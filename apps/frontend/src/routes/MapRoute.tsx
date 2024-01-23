@@ -1,5 +1,5 @@
 import React from "react";
-import imgUrl from './MapImg.png';
+import imgUrl from './MapImg.jpeg';
 
 export default function MapRoute() {
     return (
