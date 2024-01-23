@@ -10,7 +10,7 @@ const SignInRoute = () => {
     e.preventDefault();
     console.log(username);
     console.log(password);
-    navigate("/");
+    navigate("/map");
   };
 
   return (
