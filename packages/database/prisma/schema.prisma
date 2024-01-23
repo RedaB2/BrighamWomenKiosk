@@ -12,9 +12,32 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
-// example table used in the express router example
-model HighScore {
-  id    Int      @id @default(autoincrement())
-  time  DateTime
-  score Int
+model Nodes {
+  nodeID    String   @id
+  xcoord    Int
+  ycoord    Int
+  floor     String
+  building  String
+  nodeType  NodeType
+  longName  String
+  shortName String
+}
+
+model Edges {
+  edgeID    String @id
+  startNode String
+  endNode   String
+}
+
+enum NodeType {
+  ELEV
+  REST
+  STAI
+  DEPT
+  LABS
+  INFO
+  CONF
+  EXIT
+  RETL
+  SERV
 }
