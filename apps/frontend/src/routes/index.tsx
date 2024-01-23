@@ -3,7 +3,7 @@ import SignInRoute from "./SignInRoute.tsx";
 
 export const router = createBrowserRouter([
   {
-    path: "/sign-in",
+    path: "/",
     element: <SignInRoute />,
   },
 ]);
