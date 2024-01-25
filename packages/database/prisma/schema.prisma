@@ -40,4 +40,5 @@ enum NodeType {
   EXIT
   RETL
   SERV
+  HALL
 }

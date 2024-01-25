@@ -3,6 +3,7 @@ import express, { Express, NextFunction, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import exampleRouter from "./routes/example.ts";
+import mapRouter from "./routes/map.ts";
 
 const app: Express = express(); // Setup the backend
 
@@ -22,6 +23,7 @@ app.use(cookieParser()); // Cookie parser
 // Setup routers. ALL ROUTERS MUST use /api as a start point, or they
 // won't be reached by the default proxy and prod setup
 app.use("/api/high-score", exampleRouter);
+app.use("/api/map", mapRouter);
 
 /**
  * Catch all 404 errors, and forward them to the error handler

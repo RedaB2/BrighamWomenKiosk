@@ -6,6 +6,9 @@
   "types": "./src/index.ts",
   "browser": "./src/index.ts",
   "module": "true",
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
+  },
   "devDependencies": {
     "eslint": "latest",
     "eslint-config-custom": "workspace:*",
