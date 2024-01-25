@@ -40,6 +40,8 @@ const SignInRoute = () => {
         />
       </div>
       <button type="submit">Sign In</button>
+      <br />
+      <button>Reset Password</button>
     </form>
   );
 };
