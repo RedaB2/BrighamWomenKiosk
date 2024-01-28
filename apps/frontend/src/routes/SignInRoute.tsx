@@ -9,19 +9,23 @@ const SignInRoute = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (username != "TeamC" || password != "IsTheBest!") {
+      alert("Wrong Password or Account");
+      return;
+    }
     console.log(username);
     console.log(password);
-    navigate("/map");
+    navigate("/");
   };
 
   const handleResetPassword = (e: FormEvent) => {
     e.preventDefault();
-    navigate("/reset-password");
+    navigate("/sign-in/reset-password");
   };
 
   const handleCreateAccount = (e: FormEvent) => {
     e.preventDefault();
-    navigate("/new-account");
+    navigate("/sign-in/new-account");
   };
 
   return (
