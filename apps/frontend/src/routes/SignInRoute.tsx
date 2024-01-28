@@ -9,7 +9,7 @@ const SignInRoute = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (username != "TeamC" || password != "IsTheBest!") {
+    if (username != "admin" || password != "admin") {
       alert("Wrong Password or Account");
       return;
     }
