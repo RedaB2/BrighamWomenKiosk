@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Table from "./Table";
+import "./CSVData.css";
 
 export default function CSVDataRoute() {
   const [nodes, setNodes] = useState([]);
@@ -32,6 +33,10 @@ export default function CSVDataRoute() {
 
   return (
     <>
+      <form>
+        <button>Import new CSV Data</button>
+        <button>Download CSV Data</button>
+      </form>
       <Table data={nodes} />
       <Table data={edges} />
     </>
