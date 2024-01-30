@@ -5,6 +5,7 @@ import "./CSVData.css";
 export default function CSVDataRoute() {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
+  const [file, setFile] = useState("");
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -34,9 +35,21 @@ export default function CSVDataRoute() {
   return (
     <>
       <form>
-        <button>Import new CSV Data</button>
-        <button>Download CSV Data</button>
+        <label htmlFor="csv-upload">Upload new CSV Data:</label>
+        <br />
+        <input
+          type="file"
+          id="csv-upload"
+          name="poster"
+          accept="text/csv"
+          value={file}
+          onChange={(e) => setFile(e.target.value)}
+        />
+        <br />
+        <button type="submit">Upload File</button>
       </form>
+
+      <button>Download CSV Data</button>
       <Table data={nodes} />
       <Table data={edges} />
     </>
