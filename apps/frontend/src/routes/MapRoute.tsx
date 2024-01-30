@@ -22,7 +22,7 @@ function openNav() {
 function closeNav() {
   const name = document.getElementById("mySidebar");
   if (name != null) {
-    name.style.width = "250px";
+    name.style.width = "0px";
   }
 }
 
@@ -51,13 +51,13 @@ const MapRoute = () => {
   return (
     <>
       <div id="mySidebar" className="sidebar">
-        <a href="#" className="closebtn" onClick={closeNav}>
+        <a className="closebtn" onClick={closeNav}>
           &times;
         </a>
         <a href="/sign-in">Sign In</a>
         <a href="/">Map</a>
         <a href="/csv-data">CSV Data</a>
-        <a href="/service-requests">Service Requests</a>
+        <a href="/service-request">Service Requests</a>
       </div>
 
       <button className="openbtn" onClick={openNav}>
