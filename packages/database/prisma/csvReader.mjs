@@ -23,12 +23,9 @@ export const readCSV = (filePath) => {
   // Parse each line
   return lines.slice(1).map((line) => {
     const values = line.split(",");
-    return headers.reduce(
-      (obj, header, index) => {
-        obj[header] = values[index];
-        return obj;
-      },
-      {},
-    );
+    return headers.reduce((obj, header, index) => {
+      obj[header] = values[index];
+      return obj;
+    }, {});
   });
 };

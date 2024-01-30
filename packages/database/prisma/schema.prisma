@@ -27,6 +27,7 @@ model Edges {
   edgeID    String @id
   startNode String
   endNode   String
+  weight    Float
 }
 
 enum NodeType {
