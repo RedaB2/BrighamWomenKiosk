@@ -1,39 +1,27 @@
-import { createBrowserRouter } from "react-router-dom";
-import SignInRoute from "./SignInRoute.tsx";
-import MapRoute from "./MapRoute.tsx";
-import ResetPasswordRoute from "./ResetPasswordRoute.tsx";
-import NewAccountRoute from "./NewAccountRoute.tsx";
-import CSVDataRoute from "@/routes/CSVDataRoute.tsx";
-import ServiceRequestRoute from "@/routes/ServiceRequestRoute.tsx";
-import JanitorialFormRoute from "@/routes/JanitorialFormRoute.tsx";
+import { useRoutes } from "react-router-dom";
+import { AuthRoutes } from "@/features/auth";
+import { MapRoutes } from "@/features/map";
+import { ServicesRoutes } from "@/features/services";
+import { DataRoutes } from "@/features/data";
 
-export const router = createBrowserRouter([
-  {
-    path: "/sign-in",
-    element: <SignInRoute />,
-  },
-  {
-    path: "/",
-    element: <MapRoute />,
-  },
-  {
-    path: "/sign-in/reset-password",
-    element: <ResetPasswordRoute />,
-  },
-  {
-    path: "/csv-data",
-    element: <CSVDataRoute />,
-  },
-  {
-    path: "/sign-in/new-account",
-    element: <NewAccountRoute />,
-  },
-  {
-    path: "/service-request",
-    element: <ServiceRequestRoute />,
-  },
-  {
-    path: "/service-request/janitorial",
-    element: <JanitorialFormRoute />,
-  },
-]);
+export const AppRoutes = () => {
+  const element = useRoutes([
+    {
+      path: "/*",
+      element: <MapRoutes />,
+    },
+    {
+      path: "/services/*",
+      element: <ServicesRoutes />,
+    },
+    {
+      path: "/data/*",
+      element: <DataRoutes />,
+    },
+    {
+      path: "/auth/*",
+      element: <AuthRoutes />,
+    },
+  ]);
+  return <>{element}</>;
+};
