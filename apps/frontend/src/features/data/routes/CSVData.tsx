@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Table } from "@/components";
+import { FileInput, Label, Button } from "flowbite-react";
 
 const CSVData = () => {
   const [nodes, setNodes] = useState([]);
@@ -31,30 +32,56 @@ const CSVData = () => {
     fetchEdges();
   }, []);
 
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    try {
+      const res = await fetch("/api/map/upload", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error(res.statusText);
+      setFile("");
+      alert("File uploaded successfully!");
+    } catch (error) {
+      alert("Failed to upload file. Please try again.");
+    }
+  };
+
+
   return (
     <>
       <form
         action="/api/map/upload"
         method="post"
         encType="multipart/form-data"
+        
+
+        onSubmit={handleSubmit}
       >
-        <label htmlFor="csv-upload">Upload new CSV Data:</label>
-        <br />
-        <input
-          type="file"
+        <div className="mb-2 block">
+          <Label htmlFor="csv-upload" value="Upload new CSV Data:" />
+        </div>
+        <FileInput
+          className="w-96"
           id="csv-upload"
-          name="poster"
+          name="csv-upload"
           accept="text/csv"
           value={file}
+          helperText="CSV files only."
           onChange={(e) => setFile(e.target.value)}
         />
         <br />
-        <button type="submit">Upload File</button>
+        <Button type="submit">Upload File</Button>
       </form>
 
-      <button>Download CSV Data</button>
-      <Table data={nodes} />
-      <Table data={edges} />
+      <Button className="my-8">Download CSV Data</Button>
+      <div className="flex">
+        <Table data={nodes} />
+        <div className="w-32" />
+        <Table data={edges} />
+      </div>
     </>
   );
 };
