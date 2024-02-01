@@ -2,6 +2,7 @@ import React, { useState, FormEvent } from "react";
 import "./ServiceRequestStyles.css";
 import { useNavigate } from "react-router-dom";
 import DropDown from "./DropDown";
+import MenuBar from "@/routes/MenuBar.tsx";
 
 const ServiceRequestRoute = () => {
   const [showRoomDropDown, setShowRoomDropDown] = useState<boolean>(false);
@@ -62,6 +63,7 @@ const ServiceRequestRoute = () => {
 
   return (
     <div className={"dropdown"}>
+      <MenuBar></MenuBar>
       <h1>Submit a Service Request</h1>
       <div>
         {selectRoom ? `You selected ${selectRoom}.` : "Select a Room..."}
