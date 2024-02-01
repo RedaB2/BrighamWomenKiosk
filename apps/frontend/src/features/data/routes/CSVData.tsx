@@ -56,7 +56,6 @@ const CSVData = () => {
         action="/api/map/upload"
         method="post"
         encType="multipart/form-data"
-        
 
         onSubmit={handleSubmit}
       >
