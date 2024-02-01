@@ -31,12 +31,15 @@
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@vitest/ui": "^0.33.0",
+    "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
     "eslint-config-custom": "workspace:*",
     "happy-dom": "^10.6.3",
     "husky": "^8.0.0",
+    "postcss": "^8.4.33",
     "prettier": "2.8.8",
     "prettier-config-custom": "workspace:*",
+    "tailwindcss": "^3.4.1",
     "tsconfig-custom": "workspace:*",
     "turbo": "latest",
     "typescript": "^5.0.4",
@@ -44,8 +47,27 @@
   },
   "dependencies": {
     "@yarnpkg/pnpify": "^4.0.0-rc.45",
+    "flowbite": "^2.2.1",
+    "flowbite-react": "^0.7.2",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.0",
     "react-dom": "^18.2.0"
+  },
+  "dependenciesMeta": {
+    "autoprefixer@10.4.17": {
+      "unplugged": true
+    },
+    "flowbite@2.2.1": {
+      "unplugged": true
+    },
+    "flowbite-react@0.7.2": {
+      "unplugged": true
+    },
+    "postcss@8.4.33": {
+      "unplugged": true
+    },
+    "tailwindcss@3.4.1": {
+      "unplugged": true
+    }
   }
 }
