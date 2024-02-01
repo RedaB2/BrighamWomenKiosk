@@ -1,10 +1,18 @@
 import React, { ChangeEvent, useState } from "react";
 import "./JanitorialFormStyles.css";
 import { useNavigate } from "react-router-dom";
+import DropDown from "./DropDown";
 
-function JanitorialRequestForm() {
+const JanitorialRequestForm = () => {
   const [nameInput, setNameInput] = useState("");
   const [commentInput, setCommentInput] = useState("");
+  const [priorityInput, setPriorityInput] = useState<string>("");
+
+  const [showPriorityDropDown, setShowPriorityDropDown] =
+    useState<boolean>(false);
+  const priorities = () => {
+    return ["Low", "Medium", "High"];
+  };
 
   const navigate = useNavigate();
 
@@ -12,8 +20,10 @@ function JanitorialRequestForm() {
     if (nameInput !== "" && commentInput !== "") {
       const [name] = nameInput;
       const [comment] = commentInput;
+      const [priority] = priorityInput;
       console.log(name);
       console.log(comment);
+      console.log(priority);
     }
   }
 
@@ -34,13 +44,52 @@ function JanitorialRequestForm() {
     setCommentInput(e.target.value);
   }
 
+  const togglePriorityDropDown = () => {
+    setShowPriorityDropDown(!showPriorityDropDown);
+  };
+
+  const dismissPriorityHandler = (
+    e: React.FocusEvent<HTMLButtonElement>,
+  ): void => {
+    if (e.currentTarget === e.target) {
+      setShowPriorityDropDown(false);
+    }
+  };
+
+  const prioritySelection = (priority: string): void => {
+    setPriorityInput(priority);
+  };
+
   return (
-    <form onSubmit={submit} className={"submit"}>
+    <form>
       <h1>Janitorial Request Form</h1>
       <div className={"janitorialForm"}>
-        <div className={"input"}>
+        <div>
           <p>Name:</p>
           <input onChange={handleNameInput} value={nameInput} />
+          <div>
+            {priorityInput
+              ? `You selected a ${priorityInput} priority.`
+              : "Select a Priority..."}
+          </div>
+          <button
+            type={"button"}
+            className={showPriorityDropDown ? "active" : undefined}
+            onClick={(): void => togglePriorityDropDown()}
+            onBlur={(e: React.FocusEvent<HTMLButtonElement>): void =>
+              dismissPriorityHandler(e)
+            }
+          >
+            <div>{"Priorities"}</div>
+            {showPriorityDropDown && (
+              <DropDown
+                objects={priorities()}
+                showDropDown={false}
+                toggleDropDown={(): void => togglePriorityDropDown()}
+                objSelection={prioritySelection}
+              />
+            )}
+          </button>
           <p>Additional Information:</p>
           <textarea
             className={"comment"}
@@ -48,7 +97,7 @@ function JanitorialRequestForm() {
             value={commentInput}
           />
         </div>
-        <div className={"button"}>
+        <div>
           <button onClick={submit}>Submit</button>
           <button onClick={clear}>Clear</button>
           <button onClick={back}>Back</button>
@@ -56,6 +105,6 @@ function JanitorialRequestForm() {
       </div>
     </form>
   );
-}
+};
 
 export default JanitorialRequestForm;
