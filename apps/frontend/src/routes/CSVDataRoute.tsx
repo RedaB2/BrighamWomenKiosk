@@ -35,8 +35,12 @@ export default function CSVDataRoute() {
 
   return (
     <>
+      <form
+        action="/api/map/upload"
+        method="post"
+        encType="multipart/form-data"
+      >
       <MenuBar></MenuBar>
-      <form>
         <label htmlFor="csv-upload">Upload new CSV Data:</label>
         <br />
         <input
