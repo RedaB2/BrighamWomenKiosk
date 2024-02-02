@@ -86,7 +86,7 @@ const MapLayout = () => {
   return (
     <div className="h-screen flex overflow-hidden">
       <Drawer />
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-auto">
         <Outlet />
       </div>
     </div>

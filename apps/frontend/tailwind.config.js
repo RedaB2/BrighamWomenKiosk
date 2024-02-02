@@ -10,5 +10,5 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [require("flowbite/plugin")],
+  plugins: [import("flowbite/plugin")],
 };

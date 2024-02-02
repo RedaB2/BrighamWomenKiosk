@@ -120,14 +120,15 @@ initializeGraph()
     console.error("Failed to initialize the graph:", error);
   });
 
-router.get("/pathfinding", async function (req: Request, res: Response) {
+router.post("/pathfinding", async function (req: Request, res: Response) {
   if (!graph) {
     // The graph is not ready yet
     return res
       .status(503)
       .send("The graph is still initializing. Please try again later.");
   }
-  const { startNodeId, endNodeId } = req.query;
+
+  const { startNodeId, endNodeId } = req.body;
 
   if (!startNodeId || !endNodeId) {
     return res.status(400).send("Both startNodeId and endNodeId are required");
