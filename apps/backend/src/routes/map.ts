@@ -16,17 +16,6 @@ router.get("/edges", async function (req: Request, res: Response) {
   res.json(edges);
 });
 
-// Fetch edges and create the graph when the server starts
-async function initializeGraph() {
-  try {
-    const edges = await PrismaClient.edges.findMany();
-    graph = createGraph(edges);
-  } catch (error) {
-    console.error("Error initializing the graph:", error);
-    graph = null;
-  }
-}
-
 const storage = multer.diskStorage({
   destination: "tmp/",
   filename: (req, file, cb) => {
@@ -108,26 +97,7 @@ router.get("/download/edges", async function (req: Request, res: Response) {
   }
 });
 
-type Graph = Map<string, Array<{ node: string; weight: number }>>;
-
-let graph: Graph | null = null;
-
-initializeGraph()
-  .then(() => {
-    console.log("Graph has been successfully initialized");
-  })
-  .catch((error) => {
-    console.error("Failed to initialize the graph:", error);
-  });
-
 router.post("/pathfinding", async function (req: Request, res: Response) {
-  if (!graph) {
-    // The graph is not ready yet
-    return res
-      .status(503)
-      .send("The graph is still initializing. Please try again later.");
-  }
-
   const { startNodeId, endNodeId } = req.body;
 
   if (!startNodeId || !endNodeId) {
@@ -154,6 +124,8 @@ router.post("/pathfinding", async function (req: Request, res: Response) {
     }
 
     // Both nodes exist; proceed with finding the path
+    const edges = await PrismaClient.edges.findMany();
+    const graph = createGraph(edges);
     const pathNodeIds = dijkstraPathFinder(
       startNodeId as string,
       endNodeId as string,
