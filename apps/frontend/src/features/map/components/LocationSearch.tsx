@@ -17,7 +17,7 @@ const LocationSearch = () => {
   const locations: { nodeID: string; longName: string }[] = nodes.map(
     (node) => {
       return { nodeID: node.nodeID, longName: node.longName };
-    },
+    }
   );
 
   useEffect(() => {
@@ -54,7 +54,8 @@ const LocationSearch = () => {
         },
       });
       if (!res.ok) throw new Error(res.statusText);
-      setDirections((await res.json()).path);
+      const data = await res.json();
+      setDirections(data.path);
       console.log(newDirections);
     } catch (error) {
       alert("Failed to find path. Please try again.");
@@ -84,8 +85,8 @@ const LocationSearch = () => {
                   locations
                     .map((loc) => loc.longName)
                     .filter((loc) =>
-                      loc.toLowerCase().includes(e.target.value.toLowerCase()),
-                    ),
+                      loc.toLowerCase().includes(e.target.value.toLowerCase())
+                    )
                 );
               } else {
                 setStartSuggestions([]);
@@ -125,8 +126,8 @@ const LocationSearch = () => {
                   locations
                     .map((loc) => loc.longName)
                     .filter((loc) =>
-                      loc.toLowerCase().includes(e.target.value.toLowerCase()),
-                    ),
+                      loc.toLowerCase().includes(e.target.value.toLowerCase())
+                    )
                 );
               } else {
                 setEndSuggestions([]);
