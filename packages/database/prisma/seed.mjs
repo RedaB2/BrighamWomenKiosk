@@ -6,6 +6,7 @@ import { calculateEdgeWeights } from "./weightCalculator.mjs";
 const prisma = new PrismaClient();
 const nodesPath = path.join(path.resolve(), "prisma/L1Nodes.csv");
 const edgesPath = path.join(path.resolve(), "prisma/L1Edges.csv");
+//const requestsPath = path.join(path.resolve(), "prisma/services.csv");
 
 const main = async () => {
   // read csv data

@@ -1,8 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DropDown } from "@/components";
+import { DropDown, Table } from "@/components";
 
 const ServiceRequest = () => {
+  const [serviceRequests, setServiceRequests] = useState([]);
+
+  useEffect(() => {
+    const fetchServiceRequests = async () => {
+      try {
+        const res = await fetch("/api/services");
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        setServiceRequests(data);
+      } catch (error) {
+        console.error("Failed to fetch service requests:", error);
+      }
+    };
+    fetchServiceRequests();
+  }, []);
+
   const [showRoomDropDown, setShowRoomDropDown] = useState<boolean>(false);
   const [showRequestDropDown, setShowRequestDropDown] =
     useState<boolean>(false);
@@ -63,7 +79,7 @@ const ServiceRequest = () => {
     }
 
     if (selectRequest == "Janitorial") {
-      navigate("/service-request/janitorial");
+      navigate("/services/janitorial");
     }
   }
 
@@ -122,6 +138,7 @@ const ServiceRequest = () => {
         </button>
         <button onClick={back}>Back</button>
       </div>
+      <Table data={serviceRequests} />
     </div>
   );
 };

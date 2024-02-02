@@ -13,7 +13,7 @@ datasource db {
 }
 
 model Nodes {
-  nodeID    String   @id
+  nodeID    String     @id
   xcoord    Int
   ycoord    Int
   floor     String
@@ -21,6 +21,7 @@ model Nodes {
   nodeType  NodeType
   longName  String
   shortName String
+  requests  Requests[]
 }
 
 model Edges {
@@ -42,4 +43,27 @@ enum NodeType {
   RETL
   SERV
   HALL
+}
+
+model Requests {
+  id      Int         @id @default(autoincrement())
+  nodeID  String
+  room    Nodes       @relation(fields: [nodeID], references: [nodeID])
+  urgency Urgency
+  type    RequestType
+  notes   String?
+}
+
+enum Urgency {
+  LOWU // low urgency
+  MEDI // medium urgency
+  HIGH // high urgency
+}
+
+enum RequestType {
+  JANI // janitorial
+  MECH // mechanical
+  MEDI // medicinal
+  RELC // patient relocation
+  CONS // patient consultation
 }

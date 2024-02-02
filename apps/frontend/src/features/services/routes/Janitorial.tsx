@@ -1,30 +1,20 @@
 import React, { ChangeEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DropDown } from "@/components";
+import { Button } from "flowbite-react";
 
 const Janitorial = () => {
   const [nameInput, setNameInput] = useState("");
-  const [commentInput, setCommentInput] = useState("");
   const [priorityInput, setPriorityInput] = useState<string>("");
+  const [commentInput, setCommentInput] = useState("");
 
   const [showPriorityDropDown, setShowPriorityDropDown] =
     useState<boolean>(false);
   const priorities = () => {
-    return ["Low", "Medium", "High"];
+    return ["LOWU", "MEDI", "HIGH"];
   };
 
   const navigate = useNavigate();
-
-  function submit() {
-    if (nameInput !== "" && commentInput !== "") {
-      const [name] = nameInput;
-      const [comment] = commentInput;
-      const [priority] = priorityInput;
-      console.log(name);
-      console.log(comment);
-      console.log(priority);
-    }
-  }
 
   function clear() {
     setNameInput("");
@@ -32,7 +22,7 @@ const Janitorial = () => {
   }
 
   function back() {
-    navigate("/service-request");
+    navigate("/services");
   }
 
   function handleNameInput(e: ChangeEvent<HTMLInputElement>) {
@@ -59,8 +49,32 @@ const Janitorial = () => {
     setPriorityInput(priority);
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // TODO: Fix this form
+    const data = {
+      type: "JANI",
+      urgency: priorityInput,
+      notes: commentInput,
+      nodeID: "CCONF001L1",
+    };
+    try {
+      const res = await fetch("/api/services", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error(res.statusText);
+      navigate("/services");
+    } catch (error) {
+      console.error("Failed to submit janitorial request:", error);
+    }
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <h1>Janitorial Request Form</h1>
       <div className={"janitorialForm"}>
         <div>
@@ -71,7 +85,7 @@ const Janitorial = () => {
               ? `You selected a ${priorityInput} priority.`
               : "Select a Priority..."}
           </div>
-          <button
+          <Button
             type={"button"}
             className={showPriorityDropDown ? "active" : undefined}
             onClick={(): void => togglePriorityDropDown()}
@@ -88,7 +102,7 @@ const Janitorial = () => {
                 objSelection={prioritySelection}
               />
             )}
-          </button>
+          </Button>
           <p>Additional Information:</p>
           <textarea
             className={"comment"}
@@ -97,9 +111,9 @@ const Janitorial = () => {
           />
         </div>
         <div>
-          <button onClick={submit}>Submit</button>
-          <button onClick={clear}>Clear</button>
-          <button onClick={back}>Back</button>
+          <Button type="submit">Submit</Button>
+          <Button onClick={clear}>Clear</Button>
+          <Button onClick={back}>Back</Button>
         </div>
       </div>
     </form>

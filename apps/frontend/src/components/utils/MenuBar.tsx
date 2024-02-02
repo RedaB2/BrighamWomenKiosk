@@ -33,7 +33,7 @@ const MenuBar = () => {
   };
   const handleServiceRequests = (e: FormEvent) => {
     e.preventDefault();
-    navigate("/service-request");
+    navigate("/services");
   };
 
   return (
@@ -45,7 +45,7 @@ const MenuBar = () => {
         <a href="/sign-in">Sign In</a>
         <a href="/">Map</a>
         <a href="/csv-data">CSV Data</a>
-        <a href="/service-request">Service Requests</a>
+        <a href="/services">Service Requests</a>
       </div>
 
       <button className="openbtn" onClick={openNav}>

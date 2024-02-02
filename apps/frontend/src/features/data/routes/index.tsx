@@ -16,7 +16,6 @@ export const DataRoutes = () => {
     <Routes>
       <Route path="/" element={<DataLayout />}>
         <Route path="/map" element={<CSVData />} />
-        {/* <Route path="/services" element={<CSVData />} /> */}
       </Route>
     </Routes>
   );
