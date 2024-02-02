@@ -15,7 +15,7 @@ app.use(
       // This is a "hack" that gets the output to appear in the remote debugger :)
       write: (msg) => console.info(msg),
     },
-  }),
+  })
 ); // This records all HTTP requests
 app.use(express.json()); // This processes requests as JSON
 app.use(express.urlencoded({ extended: false })); // URL parser
