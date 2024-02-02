@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "@/components";
 import { FileInput, Label, Button } from "flowbite-react";
+import downloadCSV from "./downloadCSV.ts";
 
 const CSVData = () => {
   const [nodes, setNodes] = useState([]);
@@ -75,7 +76,19 @@ const CSVData = () => {
         <Button type="submit">Upload File</Button>
       </form>
 
-      <Button className="my-8">Download CSV Data</Button>
+      <br/>
+      
+      <div>
+        <Button className="my-8" onClick={() => downloadCSV("/api/download/nodes")}>
+          Download Nodes CSV
+        </Button>
+        <br />
+        <Button className="my-8" onClick={() => downloadCSV("/api/download/edges")}>
+          Download Edges CSV
+        </Button>
+      </div>
+
+      {/*<Button className="my-8">Download CSV Data</Button>*/}
       <div className="flex">
         <Table data={nodes} />
         <div className="w-32" />
