@@ -43,6 +43,7 @@ enum NodeType {
   RETL
   SERV
   HALL
+  BATH
 }
 
 model Requests {

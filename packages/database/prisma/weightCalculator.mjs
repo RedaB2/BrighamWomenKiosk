@@ -4,38 +4,65 @@
  */
 
 /**
- * @typedef EdgeWeight
- * @property {string} Edges.edgeID
- * @property {number} weight
+ * Maps floor labels to numerical values for distance calculations.
+ * @param {string} floorLabel
+ * @returns {number}
  */
-
-/**
- * Assumes that the nodes' coordinates are in the same plane (in this case, the same floor).
- *
- * @param {Nodes} nodeA
- * @param {Nodes} nodeB
- * @returns {number} The Euclidean distance between two nodes
- */
-const calculateDistance = (nodeA, nodeB) => {
-  return Math.sqrt(
-    Math.pow(nodeA.xcoord - nodeB.xcoord, 2) +
-      Math.pow(nodeA.ycoord - nodeB.ycoord, 2)
-  );
+const mapFloorToNumber = (floorLabel) => {
+  const mappings = {
+    L1: -1,
+    L2: -2,
+    1: 1,
+    2: 2,
+    3: 3,
+  };
+  return mappings[floorLabel] || 0;
 };
 
 /**
- * Calculates the weight (the length) of each edge.
+ * Adjusts the distance calculation for elevators and stairs based on floor changes.
  *
- * @param {Nodes[]} nodes
- * @param {Edges[]} edges
- * @returns {EdgeWeight[]}
+ * @param {Nodes} nodeA
+ * @param {Nodes} nodeB
+ * @returns {number} The adjusted weight for the edge.
+ */
+const calculateAdjustedDistance = (nodeA, nodeB) => {
+  const floorA = mapFloorToNumber(nodeA.floor);
+  const floorB = mapFloorToNumber(nodeB.floor);
+  const elevatorWeightPerFloor = 5;
+  const stairsWeightPerFloor = 2;
+
+  if (nodeA.nodeType === "ELEV" && nodeB.nodeType === "ELEV") {
+    // ADD ELEV WEIGHT
+    const floorDifference = Math.abs(floorA - floorB);
+    return floorDifference * elevatorWeightPerFloor;
+  } else if (nodeA.nodeType === "STAI" && nodeB.nodeType === "STAI") {
+    // ADD STAI WEIGHT
+    const floorDifference = Math.abs(floorA - floorB);
+    return floorDifference * stairsWeightPerFloor;
+  } else {
+    return Math.sqrt(
+      Math.pow(nodeA.xcoord - nodeB.xcoord, 2) +
+        Math.pow(nodeA.ycoord - nodeB.ycoord, 2)
+    );
+  }
+};
+
+/**
+ * Updates the calculateEdgeWeights function to use the new distance calculation, considering node types.
  */
 export const calculateEdgeWeights = (nodes, edges) => {
-  /** @type {Map<string, Nodes>} */
   const nodeMap = new Map();
-  nodes.forEach((node) => nodeMap.set(node.nodeID, node));
+  nodes.forEach((node) =>
+    nodeMap.set(node.nodeID, {
+      ...node,
+      xcoord: Number(node.xcoord),
+      ycoord: Number(node.ycoord),
+      floor: mapFloorToNumber(node.floor),
+      nodeType: node.nodeType,
+    })
+  );
 
-  /** @type {EdgeWeight[]} */
   const edgeWeights = edges.map((edge) => {
     const startNode = nodeMap.get(edge.startNode);
     const endNode = nodeMap.get(edge.endNode);
@@ -44,7 +71,7 @@ export const calculateEdgeWeights = (nodes, edges) => {
       throw new Error("Node not found");
     }
 
-    const weight = calculateDistance(startNode, endNode);
+    const weight = calculateAdjustedDistance(startNode, endNode);
     return { edgeID: edge.edgeID, weight };
   });
 
