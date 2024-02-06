@@ -44,7 +44,7 @@ router.get("/nodes", async function (req: Request, res: Response) {
     try {
         const csvData = await generateCSVData("nodes");
         res.header("Content-Type", "text/csv");
-        res.attachment("L1Nodes.csv");
+        res.attachment("nodes.csv");
         res.send(csvData);
     } catch (error) {
         console.error("Failed to download nodes CSV:", error);
@@ -57,7 +57,7 @@ router.get("/edges", async function (req: Request, res: Response) {
     try {
         const csvData = await generateCSVData("edges");
         res.header("Content-Type", "text/csv");
-        res.attachment("L1Edges.csv");
+        res.attachment("edges.csv");
         res.send(csvData);
     } catch (error) {
         console.error("Failed to download edges CSV:", error);

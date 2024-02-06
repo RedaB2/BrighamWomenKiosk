@@ -15,7 +15,7 @@ async function downloadCSV(endpoint: string): Promise<void> {
     const url = window.URL.createObjectURL(response.data);
     const a = document.createElement("a");
     a.href = url;
-    a.download = endpoint.includes("nodes") ? "L1Nodes.csv" : "L1Edges.csv";
+    a.download = endpoint.includes("nodes") ? "nodes.csv" : "edges.csv";
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url); // Clean up the URL object

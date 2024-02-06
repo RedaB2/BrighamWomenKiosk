@@ -5,6 +5,7 @@ import logger from "morgan";
 import exampleRouter from "./routes/example.ts";
 import mapRouter from "./routes/map.ts";
 import servicesRouter from "./routes/services.ts";
+import downloadRoute from "./routes/downloadRoute.ts";
 
 const app: Express = express(); // Setup the backend
 
