@@ -1,14 +1,18 @@
 import logoUrl from "/logo.png";
+import { drawerId } from "../constants";
 import { FaMapMarkedAlt, FaSignInAlt, FaDownload } from "react-icons/fa";
 import { MdOutlineRoomService } from "react-icons/md";
 import {
   Sidebar as FlowbiteSidebar,
   DarkThemeToggle,
   CustomFlowbiteTheme,
+  Button,
 } from "flowbite-react";
+import { IoMdClose } from "react-icons/io";
 
-const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
+const drawerTheme: CustomFlowbiteTheme["sidebar"] = {
   root: {
+    base: "fixed top-0 left-0 z-40 h-screen overflow-y-auto transition-transform -translate-x-full",
     inner:
       "h-full overflow-y-auto overflow-x-hidden rounded bg-gray-50 py-4 px-3 dark:bg-gray-800 flex flex-col",
     collapsed: {
@@ -24,10 +28,27 @@ const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
   },
 };
 
-const SidebarNavigation = () => {
+const Drawer = () => {
   return (
-    <FlowbiteSidebar aria-label="Navigation sidebar" theme={sidebarTheme}>
-      <FlowbiteSidebar.Logo href="/" img={logoUrl} imgAlt="Hospital logo" />
+    <FlowbiteSidebar
+      aria-label="Navigation drawer"
+      theme={drawerTheme}
+      tabIndex={-1}
+      id={drawerId}
+    >
+      <div className="flex space-x-4 items-center">
+        <Button
+          type="button"
+          data-drawer-hide={drawerId}
+          aria-controls={drawerId}
+          outline
+          label="Close navigation drawer"
+        >
+          <IoMdClose />
+          <span className="sr-only">Close navigation drawer</span>
+        </Button>
+        <FlowbiteSidebar.Logo href="/" img={logoUrl} imgAlt="Hospital logo" />
+      </div>
       <FlowbiteSidebar.Items>
         <FlowbiteSidebar.ItemGroup>
           <FlowbiteSidebar.Item href="/" icon={FaMapMarkedAlt}>
@@ -54,17 +75,4 @@ const SidebarNavigation = () => {
   );
 };
 
-type ContentLayoutProps = {
-  children: React.ReactNode;
-};
-
-const ContentLayout = ({ children }: ContentLayoutProps) => {
-  return (
-    <div className="h-screen flex overflow-hidden">
-      <SidebarNavigation />
-      <div className="flex-1 overflow-auto">{children}</div>
-    </div>
-  );
-};
-
-export { ContentLayout };
+export { Drawer };
