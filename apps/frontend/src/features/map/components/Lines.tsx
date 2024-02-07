@@ -21,7 +21,7 @@ function Lines(props: {
   const { path } = useContext(DirectionsContext);
   const [nodes, setNodes] = useState<Nodes[]>([]);
   const path2 = path.map((nodeID) =>
-    nodes.filter((node) => node.nodeID == nodeID)
+    nodes.filter((node) => node.nodeID == nodeID),
   );
 
   const floorID = () => {
@@ -38,6 +38,7 @@ function Lines(props: {
     } else if (props.selectedFloor == thirdFloor) {
       return "3";
     }
+    return "";
   };
 
   let paths = { G: [], L1: [], L2: [], "1": [], "2": [], "3": [] };
@@ -82,22 +83,34 @@ function Lines(props: {
     }
   }
 
-  function pathToPoints(path: Nodes[][]) {
-    let pathPoints =
+  function pathToPoints(path: Nodes[][]): {
+    pathData: string;
+    pathLength: number;
+  } {
+    let pathData =
       "M" +
       stylePost(path[0][0].xcoord, "x") +
       "," +
       stylePost(path[0][0].ycoord, "y") +
       " ";
-    path.slice(1, path.length).map((node) => {
-      pathPoints +=
+    path.slice(1, path.length).forEach((node) => {
+      pathData +=
         "L" +
         (stylePost(node[0].xcoord, "x") +
           "," +
           stylePost(node[0].ycoord, "y") +
           " ");
     });
-    return pathPoints;
+
+    const pathElement = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path",
+    );
+    pathElement.setAttribute("d", pathData);
+
+    const pathLength = pathElement.getTotalLength();
+
+    return { pathData, pathLength };
   }
 
   return (
@@ -108,17 +121,36 @@ function Lines(props: {
         xmlns="http://www.w3.org/2000/svg"
       >
         {
-          //@ts-expect-error error typing
+          // @ts-expect-error nope
           paths[floorID()].length > 0 &&
-            //@ts-expect-error error typing
+            // @ts-expect-error nope
             paths[floorID()].map((currentPath, i) => (
-              <path
-                id={"movePath" + i.toString()}
-                d={pathToPoints(currentPath)}
-                stroke="green"
-                fill="none"
-                strokeWidth={1}
-              />
+              <g key={i}>
+                <path
+                  id={"movePath" + i.toString()}
+                  d={pathToPoints(currentPath).pathData}
+                  stroke="green"
+                  fill="none"
+                  strokeWidth={1}
+                />
+                {(() => {
+                  const pathLength = pathToPoints(currentPath).pathLength;
+                  const numDots = Math.floor(pathLength / 1.5);
+                  return [...Array(numDots)].map((_, index) => (
+                    <>
+                      {path}
+                      <circle key={index} r={0.5} fill="yellow">
+                        <animateMotion
+                          dur={10}
+                          repeatCount="indefinite"
+                          begin={index * 0.5}
+                          path={pathToPoints(currentPath).pathData}
+                        ></animateMotion>
+                      </circle>
+                    </>
+                  ));
+                })()}
+              </g>
             ))
         }
         {nodes
@@ -137,23 +169,5 @@ function Lines(props: {
     </>
   );
 }
-
-/*
-{paths[floorID()].length > 0 && (paths[floorID()].map((currentPath, i) => {
-                  let pathLength = 0;
-                  if (document.getElementById('movePath')){
-                  // @ts-expect-error null exception crap
-                  pathLength = document.getElementById('movePath').getTotalLength();}
-                  const numDots = Math.floor(pathLength / 1.5);
-
-                  return [...Array(numDots)].map((_, index) => (
-                      <circle key={index} r={.5} fill="yellow">
-                          <animateMotion dur={30} repeatCount="indefinite" begin={index * .5}>
-                              <mpath href="#movePath"/>
-                          </animateMotion>
-                      </circle>
-                  ));
-              }))}
- */
 
 export { Lines };

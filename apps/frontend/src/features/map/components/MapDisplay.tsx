@@ -28,7 +28,7 @@ const MapDisplay = (props: { selectedFloor: string }) => {
     return () => {
       window.removeEventListener("resize", updateCoords);
     };
-  }, []);
+  }, [props.selectedFloor]);
 
   return (
     <>
