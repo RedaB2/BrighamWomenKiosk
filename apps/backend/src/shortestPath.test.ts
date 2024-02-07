@@ -1,7 +1,7 @@
-import { createGraph, dijkstraPathFinder } from "../src/shortestPath.ts";
+import { createGraph, shortestPathAStar } from "./shortestPath.ts";
 import { describe, it, expect } from "vitest";
 
-describe("Dijkstra Path Finder", () => {
+describe("A Star Path Finder", () => {
   it("should find the shortest path in a graph", () => {
     const edges = [
       { startNode: "A", endNode: "B", weight: 1 },
@@ -10,7 +10,7 @@ describe("Dijkstra Path Finder", () => {
     ];
 
     const graph = createGraph(edges);
-    const path = dijkstraPathFinder("A", "C", graph);
+    const path = shortestPathAStar("A", "C", graph);
 
     expect(path).toEqual(["A", "B", "C"]);
   });
@@ -22,7 +22,7 @@ describe("Dijkstra Path Finder", () => {
     ];
 
     const graph = createGraph(edges);
-    const path = dijkstraPathFinder("A", "D", graph);
+    const path = shortestPathAStar("A", "D", graph);
 
     expect(path).toEqual([]);
   });
@@ -35,7 +35,7 @@ describe("Dijkstra Path Finder", () => {
     ];
 
     const graph = createGraph(edges);
-    const path = dijkstraPathFinder("A", "B", graph);
+    const path = shortestPathAStar("A", "B", graph);
 
     expect(path).toEqual(["A", "B"]);
   });
@@ -44,7 +44,7 @@ describe("Dijkstra Path Finder", () => {
     const edges = [{ startNode: "A", endNode: "A", weight: 0 }];
 
     const graph = createGraph(edges);
-    const path = dijkstraPathFinder("A", "A", graph);
+    const path = shortestPathAStar("A", "A", graph);
 
     expect(path).toEqual(["A"]);
   });
@@ -59,7 +59,7 @@ describe("Dijkstra Path Finder", () => {
     ];
 
     const graph = createGraph(edges);
-    const path = dijkstraPathFinder("A", "D", graph);
+    const path = shortestPathAStar("A", "D", graph);
 
     // The shortest path can be either 'A' -> 'D' directly, or 'A' -> 'B' -> 'D', or 'A' -> 'C' -> 'D'
     expect(path).toContain("A");
@@ -74,8 +74,24 @@ describe("Dijkstra Path Finder", () => {
     ];
 
     const graph = createGraph(edges);
-    const path = dijkstraPathFinder("A", "D", graph);
+    const path = shortestPathAStar("A", "D", graph);
 
     expect(path).toEqual([]);
+  });
+});
+
+describe("A Star Path Finder Additional Tests", () => {
+  it("should avoid paths with high weight if possible", () => {
+    const edges = [
+      { startNode: "A", endNode: "B", weight: 1 },
+      { startNode: "B", endNode: "C", weight: 10 }, // High weight edge
+      { startNode: "A", endNode: "C", weight: 2 },
+      { startNode: "C", endNode: "D", weight: 2 },
+    ];
+
+    const graph = createGraph(edges);
+    const path = shortestPathAStar("A", "D", graph);
+
+    expect(path).toEqual(["A", "C", "D"]);
   });
 });

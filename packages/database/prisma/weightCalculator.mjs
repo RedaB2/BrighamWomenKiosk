@@ -29,8 +29,8 @@ const mapFloorToNumber = (floorLabel) => {
 const calculateAdjustedDistance = (nodeA, nodeB) => {
   const floorA = mapFloorToNumber(nodeA.floor);
   const floorB = mapFloorToNumber(nodeB.floor);
-  const elevatorWeightPerFloor = 5;
-  const stairsWeightPerFloor = 2;
+  const elevatorWeightPerFloor = 10000;
+  const stairsWeightPerFloor = 15000;
 
   if (nodeA.nodeType === "ELEV" && nodeB.nodeType === "ELEV") {
     // ADD ELEV WEIGHT
