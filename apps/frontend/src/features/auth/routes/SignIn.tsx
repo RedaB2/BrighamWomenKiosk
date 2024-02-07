@@ -8,7 +8,10 @@ const SignIn = () => {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (username != "admin" || password != "admin") {
+    if (
+      !(username === "admin" && password === "admin") &&
+      !(username === "softengc24C@gmail.com" && password === "cs3733c24C!")
+    ) {
       alert("Wrong Password or Account");
       return;
     }

@@ -1,3 +1,5 @@
+import { Autocomplete } from "@/components";
+
 import logoUrl from "/logo.png";
 import { drawerId } from "../constants";
 import {
@@ -6,7 +8,6 @@ import {
   CustomFlowbiteTheme,
   Select,
   Label,
-  TextInput,
   List,
 } from "flowbite-react";
 import { CiMenuBurger, CiSearch } from "react-icons/ci";
@@ -46,7 +47,7 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
   const [endLocation, setEndLocation] = useState<string>("");
   const [directions, setDirections] = useState<string[]>([]);
   const newDirections = directions.map((ID) =>
-    nodes.filter((node) => node["nodeID"] === ID),
+    nodes.filter((node) => node["nodeID"] === ID)
   );
 
   const { path, setPath } = useContext(DirectionsContext);
@@ -54,12 +55,12 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
   const locations: { nodeID: string; longName: string }[] = nodes.map(
     (node) => {
       return { nodeID: node.nodeID, longName: node.longName };
-    },
+    }
   );
 
   function angleBetweenVectors(
     v1: { x: number; y: number },
-    v2: { x: number; y: number },
+    v2: { x: number; y: number }
   ): number {
     // Calculate the angle in radians using the arctangent function
     const angleRad = Math.atan2(v2.y, v2.x) - Math.atan2(v1.y, v1.x);
@@ -208,112 +209,60 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
           </Select>
         </div>
         <form className="flex flex-col space-y-4" onSubmit={handleSubmit}>
-          <div className="relative space-y-2">
-            <Label
-              id="startLocation"
-              htmlFor="startLocation"
-              value="Enter starting point"
-            />
-            <TextInput
-              id="startLocation"
-              autoComplete="off"
-              type="text"
-              placeholder="Medical Records Conference Room Floor L1"
-              required
-              rightIcon={CiSearch}
-              value={startLocation}
-              onChange={(e) => {
-                setStartLocation(e.target.value);
-                if (e.target.value.length > 0) {
-                  setStartSuggestions(
-                    locations
-                      .map((loc) => loc.longName)
-                      .filter((loc) =>
-                        loc
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()),
-                      ),
-                  );
-                } else {
-                  setStartSuggestions([]);
-                }
-              }}
-            />
-            {startSuggestions.length > 0 && (
-              <List
-                unstyled
-                className="absolute bg-gray-50 dark:bg-gray-800 w-full border z-10 rounded-md shadow-lg overflow-hidden p-2 space-y-2"
-              >
-                {startSuggestions.map((suggestion) => (
-                  <List.Item key={suggestion}>
-                    <Button
-                      size="sm"
-                      outline
-                      className="w-full"
-                      type="button"
-                      onClick={() => {
-                        setStartLocation(suggestion);
-                        setStartSuggestions([]);
-                      }}
-                    >
-                      {suggestion}
-                    </Button>
-                  </List.Item>
-                ))}
-              </List>
-            )}
-          </div>
-          <div className="relative space-y-2">
-            <Label htmlFor="endLocation" value="Enter destination" />
-            <TextInput
-              id="endLocation"
-              autoComplete="off"
-              type="text"
-              placeholder="Nuclear Medicine Floor L1"
-              required
-              rightIcon={CiSearch}
-              value={endLocation}
-              onChange={(e) => {
-                setEndLocation(e.target.value);
-                if (e.target.value.length > 0) {
-                  setEndSuggestions(
-                    locations
-                      .map((loc) => loc.longName)
-                      .filter((loc) =>
-                        loc
-                          .toLowerCase()
-                          .includes(e.target.value.toLowerCase()),
-                      ),
-                  );
-                } else {
-                  setEndSuggestions([]);
-                }
-              }}
-            />
-            {endSuggestions.length > 0 && (
-              <List
-                unstyled
-                className="absolute bg-gray-50 dark:bg-gray-800 w-full border z-10 rounded-md shadow-lg overflow-hidden p-2 space-y-2"
-              >
-                {endSuggestions.map((suggestion) => (
-                  <List.Item key={suggestion}>
-                    <Button
-                      size="sm"
-                      outline
-                      className="w-full"
-                      type="button"
-                      onClick={() => {
-                        setEndLocation(suggestion);
-                        setEndSuggestions([]);
-                      }}
-                    >
-                      {suggestion}
-                    </Button>
-                  </List.Item>
-                ))}
-              </List>
-            )}
-          </div>
+          <Autocomplete
+            suggestions={startSuggestions}
+            setSuggestions={setStartSuggestions}
+            value={startLocation}
+            setValue={setStartLocation}
+            id="startLocation"
+            htmlFor="startLocation"
+            label="Enter starting point"
+            placeholder="Medical Records Conference Room Floor L1"
+            required
+            rightIcon={CiSearch}
+            onChange={(e) => {
+              setStartLocation(e.target.value);
+              if (e.target.value.length > 0) {
+                setStartSuggestions(
+                  locations
+                    .map((loc) => loc.longName)
+                    .filter((loc) =>
+                      loc.toLowerCase().includes(e.target.value.toLowerCase())
+                    )
+                    .slice(0, 10)
+                );
+              } else {
+                setStartSuggestions([]);
+              }
+            }}
+          />
+          <Autocomplete
+            suggestions={endSuggestions}
+            setSuggestions={setEndSuggestions}
+            value={endLocation}
+            setValue={setEndLocation}
+            id="endLocation"
+            htmlFor="endLocation"
+            label="Enter destination"
+            placeholder="Nuclear Medicine Floor L1"
+            required
+            rightIcon={CiSearch}
+            onChange={(e) => {
+              setEndLocation(e.target.value);
+              if (e.target.value.length > 0) {
+                setEndSuggestions(
+                  locations
+                    .map((loc) => loc.longName)
+                    .filter((loc) =>
+                      loc.toLowerCase().includes(e.target.value.toLowerCase())
+                    )
+                    .slice(0, 10)
+                );
+              } else {
+                setEndSuggestions([]);
+              }
+            }}
+          />
           <Button type="submit">Submit</Button>
         </form>
         <List ordered>

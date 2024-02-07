@@ -1,7 +1,8 @@
 import logoUrl from "/logo.png";
 import { drawerId } from "../constants";
-import { FaMapMarkedAlt, FaSignInAlt, FaDownload } from "react-icons/fa";
+import { FaMapMarkedAlt, FaSignInAlt, FaDownload, FaMap } from "react-icons/fa";
 import { MdOutlineRoomService } from "react-icons/md";
+import { FaPeopleGroup } from "react-icons/fa6";
 import {
   Sidebar as FlowbiteSidebar,
   DarkThemeToggle,
@@ -57,9 +58,23 @@ const Drawer = () => {
           <FlowbiteSidebar.Item href="/services" icon={MdOutlineRoomService}>
             Request Services
           </FlowbiteSidebar.Item>
-          <FlowbiteSidebar.Item href="/data/map" icon={FaDownload}>
-            Import/Export Data
-          </FlowbiteSidebar.Item>
+          <FlowbiteSidebar.Collapse
+            icon={FaDownload}
+            label="Import/Export Data"
+          >
+            <FlowbiteSidebar.Item href="/data/map" icon={FaMap}>
+              Map Data
+            </FlowbiteSidebar.Item>
+            <FlowbiteSidebar.Item href="/data/employees" icon={FaPeopleGroup}>
+              Employees Data
+            </FlowbiteSidebar.Item>
+            <FlowbiteSidebar.Item
+              href="/data/services"
+              icon={MdOutlineRoomService}
+            >
+              Service Requests Data
+            </FlowbiteSidebar.Item>
+          </FlowbiteSidebar.Collapse>
         </FlowbiteSidebar.ItemGroup>
         <FlowbiteSidebar.ItemGroup>
           <FlowbiteSidebar.Item>

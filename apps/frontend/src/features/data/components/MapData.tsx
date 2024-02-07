@@ -1,31 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "@/components";
 import { FileInput, Label, Button } from "flowbite-react";
-import axios from "axios";
+import { downloadCSV } from "../utils";
 
-/**
- * Triggers a download of a CSV file from a given endpoint.
- * @param endpoint The URL endpoint to fetch the CSV file from.
- */
-async function downloadCSV(endpoint: string): Promise<void> {
-  try {
-    const response = await axios.get(endpoint, { responseType: "blob" });
-
-    // Create a link element, use it to download the blob, and remove it
-    const url = window.URL.createObjectURL(response.data);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = endpoint.includes("nodes") ? "nodes.csv" : "edges.csv";
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url); // Clean up the URL object
-    a.remove();
-  } catch (error) {
-    console.error("Error downloading CSV:", error);
-  }
-}
-
-const CSVData = () => {
+const MapData = () => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [file, setFile] = useState("");
@@ -113,4 +91,4 @@ const CSVData = () => {
   );
 };
 
-export { CSVData };
+export { MapData };

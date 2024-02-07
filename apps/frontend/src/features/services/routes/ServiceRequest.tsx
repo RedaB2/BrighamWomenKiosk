@@ -1,145 +1,212 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { DropDown, Table } from "@/components";
+import { Button, Label, Select, Textarea } from "flowbite-react";
+import { FaPerson } from "react-icons/fa6";
+import { CiLocationOn } from "react-icons/ci";
+import {
+  Nodes,
+  Employees,
+  RequestType,
+  Urgency,
+  RequestStatus,
+} from "database";
+import { Autocomplete } from "@/components";
 
 const ServiceRequest = () => {
-  const [serviceRequests, setServiceRequests] = useState([]);
+  const [nodes, setNodes] = useState<Nodes[]>([]);
+  const [roomSuggestions, setRoomSuggestions] = useState<string[]>([]);
+  const [room, setRoom] = useState<string>("");
+
+  const [employees, setEmployees] = useState<Employees[]>([]);
+  const [employeeSuggestions, setEmployeeSuggestions] = useState<string[]>([]);
+  const [employee, setEmployee] = useState<string>("");
+
+  const [type, setType] = useState<RequestType>("JANI");
+  const [urgency, setUrgency] = useState<Urgency>("LOW");
+  const [status, setStatus] = useState<RequestStatus>("UNASSIGNED");
+  const [notes, setNotes] = useState<string>();
 
   useEffect(() => {
-    const fetchServiceRequests = async () => {
+    const fetchNodes = async () => {
       try {
-        const res = await fetch("/api/services");
+        const res = await fetch("/api/map/nodes");
         if (!res.ok) throw new Error(res.statusText);
         const data = await res.json();
-        setServiceRequests(data);
+        setNodes(data);
       } catch (error) {
-        console.error("Failed to fetch service requests:", error);
+        console.error("Failed to fetch nodes:", error);
       }
     };
-    fetchServiceRequests();
+    const fetchEmployees = async () => {
+      try {
+        const res = await fetch("/api/employees");
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        setEmployees(data);
+      } catch (error) {
+        console.error("Failed to fetch employees:", error);
+      }
+    };
+    fetchNodes();
+    fetchEmployees();
   }, []);
 
-  const [showRoomDropDown, setShowRoomDropDown] = useState<boolean>(false);
-  const [showRequestDropDown, setShowRequestDropDown] =
-    useState<boolean>(false);
-  const [selectRoom, setSelectRoom] = useState<string>("");
-  const rooms = () => {
-    return ["Room 1", "Room 2", "Room 3"];
-  };
-  const [selectRequest, setSelectRequest] = useState<string>("");
-  const requests = () => {
-    return [
-      "Janitorial",
-      "Mechanical",
-      "Medicine",
-      "Consultation",
-      "Patient Relocation",
-    ];
-  };
-  const navigate = useNavigate();
-
-  const toggleRoomDropDown = () => {
-    setShowRoomDropDown(!showRoomDropDown);
-  };
-
-  const toggleRequestDropDown = () => {
-    setShowRequestDropDown(!showRequestDropDown);
-  };
-
-  const dismissRoomHandler = (
-    event: React.FocusEvent<HTMLButtonElement>
-  ): void => {
-    if (event.currentTarget === event.target) {
-      setShowRoomDropDown(false);
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("submitting");
+    const nodeID = nodes
+      .filter((node) => node.longName === room)
+      .map((node) => node.nodeID)[0];
+    const employeeID = employees
+      .filter((emp) => emp.firstName + " " + emp.lastName === employee)
+      .map((emp) => emp.id)[0];
+    try {
+      const res = await fetch("/api/services", {
+        method: "POST",
+        body: JSON.stringify({
+          type,
+          urgency,
+          notes,
+          completionStatus: status,
+          nodeID,
+          employeeID,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error(res.statusText);
+      alert("Service request received");
+      resetForm();
+    } catch (error) {
+      alert("Failed to submit service request. Please try again.");
     }
   };
 
-  const dismissRequestHandler = (
-    event: React.FocusEvent<HTMLButtonElement>
-  ): void => {
-    if (event.currentTarget === event.target) {
-      setShowRequestDropDown(false);
-    }
+  const resetForm = () => {
+    setRoom("");
+    setEmployee("");
+    setType("JANI");
+    setUrgency("LOW");
+    setStatus("UNASSIGNED");
+    setNotes("");
   };
-
-  const roomSelection = (room: string): void => {
-    setSelectRoom(room);
-  };
-
-  const requestSelection = (request: string): void => {
-    setSelectRequest(request);
-  };
-
-  function submit() {
-    if (selectRoom !== "" && selectRequest !== "") {
-      const [room] = selectRoom;
-      const [request] = selectRequest;
-      console.log(room);
-      console.log(request);
-    }
-
-    if (selectRequest == "Janitorial") {
-      navigate("/services/janitorial");
-    }
-  }
-
-  function back() {
-    navigate("/");
-  }
 
   return (
-    <div className={"dropdown"}>
-      <h1>Submit a Service Request</h1>
-      <div>
-        {selectRoom ? `You selected ${selectRoom}.` : "Select a Room..."}
+    <form
+      className="mx-auto py-8 flex flex-col space-y-4 max-w-md"
+      onSubmit={handleSubmit}
+    >
+      <h1 className="text-2xl font-bold">Request Service Form</h1>
+      <Autocomplete
+        suggestions={roomSuggestions}
+        setSuggestions={setRoomSuggestions}
+        value={room}
+        setValue={setRoom}
+        id="room"
+        htmlFor="room"
+        label="Assign to room"
+        placeholder="Nuclear Medicine Floor L1"
+        required
+        rightIcon={CiLocationOn}
+        onChange={(e) => {
+          setRoom(e.target.value);
+          if (e.target.value.length > 0) {
+            setRoomSuggestions(
+              nodes
+                .map((loc) => {
+                  return loc.longName;
+                })
+                .filter((loc) =>
+                  loc.toLowerCase().includes(e.target.value.toLowerCase())
+                )
+                .slice(0, 10)
+            );
+          } else {
+            setRoomSuggestions([]);
+          }
+        }}
+      />
+      <Autocomplete
+        suggestions={employeeSuggestions}
+        setSuggestions={setEmployeeSuggestions}
+        value={employee}
+        setValue={setEmployee}
+        id="employee"
+        htmlFor="employee"
+        label="Assign to employee"
+        placeholder="John Doe"
+        required
+        rightIcon={FaPerson}
+        onChange={(e) => {
+          setEmployee(e.target.value);
+          if (e.target.value.length > 0) {
+            setEmployeeSuggestions(
+              employees
+                .map((emp) => emp.firstName + " " + emp.lastName)
+                .filter((emp) =>
+                  emp.toLowerCase().includes(e.target.value.toLowerCase())
+                )
+                .slice(0, 10)
+            );
+          } else {
+            setEmployeeSuggestions([]);
+          }
+        }}
+      />
+      <div className="space-y-2">
+        <Label htmlFor="type">Service type</Label>
+        <Select
+          id="type"
+          required
+          value={type}
+          onChange={(e) => setType(e.target.value as RequestType)}
+        >
+          <option value="JANI">Janitorial</option>
+          <option value="MECH">Mechanical</option>
+          <option value="MEDI">Medicinal</option>
+          <option value="RELC">Patient relocation</option>
+          <option value="CONS">Patient consultation</option>
+          <option value="CUST">Other</option>
+        </Select>
       </div>
-      <button
-        className={showRoomDropDown ? "active" : undefined}
-        onClick={(): void => toggleRoomDropDown()}
-        onBlur={(e: React.FocusEvent<HTMLButtonElement>): void =>
-          dismissRoomHandler(e)
-        }
-      >
-        <div>{"Rooms"}</div>
-        {showRoomDropDown && (
-          <DropDown
-            objects={rooms()}
-            showDropDown={false}
-            toggleDropDown={(): void => toggleRoomDropDown()}
-            objSelection={roomSelection}
-          />
-        )}
-      </button>
-      <div>
-        {selectRequest
-          ? `You selected a ${selectRequest} request.`
-          : "Select a Request..."}
+      <div className="space-y-2">
+        <Label htmlFor="urgency">Urgency</Label>
+        <Select
+          id="urgency"
+          required
+          value={urgency}
+          onChange={(e) => setUrgency(e.target.value as Urgency)}
+        >
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HIGH">High</option>
+        </Select>
       </div>
-      <button
-        className={showRequestDropDown ? "active" : undefined}
-        onClick={(): void => toggleRequestDropDown()}
-        onBlur={(e: React.FocusEvent<HTMLButtonElement>): void =>
-          dismissRequestHandler(e)
-        }
-      >
-        <div>{"Requests"}</div>
-        {showRequestDropDown && (
-          <DropDown
-            objects={requests()}
-            showDropDown={false}
-            toggleDropDown={(): void => toggleRequestDropDown()}
-            objSelection={requestSelection}
-          />
-        )}
-      </button>
-      <div>
-        <button type="submit" onClick={submit}>
-          Submit
-        </button>
-        <button onClick={back}>Back</button>
+      <div className="space-y-2">
+        <Label htmlFor="status">Status</Label>
+        <Select
+          id="status"
+          required
+          value={status}
+          onChange={(e) => setStatus(e.target.value as RequestStatus)}
+        >
+          <option value="UNASSIGNED">Unassigned</option>
+          <option value="ASSIGNED">Assigned</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="COMPLETED">Completed</option>
+        </Select>
       </div>
-      <Table data={serviceRequests} />
-    </div>
+      <div className="space-y-2">
+        <Label htmlFor="notes">Additional notes</Label>
+        <Textarea
+          id="notes"
+          name="notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
+      </div>
+      <Button type="submit">Submit</Button>
+    </form>
   );
 };
 
