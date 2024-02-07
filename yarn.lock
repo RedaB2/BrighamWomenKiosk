@@ -617,6 +617,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@faker-js/faker@npm:^8.4.0":
+  version: 8.4.0
+  resolution: "@faker-js/faker@npm:8.4.0"
+  checksum: f9253d0b4846ab0fd769cd78be88c4ea24741d9201cccb0038b3627ac21041a2aef150b0f843b2f63d5a056737bec28bcdf493e0b72201a892df4423be0dff79
+  languageName: node
+  linkType: hard
+
 "@fal-works/esbuild-plugin-global-externals@npm:^2.1.2":
   version: 2.1.2
   resolution: "@fal-works/esbuild-plugin-global-externals@npm:2.1.2"
@@ -3676,6 +3683,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "database@workspace:packages/database"
   dependencies:
+    "@faker-js/faker": "npm:^8.4.0"
     "@prisma/client": "npm:4.15.0"
     eslint: "npm:latest"
     eslint-config-custom: "workspace:*"

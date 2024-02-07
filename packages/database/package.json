@@ -10,6 +10,7 @@
     "seed": "node prisma/seed.mjs"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.0",
     "eslint": "latest",
     "eslint-config-custom": "workspace:*",
     "prettier": "latest",

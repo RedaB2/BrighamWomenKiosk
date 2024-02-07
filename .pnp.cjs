@@ -894,6 +894,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["@faker-js/faker", [\
+      ["npm:8.4.0", {\
+        "packageLocation": "./.yarn/cache/@faker-js-faker-npm-8.4.0-c373354286-f9253d0b48.zip/node_modules/@faker-js/faker/",\
+        "packageDependencies": [\
+          ["@faker-js/faker", "npm:8.4.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["@fal-works/esbuild-plugin-global-externals", [\
       ["npm:2.1.2", {\
         "packageLocation": "./.yarn/cache/@fal-works-esbuild-plugin-global-externals-npm-2.1.2-b50ef0c6e7-fd68714ccc.zip/node_modules/@fal-works/esbuild-plugin-global-externals/",\
@@ -4808,6 +4817,7 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./packages/database/",\
         "packageDependencies": [\
           ["database", "workspace:packages/database"],\
+          ["@faker-js/faker", "npm:8.4.0"],\
           ["@prisma/client", "virtual:fe27c481e11f854f2aaf80c4760560439cddfbeba750e60d2e16a63e1f6a6a95afa15077c31c3bb85454931e3cde1f859cec18d092f611e16a968032948f7247#npm:4.15.0"],\
           ["eslint", "npm:8.56.0"],\
           ["eslint-config-custom", "workspace:configs/eslint-config-custom"],\
