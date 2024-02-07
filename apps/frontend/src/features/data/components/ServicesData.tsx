@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "@/components";
-import { FileInput, Label, Button } from "flowbite-react";
+import { FileInput, Label, Button, Select } from "flowbite-react";
 import { downloadCSV } from "../utils";
+import { RequestStatus, Requests } from "database";
 
 const ServicesData = () => {
-  const [services, setServices] = useState([]);
+  const [services, setServices] = useState<Requests[]>([]);
   const [file, setFile] = useState("");
 
   useEffect(() => {
@@ -34,6 +35,30 @@ const ServicesData = () => {
       alert("File uploaded successfully!");
     } catch (error) {
       alert("Failed to upload file. Please try again.");
+    }
+  };
+
+  const changeCompletionStatus = async (
+    id: number,
+    newStatus: RequestStatus
+  ) => {
+    try {
+      const res = await fetch(`/api/services/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ completionStatus: newStatus }),
+      });
+      if (!res.ok) throw new Error(res.statusText);
+      const updatedServices = services.map((service) =>
+        service.id === id
+          ? { ...service, completionStatus: newStatus }
+          : service
+      );
+      setServices(updatedServices);
+    } catch (error) {
+      console.error("Failed to update service request:", error);
     }
   };
 
@@ -68,7 +93,40 @@ const ServicesData = () => {
       </div>
 
       <div className="flex">
-        <Table data={services} />
+        <Table
+          data={
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            services.map(({ completionStatus, ...rest }) => rest) as Record<
+              string,
+              string | number
+            >[]
+          }
+        />
+        <div>
+          <h6 className="font-bold mb-2">Completion Status</h6>
+          <div className="flex flex-col gap-2 ml-2">
+            {services.map((service) => (
+              <Select
+                id="status"
+                sizing="sm"
+                required
+                key={service.id}
+                defaultValue={service.completionStatus}
+                onChange={(e) =>
+                  changeCompletionStatus(
+                    service.id,
+                    e.target.value as RequestStatus
+                  )
+                }
+              >
+                <option value="UNASSIGNED">Unassigned</option>
+                <option value="ASSIGNED">Assigned</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
+              </Select>
+            ))}
+          </div>
+        </div>
       </div>
     </>
   );
