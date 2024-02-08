@@ -6,7 +6,8 @@ import { downloadCSV } from "../utils";
 const MapData = () => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
-  const [file, setFile] = useState("");
+  const [nodesFile, setNodesFile] = useState("");
+  const [edgesFile, setEdgesFile] = useState("");
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -33,16 +34,32 @@ const MapData = () => {
     fetchEdges();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitNodes = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     try {
-      const res = await fetch("/api/map/upload", {
+      const res = await fetch("/api/map/upload/nodes", {
         method: "POST",
         body: formData,
       });
       if (!res.ok) throw new Error(res.statusText);
-      setFile("");
+      setNodesFile("");
+      alert("File uploaded successfully!");
+    } catch (error) {
+      alert("Failed to upload file. Please try again.");
+    }
+  };
+
+  const handleSubmitEdges = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    try {
+      const res = await fetch("/api/map/upload/edges", {
+        method: "POST",
+        body: formData,
+      });
+      if (!res.ok) throw new Error(res.statusText);
+      setNodesFile("");
       alert("File uploaded successfully!");
     } catch (error) {
       alert("Failed to upload file. Please try again.");
@@ -51,27 +68,50 @@ const MapData = () => {
 
   return (
     <>
-      <form
-        action="/api/map/upload"
-        method="post"
-        encType="multipart/form-data"
-        onSubmit={handleSubmit}
-      >
-        <div className="mb-2 block">
-          <Label htmlFor="csv-upload" value="Upload new CSV Data:" />
-        </div>
-        <FileInput
-          className="w-96"
-          id="csv-upload"
-          name="csv-upload"
-          accept="text/csv"
-          value={file}
-          helperText="CSV files only."
-          onChange={(e) => setFile(e.target.value)}
-        />
-        <br />
-        <Button type="submit">Upload File</Button>
-      </form>
+      <div className="flex gap-8">
+        <form
+          action="/api/map/upload/nodes"
+          method="post"
+          encType="multipart/form-data"
+          onSubmit={handleSubmitNodes}
+        >
+          <div className="mb-2 block">
+            <Label htmlFor="csv-upload" value="Upload new Nodes Data:" />
+          </div>
+          <FileInput
+            className="w-96"
+            id="csv-upload"
+            name="csv-upload"
+            accept="text/csv"
+            value={nodesFile}
+            helperText="CSV files only."
+            onChange={(e) => setNodesFile(e.target.value)}
+          />
+          <br />
+          <Button type="submit">Upload File</Button>
+        </form>
+        <form
+          action="/api/map/upload/edges"
+          method="post"
+          encType="multipart/form-data"
+          onSubmit={handleSubmitEdges}
+        >
+          <div className="mb-2 block">
+            <Label htmlFor="csv-upload" value="Upload new Edges Data:" />
+          </div>
+          <FileInput
+            className="w-96"
+            id="csv-upload"
+            name="csv-upload"
+            accept="text/csv"
+            value={edgesFile}
+            helperText="CSV files only."
+            onChange={(e) => setEdgesFile(e.target.value)}
+          />
+          <br />
+          <Button type="submit">Upload File</Button>
+        </form>
+      </div>
 
       <div className="mt-4 flex space-x-4 w-96">
         <Button onClick={() => downloadCSV("/api/map/download/nodes")}>
