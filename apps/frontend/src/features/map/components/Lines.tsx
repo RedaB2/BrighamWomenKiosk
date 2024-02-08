@@ -156,7 +156,6 @@ function Lines(props: {
               />
             ))}
         {
-
           // @ts-expect-error type error
           paths[floorID()].length > 0 &&
             // @ts-expect-error type error
@@ -188,19 +187,18 @@ function Lines(props: {
               </g>
             ))
         }
-        {displayV &&
-          nodes
-            .filter((Node) => Node.floor == floorID())
-            .map((node, i) => (
-              <circle
-                key={i}
-                r={0.5}
-                cy={stylePost(node.ycoord, "y")}
-                cx={stylePost(node.xcoord, "x")}
-                stroke={"black"}
-                onClick={() => alert(node.longName)}
-              />
-            ))}
+        {nodes
+          .filter((Node) => Node.floor == floorID())
+          .map((node, i) => (
+            <circle
+              key={i}
+              r={0.5}
+              cy={stylePost(node.ycoord, "y")}
+              cx={stylePost(node.xcoord, "x")}
+              stroke={"black"}
+              onClick={() => alert(node.longName)}
+            />
+          ))}
       </svg>
       <button onClick={() => setdisplayV(!displayV)}>Display Toggle</button>
     </>

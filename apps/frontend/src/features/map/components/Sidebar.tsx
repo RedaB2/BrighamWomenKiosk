@@ -9,6 +9,7 @@ import {
   Select,
   Label,
   List,
+  Dropdown,
 } from "flowbite-react";
 import { CiMenuBurger, CiSearch } from "react-icons/ci";
 import React, { useContext, useEffect, useState } from "react";
@@ -46,8 +47,9 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
   const [startLocation, setStartLocation] = useState<string>("");
   const [endLocation, setEndLocation] = useState<string>("");
   const [directions, setDirections] = useState<string[]>([]);
+  const [algorithm, setAlgorithm] = useState<string | null>("AStar");
   const newDirections = directions.map((ID) =>
-    nodes.filter((node) => node["nodeID"] === ID)
+    nodes.filter((node) => node["nodeID"] === ID),
   );
 
   const { path, setPath } = useContext(DirectionsContext);
@@ -55,12 +57,16 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
   const locations: { nodeID: string; longName: string }[] = nodes.map(
     (node) => {
       return { nodeID: node.nodeID, longName: node.longName };
-    }
+    },
   );
+
+  const handleItemClick = (value: string) => {
+    setAlgorithm(value);
+  };
 
   function angleBetweenVectors(
     v1: { x: number; y: number },
-    v2: { x: number; y: number }
+    v2: { x: number; y: number },
   ): number {
     // Calculate the angle in radians using the arctangent function
     const angleRad = Math.atan2(v2.y, v2.x) - Math.atan2(v1.y, v1.x);
@@ -159,6 +165,7 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
         body: JSON.stringify({
           startNodeId,
           endNodeId,
+          algorithm,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -170,6 +177,7 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
       console.log(newDirections);
       setPath(data.path);
       console.log(path);
+      console.log(algorithm);
     } catch (error) {
       alert("Failed to find path. Please try again.");
     }
@@ -227,9 +235,9 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
                   locations
                     .map((loc) => loc.longName)
                     .filter((loc) =>
-                      loc.toLowerCase().includes(e.target.value.toLowerCase())
+                      loc.toLowerCase().includes(e.target.value.toLowerCase()),
                     )
-                    .slice(0, 10)
+                    .slice(0, 10),
                 );
               } else {
                 setStartSuggestions([]);
@@ -254,15 +262,29 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
                   locations
                     .map((loc) => loc.longName)
                     .filter((loc) =>
-                      loc.toLowerCase().includes(e.target.value.toLowerCase())
+                      loc.toLowerCase().includes(e.target.value.toLowerCase()),
                     )
-                    .slice(0, 10)
+                    .slice(0, 10),
                 );
               } else {
                 setEndSuggestions([]);
               }
             }}
           />
+          <Dropdown
+            label={`Search Method${algorithm ? `: ${algorithm}` : ""}`}
+            dismissOnClick={true}
+          >
+            <Dropdown.Item onClick={() => handleItemClick("AStar")}>
+              AStar
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => handleItemClick("BFS")}>
+              BFS
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => handleItemClick("Dijkstra")}>
+              Dijkstra
+            </Dropdown.Item>
+          </Dropdown>
           <Button type="submit">Submit</Button>
         </form>
         <List ordered>
