@@ -47,13 +47,29 @@ enum NodeType {
 }
 
 model Employees {
-  id        Int          @id @default(autoincrement())
-  firstName String
-  lastName  String
-  role      EmployeeRole
-  username  String
-  password  String
-  requests  Requests[]
+  id            Int          @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  username      String
+  password      String
+  role          EmployeeRole
+  requests      Requests[]
+  jobs          EmployeeJobs[]
+}
+
+model EmployeeJobs {
+  employeeId     Int
+  job            EmployeeJob
+  employee       Employees       @relation(fields:[employeeId],references:[id])
+
+  @@id(name:"jobId", [employeeId, job])    //compound key
+}
+
+enum EmployeeJob {
+  JANITOR
+  DOCTOR
+  NURSE
+  OFFICE_ADMIN
 }
 
 enum EmployeeRole {
@@ -62,14 +78,14 @@ enum EmployeeRole {
 }
 
 model Requests {
-  id         Int         @id @default(autoincrement())
-  nodeID     String
-  employeeID Int
-  room       Nodes       @relation(fields: [nodeID], references: [nodeID])
-  employee   Employees   @relation(fields: [employeeID], references: [id])
-  urgency    Urgency
-  type       RequestType
-  notes      String?
+  id               Int         @id @default(autoincrement())
+  nodeID           String
+  employeeID       Int
+  room             Nodes       @relation(fields: [nodeID], references: [nodeID])
+  employee         Employees   @relation(fields: [employeeID], references: [id])
+  urgency          Urgency
+  type             RequestType
+  notes            String?
   completionStatus RequestStatus @default(UNASSIGNED)
 }
 
