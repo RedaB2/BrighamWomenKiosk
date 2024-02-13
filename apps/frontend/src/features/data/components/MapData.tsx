@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Table } from "@/components";
-import { FileInput, Label, Button } from "flowbite-react";
+import { DataTable, DataTableColumnHeader } from "@/components";
+import { FileInput, Label, Button, Checkbox, Dropdown } from "flowbite-react";
 import { downloadCSV } from "../utils";
+import { ColumnDef } from "@tanstack/react-table";
+import { Edges, Nodes } from "database";
+import { MdMoreHoriz } from "react-icons/md";
+import { FaDownload, FaTrash } from "react-icons/fa";
 
 const MapData = () => {
   const [nodes, setNodes] = useState([]);
@@ -123,12 +127,200 @@ const MapData = () => {
       </div>
 
       <div className="flex">
-        <Table data={nodes} />
+        <DataTable
+          columns={nodesTableColumns}
+          data={nodes}
+          searchColumn="longName"
+        />
         <div className="w-32" />
-        <Table data={edges} />
+        <DataTable
+          columns={edgesTableColumns}
+          data={edges}
+          searchColumn="edgeID"
+        />
       </div>
     </>
   );
 };
+
+const nodesTableColumns: ColumnDef<Nodes>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && undefined)
+        }
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          table.toggleAllPageRowsSelected(event.target.checked);
+        }}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          row.toggleSelected(event.target.checked);
+        }}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "nodeID",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Room ID" />
+    ),
+    cell: ({ row }) => row.getValue("nodeID"),
+  },
+  {
+    accessorKey: "xcoord",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="X-Coordinate" />
+    ),
+    cell: ({ row }) => row.getValue("xcoord"),
+  },
+  {
+    accessorKey: "ycoord",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Y-Coordinate" />
+    ),
+    cell: ({ row }) => row.getValue("ycoord"),
+  },
+  {
+    accessorKey: "floor",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Floor" />
+    ),
+    cell: ({ row }) => row.getValue("floor"),
+  },
+  {
+    accessorKey: "building",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Building" />
+    ),
+    cell: ({ row }) => row.getValue("building"),
+  },
+  {
+    accessorKey: "nodeType",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Type" />
+    ),
+    cell: ({ row }) => row.getValue("nodeType"),
+  },
+  {
+    accessorKey: "longName",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Long Name" />
+    ),
+    cell: ({ row }) => row.getValue("longName"),
+  },
+  {
+    accessorKey: "shortName",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Short Name" />
+    ),
+    cell: ({ row }) => row.getValue("shortName"),
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: () => {
+      return (
+        <Dropdown
+          label="Actions"
+          renderTrigger={() => (
+            <Button outline pill size="xs">
+              <MdMoreHoriz className="h-4 w-4" />
+            </Button>
+          )}
+        >
+          <Dropdown.Item icon={FaDownload}>Download track</Dropdown.Item>
+          <Dropdown.Item icon={FaTrash}>Delete track</Dropdown.Item>
+        </Dropdown>
+      );
+    },
+  },
+];
+
+const edgesTableColumns: ColumnDef<Edges>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && undefined)
+        }
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          table.toggleAllPageRowsSelected(event.target.checked);
+        }}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          row.toggleSelected(event.target.checked);
+        }}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "edgeID",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Edge ID" />
+    ),
+    cell: ({ row }) => row.getValue("edgeID"),
+  },
+  {
+    accessorKey: "startNode",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Start Room" />
+    ),
+    cell: ({ row }) => row.getValue("startNode"),
+  },
+  {
+    accessorKey: "endNode",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="End Room" />
+    ),
+    cell: ({ row }) => row.getValue("endNode"),
+  },
+  {
+    accessorKey: "weight",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Weight" />
+    ),
+    cell: ({ row }) => row.getValue("weight"),
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: () => {
+      return (
+        <Dropdown
+          label="Actions"
+          renderTrigger={() => (
+            <Button outline pill size="xs">
+              <MdMoreHoriz className="h-4 w-4" />
+            </Button>
+          )}
+        >
+          <Dropdown.Item icon={FaDownload}>Download track</Dropdown.Item>
+          <Dropdown.Item icon={FaTrash}>Delete track</Dropdown.Item>
+        </Dropdown>
+      );
+    },
+  },
+];
 
 export { MapData };

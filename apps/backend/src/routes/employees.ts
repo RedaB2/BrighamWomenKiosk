@@ -6,6 +6,81 @@ import { Prisma } from "database";
 
 const router: Router = express.Router();
 
+router.get("/", async function (req: Request, res: Response) {
+  const requests = await PrismaClient.employees.findMany();
+  res.json(requests);
+});
+
+router.get("/download", async function (req: Request, res: Response) {
+  try {
+    const employees = await PrismaClient.employees.findMany();
+    const csvData = objectsToCSV(employees);
+    res.header("Content-Type", "text/csv");
+    res.attachment("employees.csv");
+    res.send(csvData);
+  } catch (error) {
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/", async function (req: Request, res: Response) {
+  try {
+    console.log(req.body);
+    const { firstName, lastName, role, username, password } = req.body;
+    const employee = await PrismaClient.employees.create({
+      data: {
+        firstName,
+        lastName,
+        role,
+        username,
+        password,
+      },
+    });
+    res.json(employee);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.patch("/:id", async function (req: Request, res: Response) {
+  try {
+    const id = Number(req.params.id);
+    const { firstName, lastName, role, username, password } = req.body;
+    const employee = await PrismaClient.employees.update({
+      where: {
+        id: id,
+      },
+      data: {
+        firstName,
+        lastName,
+        role,
+        username,
+        password,
+      },
+    });
+    res.json(employee);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.delete("/:id", async function (req: Request, res: Response) {
+  try {
+    const id = Number(req.params.id);
+    await PrismaClient.employees.delete({
+      where: {
+        id: id,
+      },
+    });
+    res.status(200).send("Employee deleted successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 const storage = multer.diskStorage({
   destination: "tmp/",
   filename: (req, file, cb) => {
@@ -64,23 +139,6 @@ router.post("/upload", upload.single("csv-upload"), async (req, res) => {
   }
 
   res.status(200).send("File uploaded successfully");
-});
-
-router.get("/", async function (req: Request, res: Response) {
-  const requests = await PrismaClient.employees.findMany();
-  res.json(requests);
-});
-
-router.get("/download", async function (req: Request, res: Response) {
-  try {
-    const employees = await PrismaClient.employees.findMany();
-    const csvData = objectsToCSV(employees);
-    res.header("Content-Type", "text/csv");
-    res.attachment("employees.csv");
-    res.send(csvData);
-  } catch (error) {
-    res.status(500).send("Internal Server Error");
-  }
 });
 
 export default router;

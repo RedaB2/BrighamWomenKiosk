@@ -4,11 +4,11 @@ import multer from "multer";
 import { readCSV, objectsToCSV } from "../utils";
 import { Prisma } from "database";
 import {
+  createGraph,
   shortestPathAStar,
   bfsShortestPath,
   dijkstraShortestPath,
 } from "../shortestPath.ts";
-import uniqueGraph from "../uniqueGraph.ts";
 
 const router: Router = express.Router();
 
@@ -17,10 +17,115 @@ router.get("/nodes", async function (req: Request, res: Response) {
   res.json(nodes);
 });
 
+const paginatedDataMiddlewareBuilder = ({
+  model,
+  searchField,
+  defaultPage,
+  defaultPerPage,
+  defaultSortBy,
+  defaultSearchQuery,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  model: any;
+  searchField: string;
+  defaultPage: number;
+  defaultPerPage: number;
+  defaultSortBy: string;
+  defaultSearchQuery: string;
+}) => {
+  return async (req: Request, res: Response) => {
+    try {
+      // Pagination
+      const page = Number(req.query.page) || defaultPage;
+      const perPage = Number(req.query.perPage) || defaultPerPage;
+
+      // Sorting
+      const sortBy = req.query.sortBy
+        ? String(req.query.sortBy)
+        : defaultSortBy;
+      const sortOrder = req.query.sortOrder === "desc" ? "desc" : "asc";
+
+      // Filtering/Searching
+      const searchQuery = req.query.searchQuery
+        ? String(req.query.searchQuery)
+        : defaultSearchQuery;
+
+      if (page < 1 || perPage < 1) {
+        return res.status(400).send("Invalid page or perPage");
+      }
+
+      const totalRecords = await model.count({
+        where: {
+          [searchField]: {
+            contains: searchQuery,
+          },
+        },
+      });
+      const totalPages = Math.ceil(totalRecords / perPage);
+
+      if (page > totalPages) {
+        return res.status(400).send("Invalid page number");
+      }
+
+      const data = await model.findMany({
+        skip: (page - 1) * perPage,
+        take: perPage,
+        orderBy: {
+          [sortBy]: sortOrder,
+        },
+        where: {
+          [searchField]: {
+            contains: searchQuery,
+          },
+        },
+      });
+
+      res.json({
+        data,
+        pagination: {
+          totalRecords,
+          totalPages,
+          perPage,
+          previousPage: page - 1 < 1 ? null : page - 1,
+          currentPage: page,
+          nextPage: page + 1 > totalPages ? null : page + 1,
+        },
+      });
+    } catch (error) {
+      console.error(`Error fetching data:`, error);
+      res.status(400).send(error);
+    }
+  };
+};
+
+router.get(
+  "/paginatedNodes",
+  paginatedDataMiddlewareBuilder({
+    model: PrismaClient.nodes,
+    searchField: "longName",
+    defaultPage: 1,
+    defaultPerPage: 50,
+    defaultSortBy: "nodeID",
+    defaultSearchQuery: "",
+  })
+);
+
 router.get("/edges", async function (req: Request, res: Response) {
   const edges = await PrismaClient.edges.findMany();
   res.json(edges);
 });
+
+router.get(
+  "/paginatedEdges",
+  paginatedDataMiddlewareBuilder({
+    model: PrismaClient.edges,
+    searchField: "edgeID",
+    defaultPage: 1,
+    defaultPerPage: 50,
+    defaultSortBy: "edgeID",
+    defaultSearchQuery: "",
+  })
+);
 
 const storage = multer.diskStorage({
   destination: "tmp/",
@@ -174,20 +279,28 @@ router.post("/pathfinding", async function (req: Request, res: Response) {
   }
 
   try {
-    const nodes = await PrismaClient.nodes.findMany({
-      where: {
-        nodeID: {
-          in: [startNodeId, endNodeId],
-        },
-      },
+    // Check if the startNodeId exists
+    const startNodeExists = await PrismaClient.nodes.findUnique({
+      where: { nodeID: startNodeId as string },
     });
 
-    if (nodes.length < 2) {
-      return res.status(404).send("One or both node IDs not found");
+    if (!startNodeExists) {
+      return res.status(404).send("Start node ID not found");
     }
 
-    const graph = await uniqueGraph.getInstance();
-    // console.log(uniqueGraph.getInitializationCount());
+    // Check if the endNodeId exists
+    const endNodeExists = await PrismaClient.nodes.findUnique({
+      where: { nodeID: endNodeId as string },
+    });
+
+    if (!endNodeExists) {
+      return res.status(404).send("End node ID not found");
+    }
+
+    // Both nodes exist; proceed with finding the path
+    const edges = await PrismaClient.edges.findMany();
+    const graph = createGraph(edges);
+
     let pathNodeIds = [];
 
     switch (algorithm) {
