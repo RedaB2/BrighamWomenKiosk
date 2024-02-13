@@ -12,6 +12,8 @@ type AutocompleteProps<T> = {
   required?: boolean;
   rightIcon?: React.FC<React.SVGProps<SVGSVGElement>> | undefined;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
 };
 
 const Autocomplete = <T,>({
@@ -26,6 +28,8 @@ const Autocomplete = <T,>({
   required,
   rightIcon,
   onChange,
+  onFocus,
+  onBlur,
 }: AutocompleteProps<T>) => {
   return (
     <div className="relative space-y-2">
@@ -39,6 +43,8 @@ const Autocomplete = <T,>({
         rightIcon={rightIcon}
         value={value as string | number | readonly string[] | undefined}
         onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
       />
       {suggestions.length > 0 && (
         <List

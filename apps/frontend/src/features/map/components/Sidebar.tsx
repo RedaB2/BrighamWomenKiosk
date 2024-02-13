@@ -1,5 +1,3 @@
-import { Autocomplete } from "@/components";
-
 import logoUrl from "/logo.png";
 import { drawerId } from "../constants";
 import {
@@ -22,12 +20,35 @@ import lowerLevel2 from "../assets/00_thelowerlevel2.png";
 import firstFloor from "../assets/01_thefirstfloor.png";
 import secondFloor from "../assets/02_thesecondfloor.png";
 import thirdFloor from "../assets/03_thethirdfloor.png";
-
+import { Autocomplete } from "@/components";
+import { HiChevronUp, HiChevronDown, HiLocationMarker } from "react-icons/hi";
+//import { TbElevator } from "react-icons/tb";
+import { MdElevator } from "react-icons/md";
+import {
+  BsArrowUpLeftCircle,
+  BsArrowUpRightCircle,
+  BsArrowLeftCircle,
+  BsArrowRightCircle,
+  BsArrowUpCircle,
+} from "react-icons/bs";
+/*
+const customStyles = {
+    li: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+    '.custom-arrow-icon': {
+        height: '1.5rem',
+        width: '1.5rem',
+        marginRight: '1.0rem !important',
+    },
+};
+*/
 const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
   root: {
     base: "h-full",
     collapsed: {
-      off: "w-96",
+      off: "w-80",
     },
   },
   logo: {
@@ -40,6 +61,17 @@ type SidebarProps = {
   setSelectedFloor: (value: string) => void;
 };
 
+// A class to temporarily hold nodes with an associated floorID, so that nodes on separate areas of the same floor can be differentiated
+class nodeFloorID {
+  node: Nodes;
+  floorID: string;
+
+  constructor(node: Nodes, floorID: string) {
+    this.node = node;
+    this.floorID = floorID;
+  }
+}
+
 const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
   const [nodes, setNodes] = useState<Nodes[]>([]);
   const [startSuggestions, setStartSuggestions] = useState<string[]>([]);
@@ -48,9 +80,31 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
   //const [endLocation, setEndLocation] = useState<string>("");
   const [directions, setDirections] = useState<string[]>([]);
   const [algorithm, setAlgorithm] = useState<string | null>("AStar");
-  const newDirections = directions.map((ID) =>
-    nodes.filter((node) => node["nodeID"] === ID),
+
+  const [openFloor, setOpenFloor] = useState<string | null>(null);
+
+  const newDirections = directions.map(
+    (ID) => nodes.filter((node) => node["nodeID"] === ID)[0],
   );
+
+  //assigns nodes IDs so that nodes on separate areas of the same floor can be differentiated
+  function separateFloors(newDirections: Nodes[]) {
+    let lastFloor = "";
+    const floors: nodeFloorID[] = [];
+    let floorID = 0;
+    for (const node of newDirections) {
+      if (lastFloor != node.floor) {
+        lastFloor = node.floor;
+        floorID = (floorID + 1) % 10;
+      }
+      floors.push(new nodeFloorID(node, node.floor + floorID));
+    }
+    return floors;
+  }
+
+  const splitDirections = separateFloors(newDirections);
+
+  console.log(splitDirections);
 
   const { startLocation, setStartLocation } = useContext(StartContext);
   const { endLocation, setEndLocation } = useContext(EndContext);
@@ -65,6 +119,22 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
 
   const handleItemClick = (value: string) => {
     setAlgorithm(value);
+  };
+
+  const handleFloorClick = (floorID: string) => {
+    setOpenFloor((prevFloor) => (prevFloor === floorID ? null : floorID));
+    const floor = floorID.substring(0, floorID.length - 1);
+    if (floor == "L1") {
+      setSelectedFloor(lowerLevel1);
+    } else if (floor == "L2") {
+      setSelectedFloor(lowerLevel2);
+    } else if (floor == "1") {
+      setSelectedFloor(firstFloor);
+    } else if (floor == "2") {
+      setSelectedFloor(secondFloor);
+    } else if (floor == "3") {
+      setSelectedFloor(thirdFloor);
+    }
   };
 
   function angleBetweenVectors(
@@ -87,56 +157,127 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
     return angleDegrees;
   }
 
-  function turnDirection(index: number) {
-    let currDirection = null;
-    let prevDirection = null;
-    let nextDirection = null;
+  function turnDirection(floor: string, index: number) {
+    console.log(nodes);
+    //const floor = floorID.substring(0,floorID.length-1);
+    const floorDirections = splitDirections.filter(
+      (direction, i, arr) =>
+        direction?.floorID === floor ||
+        (i > 0 && arr[i - 1].floorID === floor) ||
+        (i === arr.length - 1 && arr[i].floorID === floor),
+    );
 
-    switch (index) {
-      case 0:
-        return "Start at ";
-      case 1:
-        return "Head towards ";
-      case newDirections.length - 1:
-        return "Arrive at ";
-      default:
-        if (
-          newDirections.length > 0 &&
-          index > 0 &&
-          index < newDirections.length
-        ) {
-          prevDirection = newDirections[index - 1][0];
-          currDirection = newDirections[index][0];
-          nextDirection = newDirections[index + 1][0];
+    //console.log(floorDirections);
 
+    const currDirection = floorDirections[index];
+    const prevDirection = index > 0 ? floorDirections[index - 1] : null;
+    const nextDirection =
+      index < floorDirections.length - 1 ? floorDirections[index + 1] : null;
+
+    if (nextDirection === null && index === floorDirections.length - 1) {
+      // Assuming the next direction is already present in newDirections
+      return (
+        <>
+          <HiLocationMarker className="mr-2 ml-1 h-5 w-5 inline" />
+          {"Arrive at " + currDirection.node.longName}
+        </>
+      );
+    }
+
+    if (currDirection) {
+      switch (index) {
+        case 0:
+          return (
+            <>
+              <HiLocationMarker className="mr-2 ml-1 h-5 w-5 inline" />
+              {"Start at " + currDirection.node.longName}
+            </>
+          );
+        case 1000:
+          return (
+            <>
+              <BsArrowUpCircle className="mr-2 ml-1 w-4 h-4 inline " />
+              {"Head towards " + currDirection.node.longName}
+            </>
+          );
+        case newDirections.length - 1:
+          return (
+            <>
+              {"Arrive at " + currDirection.node.longName}
+              <HiLocationMarker
+                className="mr-2 ml-1 h-4 w-4 inline "
+                style={{ color: "blue" }}
+              />
+            </>
+          );
+        default:
           if (currDirection && nextDirection && prevDirection) {
+            if (currDirection.floorID != nextDirection.floorID) {
+              return (
+                <>
+                  <MdElevator className="mr-2 ml-1 h-5 w-5 inline" />
+                  {"Take " +
+                    currDirection.node.longName +
+                    " to Floor " +
+                    nextDirection.node.floor}
+                </>
+              );
+            }
+
             const vector1 = {
-              x: currDirection.xcoord - prevDirection.xcoord,
-              y: currDirection.ycoord - prevDirection.ycoord,
+              x: currDirection.node.xcoord - prevDirection.node.xcoord,
+              y: currDirection.node.ycoord - prevDirection.node.ycoord,
             };
             const vector2 = {
-              x: nextDirection.xcoord - currDirection.xcoord,
-              y: nextDirection.ycoord - currDirection.ycoord,
+              x: nextDirection.node.xcoord - currDirection.node.xcoord,
+              y: nextDirection.node.ycoord - currDirection.node.ycoord,
             };
 
             const angle = angleBetweenVectors(vector1, vector2);
-
             // Use crossProductValue to determine left or right turn
             if (angle < -30) {
-              return "Turn left towards ";
+              return (
+                <>
+                  <BsArrowLeftCircle className="mr-2 ml-1 w-4 h-4 inline" />
+                  {"Turn left towards " + currDirection.node.longName}
+                </>
+              );
             } else if (angle >= -30 && angle < -15) {
-              return "Bear left towards ";
+              return (
+                <>
+                  <BsArrowUpLeftCircle className="mr-2 ml-1 w-4 h-4 inline" />
+                  {"Bear left towards " + currDirection.node.longName}
+                </>
+              );
             } else if (angle >= -15 && angle < 15) {
-              return "Head straight towards ";
+              return (
+                <>
+                  <BsArrowUpCircle className="mr-2 ml-1 w-4 h-4 inline" />
+                  {"Continue Straight towards " + currDirection.node.longName}
+                </>
+              );
+              //return "Head straight towards " + currDirection.longName;
             } else if (angle >= 15 && angle < 30) {
-              return "Bear right towards ";
+              return (
+                <>
+                  <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
+                  {"Bear right towards " + currDirection.node.longName}
+                </>
+              );
             } else if (angle >= 30) {
-              return "Turn right towards ";
+              return (
+                <>
+                  <BsArrowRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
+                  {"Turn right towards " + currDirection.node.longName}
+                </>
+              );
             } else {
               return "idk lmfao";
             }
           }
-        }
+      }
+    } else {
+      return "Oh no! Something went wrong!";
     }
   }
 
@@ -183,6 +324,19 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
     }
   };
 
+  function colorPicker(i: number, dark: number) {
+    if (dark) {
+      if (i % 2 == 0) {
+        return "gray-700";
+      }
+      return "gray-800";
+    }
+    if (i % 2 == 0) {
+      return "gray-50";
+    }
+    return "gray-200";
+  }
+
   return (
     <FlowbiteSidebar aria-label="Map sidebar" theme={sidebarTheme}>
       <div className="flex space-x-4 items-center">
@@ -208,8 +362,9 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
             id="mapFloor"
             onChange={(e) => setSelectedFloor(e.target.value)}
           >
-              {//<option value={groundFloor}>Ground Floor</option>
-              }
+            {
+              //<option value={groundFloor}>Ground Floor</option>
+            }
             <option value={lowerLevel1}>Lower Level 1</option>
             <option value={lowerLevel2}>Lower Level 2</option>
             <option value={firstFloor}>First Floor</option>
@@ -229,6 +384,48 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
             placeholder="Medical Records Conference Room Floor L1"
             required
             rightIcon={CiSearch}
+            onFocus={(e) => {
+              setStartLocation(e.target.value);
+              if (e.target.value.length > 0) {
+                setStartSuggestions(
+                  locations
+                    .map((loc) => loc.longName)
+                    .filter((loc) =>
+                      loc.toLowerCase().includes(e.target.value.toLowerCase()),
+                    )
+                    .filter(
+                      (loc) =>
+                        (!loc.toLowerCase().includes("hall") &&
+                          !loc.toLowerCase().includes("stair") &&
+                          !loc.toLowerCase().includes("elevator")) ||
+                        loc.toLowerCase() ===
+                          "carrie m. hall conference center floor 2",
+                    )
+                    .sort()
+                    .slice(0, 10),
+                );
+              } else {
+                setStartSuggestions(
+                  locations
+                    .map((loc) => loc.longName)
+                    .filter((loc) =>
+                      loc.toLowerCase().includes(e.target.value.toLowerCase()),
+                    )
+                    .filter(
+                      (loc) =>
+                        (!loc.toLowerCase().includes("hall") &&
+                          !loc.toLowerCase().includes("stair") &&
+                          !loc.toLowerCase().includes("elevator")) ||
+                        loc.toLowerCase() ===
+                          "carrie m. hall conference center floor 2",
+                    )
+                    .sort(),
+                );
+              }
+            }}
+            onBlur={() => {
+              setTimeout(() => setStartSuggestions([]), 200);
+            }}
             onChange={(e) => {
               setStartLocation(e.target.value);
               if (e.target.value.length > 0) {
@@ -238,6 +435,15 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
                     .filter((loc) =>
                       loc.toLowerCase().includes(e.target.value.toLowerCase()),
                     )
+                    .filter(
+                      (loc) =>
+                        (!loc.toLowerCase().includes("hall") &&
+                          !loc.toLowerCase().includes("stair") &&
+                          !loc.toLowerCase().includes("elevator")) ||
+                        loc.toLowerCase() ===
+                          "carrie m. hall conference center floor 2",
+                    )
+                    .sort()
                     .slice(0, 10),
                 );
               } else {
@@ -265,37 +471,122 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
                     .filter((loc) =>
                       loc.toLowerCase().includes(e.target.value.toLowerCase()),
                     )
+                    .filter(
+                      (loc) =>
+                        (!loc.toLowerCase().includes("hall") &&
+                          !loc.toLowerCase().includes("stair") &&
+                          !loc.toLowerCase().includes("elevator")) ||
+                        loc.toLowerCase() ===
+                          "carrie m. hall conference center floor 2",
+                    )
+                    .sort()
                     .slice(0, 10),
                 );
               } else {
                 setEndSuggestions([]);
               }
             }}
+            onFocus={(e) => {
+              setEndLocation(e.target.value);
+              if (e.target.value.length > 0) {
+                setEndSuggestions(
+                  locations
+                    .map((loc) => loc.longName)
+                    .filter((loc) =>
+                      loc.toLowerCase().includes(e.target.value.toLowerCase()),
+                    )
+                    .filter(
+                      (loc) =>
+                        (!loc.toLowerCase().includes("hall") &&
+                          !loc.toLowerCase().includes("stair") &&
+                          !loc.toLowerCase().includes("elevator")) ||
+                        loc.toLowerCase() ===
+                          "carrie m. hall conference center floor 2",
+                    )
+                    .sort()
+                    .slice(0, 10),
+                );
+              } else {
+                setEndSuggestions(
+                  locations
+                    .map((loc) => loc.longName)
+                    .filter((loc) =>
+                      loc.toLowerCase().includes(e.target.value.toLowerCase()),
+                    )
+                    .filter(
+                      (loc) =>
+                        (!loc.toLowerCase().includes("hall") &&
+                          !loc.toLowerCase().includes("stair") &&
+                          !loc.toLowerCase().includes("elevator")) ||
+                        loc.toLowerCase() ===
+                          "carrie m. hall conference center floor 2",
+                    )
+                    .sort(),
+                );
+              }
+            }}
+            onBlur={() => {
+              setTimeout(() => setEndSuggestions([]), 200);
+            }}
           />
-          <Dropdown
-            label={`Search Method${algorithm ? `: ${algorithm}` : ""}`}
-            dismissOnClick={true}
-          >
-            <Dropdown.Item onClick={() => handleItemClick("AStar")}>
-              AStar
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleItemClick("BFS")}>
-              BFS
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => handleItemClick("Dijkstra")}>
-              Dijkstra
-            </Dropdown.Item>
-          </Dropdown>
+          <div className="w-full">
+            <Dropdown
+              label={`Search Method${algorithm ? `: ${algorithm}` : ""}`}
+              dismissOnClick={true}
+            >
+              <Dropdown.Item onClick={() => handleItemClick("AStar")}>
+                AStar
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleItemClick("BFS")}>
+                BFS
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => handleItemClick("Dijkstra")}>
+                Dijkstra
+              </Dropdown.Item>
+            </Dropdown>
+          </div>
           <Button type="submit">Submit</Button>
         </form>
-        <List ordered>
-          {newDirections.map((row, i: number) => (
-            <List.Item key={i}>
-              {i < newDirections.length && turnDirection(i)}
-              {row[0]?.longName}{" "}
-            </List.Item>
+        {/* Displaying directions organized by floor */}
+        <div className="mt-4 space-y-2">
+          {Array.from(
+            new Set(splitDirections.map((direction) => direction?.floorID)),
+          ).map((floor) => (
+            <div key={floor}>
+              <Button
+                className="w-full"
+                outline
+                label={`Floor ${floor}`}
+                onClick={() => handleFloorClick(floor)}
+              >
+                {openFloor === floor ? (
+                  <>
+                    {`Hide Directions for Floor ${floor.substring(0, floor.length - 1)}`}
+                    <HiChevronUp className="ml-4 h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    {`Show Directions for Floor ${floor.substring(0, floor.length - 1)}`}
+                    <HiChevronDown className="ml-4 h-4 w-4" />
+                  </>
+                )}
+              </Button>
+              {openFloor === floor && (
+                <List>
+                  {splitDirections
+                    .filter((direction) => direction?.floorID === floor)
+                    .map((row, i: number) => (
+                      <List
+                        className={`bg-${colorPicker(i, 0)} dark:bg-${colorPicker(i, 1)}`}
+                      >
+                        {i < newDirections.length && turnDirection(floor, i)}
+                      </List>
+                    ))}
+                </List>
+              )}
+            </div>
           ))}
-        </List>
+        </div>
       </div>
     </FlowbiteSidebar>
   );

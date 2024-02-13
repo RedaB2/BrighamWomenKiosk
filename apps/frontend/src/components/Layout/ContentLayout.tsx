@@ -13,7 +13,7 @@ const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
     inner:
       "h-full overflow-y-auto overflow-x-hidden rounded bg-gray-50 py-4 px-3 dark:bg-gray-800 flex flex-col",
     collapsed: {
-      off: "w-96",
+      off: "w-80",
     },
   },
   logo: {

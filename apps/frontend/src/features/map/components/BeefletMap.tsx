@@ -1,18 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
-    MapContainer,
-    ImageOverlay,
-    Circle,
-    Polyline,
-    Popup,
-    FeatureGroup,
-    Marker,
-    LayerGroup,
-    Tooltip,
-    SVGOverlay,
+  MapContainer,
+  ImageOverlay,
+  Circle,
+  Polyline,
+  Popup,
+  FeatureGroup,
+  Marker,
+  LayerGroup,
+  Tooltip,
+  SVGOverlay,
 } from "react-leaflet";
 import { LatLngBounds, CRS } from "leaflet";
-import {Edges, Nodes} from "database";
+import { Edges, Nodes } from "database";
 import groundFloor from "@/features/map/assets/00_thegroundfloor.png";
 import lowerLevel1 from "../assets/00_thelowerlevel1.png";
 import lowerLevel2 from "@/features/map/assets/00_thelowerlevel2.png";
@@ -30,7 +30,7 @@ export default function BeefletMap(props: { selectedFloor: string }) {
   const imageBounds = new LatLngBounds([0, 0], [-3400, 5000]);
   const [nodes, setNodes] = useState<Nodes[]>([]);
   const [edges, setEdges] = useState<Edges[]>([]);
-  const { path, setPath} = useContext(DirectionsContext);
+  const { path, setPath } = useContext(DirectionsContext);
   const { startLocation, setStartLocation } = useContext(StartContext);
   const { endLocation, setEndLocation } = useContext(EndContext);
   const nodePath = path.map((nodeID) =>
@@ -63,30 +63,30 @@ export default function BeefletMap(props: { selectedFloor: string }) {
     paths[currentFloor].push(nodePath.slice(lastCut, nodePath.length));
   }
 
-    useEffect(() => {
-        const fetchNodes = async () => {
-            try {
-                const res = await fetch("/api/map/nodes");
-                if (!res.ok) throw new Error(res.statusText);
-                const data = await res.json();
-                setNodes(data);
-            } catch (error) {
-                console.error("Failed to fetch nodes:", error);
-            }
-        };
-        const fetchEdges = async () => {
-            try {
-                const res = await fetch("/api/map/edges");
-                if (!res.ok) throw new Error(res.statusText);
-                const data = await res.json();
-                setEdges(data);
-            } catch (error) {
-                console.error("Failed to fetch edges:", error);
-            }
-        };
-        fetchNodes();
-        fetchEdges();
-    }, []);
+  useEffect(() => {
+    const fetchNodes = async () => {
+      try {
+        const res = await fetch("/api/map/nodes");
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        setNodes(data);
+      } catch (error) {
+        console.error("Failed to fetch nodes:", error);
+      }
+    };
+    const fetchEdges = async () => {
+      try {
+        const res = await fetch("/api/map/edges");
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        setEdges(data);
+      } catch (error) {
+        console.error("Failed to fetch edges:", error);
+      }
+    };
+    fetchNodes();
+    fetchEdges();
+  }, []);
 
   const floorID = () => {
     if (props.selectedFloor == groundFloor) {
@@ -107,44 +107,47 @@ export default function BeefletMap(props: { selectedFloor: string }) {
   floorID();
   // Define a custom CRS for x and y coordinates
 
-    function sleep(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-  function nav(dest: string) {
-      navigate(dest);
+  function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-    const handleSubmit = async (s: string, e: string) => {
-      sleep(200);
+  function nav(dest: string) {
+    navigate(dest);
+  }
+
+  const handleSubmit = async (s: string, e: string) => {
+    sleep(200);
+    return;
+    if (s === "" || e === "") {
+      console.log("Not attempting Pathfinder");
       return;
-      if (s === "" || e === "") {console.log("Not attempting Pathfinder"); return;}
-        const startNodeId = nodes
-            .filter((node) => node["longName"] === s)
-            .map((node) => node.nodeID)[0];
-        const endNodeId = nodes
-            .filter((node) => node["longName"] === e)
-            .map((node) => node.nodeID)[0];
-        try {
-            const res = await fetch("/api/map/pathfinding", {
-                method: "POST",
-                body: JSON.stringify({
-                    startNodeId,
-                    endNodeId,
-                    algorithm,
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (!res.ok) throw new Error(res.statusText);
-            const data = await res.json();
-            //setDirections(data.path);
-            setPath(data.path);
-        } catch (error) {
-            alert("Failed to find path. Please try again.");
-        }
-    };
+    }
+    const startNodeId = nodes
+      .filter((node) => node["longName"] === s)
+      .map((node) => node.nodeID)[0];
+    const endNodeId = nodes
+      .filter((node) => node["longName"] === e)
+      .map((node) => node.nodeID)[0];
+    try {
+      const res = await fetch("/api/map/pathfinding", {
+        method: "POST",
+        body: JSON.stringify({
+          startNodeId,
+          endNodeId,
+          algorithm,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error(res.statusText);
+      const data = await res.json();
+      //setDirections(data.path);
+      setPath(data.path);
+    } catch (error) {
+      alert("Failed to find path. Please try again.");
+    }
+  };
 
   return (
     <div className="w-full h-full">
@@ -160,42 +163,44 @@ export default function BeefletMap(props: { selectedFloor: string }) {
         doubleClickZoom={false}
       >
         <LayerGroup>
-            <ImageOverlay url={props.selectedFloor} bounds={imageBounds} />
-            {toggled &&
-                edges
-                    .map((edge) => [
-                        nodes.filter((node) => node.nodeID == edge.startNode),
-                        nodes.filter((node) => node.nodeID == edge.endNode),
-                    ])
-                    .filter(
-                        (edge) =>
-                            edge[0][0].floor == floorID() &&
-                            edge[0][0].floor == edge[1][0].floor,
-                    )
-                    .map((edge) => (
-                        <Polyline positions={[[edge[0][0].ycoord * -1, edge[0][0].xcoord],
-                            [edge[1][0].ycoord * -1, edge[1][0].xcoord]]}></Polyline>
-                    ))}
-            {
+          <ImageOverlay url={props.selectedFloor} bounds={imageBounds} />
+          {toggled &&
+            edges
+              .map((edge) => [
+                nodes.filter((node) => node.nodeID == edge.startNode),
+                nodes.filter((node) => node.nodeID == edge.endNode),
+              ])
+              .filter(
+                (edge) =>
+                  edge[0][0].floor == floorID() &&
+                  edge[0][0].floor == edge[1][0].floor,
+              )
+              .map((edge) => (
+                <Polyline
+                  positions={[
+                    [edge[0][0].ycoord * -1, edge[0][0].xcoord],
+                    [edge[1][0].ycoord * -1, edge[1][0].xcoord],
+                  ]}
+                ></Polyline>
+              ))}
+          {
+            //@ts-expect-error any type error
+            paths[floorID()].map((currentPath, i) => (
+              <Polyline
+                key={i}
                 //@ts-expect-error any type error
-                paths[floorID()].map((currentPath, i) => (
-                    <Polyline
-                        key={i}
-                        //@ts-expect-error any type error
-                        positions={currentPath.map((node) => [
-                            -node[0].ycoord,
-                            node[0].xcoord,
-                        ])}
-                        pathOptions={{ color: "black" }}
-                        interactive={false}
-                        weight={8}
-                    />
-                ))
-            }
+                positions={currentPath.map((node) => [
+                  -node[0].ycoord,
+                  node[0].xcoord,
+                ])}
+                pathOptions={{ color: "black" }}
+                interactive={false}
+                weight={8}
+              />
+            ))
+          }
         </LayerGroup>
-        <SVGOverlay bounds={imageBounds}>
-
-        </SVGOverlay>
+        <SVGOverlay bounds={imageBounds}></SVGOverlay>
         <FeatureGroup>
           {nodes
             .filter((node) => node.floor == floorID())
@@ -236,68 +241,102 @@ export default function BeefletMap(props: { selectedFloor: string }) {
                       },
                       click: async (e) => {
                         if (clicked || e.originalEvent.ctrlKey) {
-                            e.target.closePopup();
-                            setStartLocation(node.longName);
-                            console.log("1");
-                            await handleSubmit(node.longName, endLocation);
-                            return;
+                          e.target.closePopup();
+                          setStartLocation(node.longName);
+                          console.log("1");
+                          await handleSubmit(node.longName, endLocation);
+                          return;
                         }
                         setClicked(true);
                       },
                       contextmenu: async (e) => {
-                          //e.target.preventDefault();
-                          e.target.closePopup();
-                          setEndLocation(node.longName);
-                          await handleSubmit(startLocation, node.longName);
+                        //e.target.preventDefault();
+                        e.target.closePopup();
+                        setEndLocation(node.longName);
+                        await handleSubmit(startLocation, node.longName);
                       },
                     }}
-                    fillOpacity={.8}
+                    fillOpacity={0.8}
                   >
                     <Popup className="leaflet-popup-content-wrapper">
                       {clicked ? (
-                          <div className={"flex flex-col space-y-2"}>
-                              <Button
-                                  onClick={async () => {setStartLocation(node.longName); await handleSubmit(node.longName, endLocation);}}
-                                  className={"custom-button"}>
-                                  Set Start
-                              </Button>
-                              <Button
-                                  onClick={async () => {setEndLocation(node.longName); await handleSubmit(startLocation, node.longName);}}
-                                  className={"custom-button"}>
-                                  Set End
-                              </Button>
-                              <Button className={"custom-button"} onClick={() => nav("/data/services")}>
-                                  View Requests
-                              </Button>
-                              <Button className={"custom-button"} onClick={() => nav("/services")}>Make Request</Button>
-                              <Button className={"custom-button"}>Schedule Move</Button>
-                          </div>
+                        <div className={"flex flex-col space-y-2"}>
+                          <Button
+                            onClick={async () => {
+                              setStartLocation(node.longName);
+                              await handleSubmit(node.longName, endLocation);
+                            }}
+                            className={"custom-button"}
+                          >
+                            Set Start
+                          </Button>
+                          <Button
+                            onClick={async () => {
+                              setEndLocation(node.longName);
+                              await handleSubmit(startLocation, node.longName);
+                            }}
+                            className={"custom-button"}
+                          >
+                            Set End
+                          </Button>
+                          <Button
+                            className={"custom-button"}
+                            onClick={() => nav("/data/services")}
+                          >
+                            View Requests
+                          </Button>
+                          <Button
+                            className={"custom-button"}
+                            onClick={() => nav("/services")}
+                          >
+                            Make Request
+                          </Button>
+                          <Button className={"custom-button"}>
+                            Schedule Move
+                          </Button>
+                        </div>
                       ) : (
-                          <div>
+                        <div>
                           {"Full name: " + node.longName}
                           <br />
                           {"Short name: " + node.shortName}
                         </div>
                       )}
                     </Popup>
-                    {toggled && <Tooltip permanent={true} className={"customTooltip"} direction={"top"}>{node.longName}</Tooltip>}
+                    {toggled && (
+                      <Tooltip
+                        permanent={true}
+                        className={"customTooltip"}
+                        direction={"top"}
+                      >
+                        {node.longName}
+                      </Tooltip>
+                    )}
                   </Circle>
                 </>
               );
             })}
         </FeatureGroup>
-          {nodes.filter((node) => node.longName == startLocation && node.floor == floorID()).map((node) => (
-              <Marker position={[-node.ycoord, node.xcoord]}></Marker>
+        {nodes
+          .filter(
+            (node) => node.longName == startLocation && node.floor == floorID(),
+          )
+          .map((node) => (
+            <Marker position={[-node.ycoord, node.xcoord]}></Marker>
           ))}
-          {nodes.filter((node) => node.longName == endLocation && node.floor == floorID()).map((node) => (
-              <Marker position={[-node.ycoord, node.xcoord]}></Marker>
+        {nodes
+          .filter(
+            (node) => node.longName == endLocation && node.floor == floorID(),
+          )
+          .map((node) => (
+            <Marker position={[-node.ycoord, node.xcoord]}></Marker>
           ))}
-          <CustomButton
-              title={"Toggle"}
-              onClick={() => setToggled(!toggled)}
-              className={"custom-toggle-button"}
-              position={"bottomleft"}
-          />
+        <CustomButton
+          title={"Toggle"}
+          onClick={() => setToggled(!toggled)}
+          className={"custom-toggle-button"}
+          position={"bottomleft"}
+        />
       </MapContainer>
     </div>
   );
