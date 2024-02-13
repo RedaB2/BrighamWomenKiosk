@@ -6,24 +6,29 @@ type Edge = {
 
 type Graph = Map<string, Array<{ node: string; weight: number }>>;
 
-export function createGraph(edges: Edge[]): Graph {
-  const graph = new Map<string, Array<{ node: string; weight: number }>>();
-  edges.forEach((edge) => {
-    if (!graph.has(edge.startNode)) {
-      graph.set(edge.startNode, []);
-    }
-    if (!graph.has(edge.endNode)) {
-      graph.set(edge.endNode, []);
-    }
-    graph
-      .get(edge.startNode)
-      ?.push({ node: edge.endNode, weight: edge.weight });
-    // 
-    graph
-      .get(edge.endNode)
-      ?.push({ node: edge.startNode, weight: edge.weight });
-  });
-  return graph;
+export function createGraph(edges: Edge[], nodes: Map<string, { nodeType: string }>, includeElevators: boolean): Graph {
+    const graph = new Map<string, Array<{ node: string; weight: number }>>();
+
+    edges.forEach((edge) => {
+        const startNode = nodes.get(edge.startNode);
+        const endNode = nodes.get(edge.endNode);
+
+
+        const isElevatorEdge = (startNode?.nodeType === 'ELEV' && endNode?.nodeType === 'ELEV');
+
+
+        if (isElevatorEdge && !includeElevators) return;
+
+        if (!graph.has(edge.startNode)) {
+            graph.set(edge.startNode, []);
+        }
+        if (!graph.has(edge.endNode)) {
+            graph.set(edge.endNode, []);
+        }
+        graph.get(edge.startNode)?.push({ node: edge.endNode, weight: edge.weight });
+        graph.get(edge.endNode)?.push({ node: edge.startNode, weight: edge.weight });
+    });
+    return graph;
 }
 
 
@@ -188,7 +193,3 @@ function reconstructPathDijkstra(predecessors: { [key: string]: string }, start:
     path.unshift(start);
     return path;
 }
-
-
-
-

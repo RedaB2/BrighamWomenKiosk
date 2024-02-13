@@ -2,6 +2,7 @@ import app from "../app.ts";
 import http from "http";
 import { AddressInfo } from "net";
 import { createHttpTerminator } from "http-terminator";
+import uniqueGraph from "../uniqueGraph.ts";
 
 // Attempt a database connection
 console.info("Connecting to database...");
@@ -65,6 +66,13 @@ export default server;
     console.log("Server shutdown complete");
     process.exit(0); // Exit normally
   });
+});
+
+//Graph initialization
+
+// Initialize graph in memory
+uniqueGraph.getInstance().then(() => {
+  console.log("Graph loaded and ready.");
 });
 
 // Listen on the provided port, on all interfaces
