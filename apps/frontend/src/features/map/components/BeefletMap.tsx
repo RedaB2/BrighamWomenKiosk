@@ -107,17 +107,11 @@ export default function BeefletMap(props: { selectedFloor: string }) {
   floorID();
   // Define a custom CRS for x and y coordinates
 
-  function sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   function nav(dest: string) {
     navigate(dest);
   }
 
   const handleSubmit = async (s: string, e: string) => {
-    sleep(200);
-    return;
     if (s === "" || e === "") {
       console.log("Not attempting Pathfinder");
       return;

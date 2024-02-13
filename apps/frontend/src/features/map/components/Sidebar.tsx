@@ -361,6 +361,7 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
             name="mapFloor"
             id="mapFloor"
             onChange={(e) => setSelectedFloor(e.target.value)}
+            value={firstFloor}
           >
             {
               //<option value={groundFloor}>Ground Floor</option>
