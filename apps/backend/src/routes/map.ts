@@ -4,11 +4,11 @@ import multer from "multer";
 import { readCSV, objectsToCSV } from "../utils";
 import { Prisma } from "database";
 import {
-  createGraph,
   shortestPathAStar,
   bfsShortestPath,
   dijkstraShortestPath,
 } from "../shortestPath.ts";
+import uniqueGraph from "../uniqueGraph.ts";
 
 const router: Router = express.Router();
 
@@ -264,76 +264,52 @@ router.get("/download/edges", async function (req: Request, res: Response) {
 });
 
 router.post("/pathfinding", async function (req: Request, res: Response) {
-  const { startNodeId, endNodeId, algorithm } = req.body;
+    const { startNodeId, endNodeId, algorithm } = req.body;
 
-  if (!startNodeId || !endNodeId) {
-    return res.status(400).send("Both startNodeId and endNodeId are required");
-  }
-
-  if (!["AStar", "BFS", "Dijkstra"].includes(algorithm)) {
-    return res
-      .status(400)
-      .send(
-        "Invalid or missing algorithm type. Valid options are: 'AStar', 'BFS', 'Dijkstra'."
-      );
-  }
-
-  try {
-    // Check if the startNodeId exists
-    const startNodeExists = await PrismaClient.nodes.findUnique({
-      where: { nodeID: startNodeId as string },
-    });
-
-    if (!startNodeExists) {
-      return res.status(404).send("Start node ID not found");
+    if (!startNodeId || !endNodeId) {
+        return res.status(400).send("Both startNodeId and endNodeId are required");
     }
 
-    // Check if the endNodeId exists
-    const endNodeExists = await PrismaClient.nodes.findUnique({
-      where: { nodeID: endNodeId as string },
-    });
-
-    if (!endNodeExists) {
-      return res.status(404).send("End node ID not found");
+    if (!['AStar', 'BFS', 'Dijkstra'].includes(algorithm)) {
+        return res.status(400).send("Invalid or missing algorithm type. Valid options are: 'AStar', 'BFS', 'Dijkstra'.");
     }
 
-    // Both nodes exist; proceed with finding the path
-    const edges = await PrismaClient.edges.findMany();
-    const graph = createGraph(edges);
+    try {
+        const nodes = await PrismaClient.nodes.findMany({
+            where: {
+                nodeID: {
+                    in: [startNodeId, endNodeId],
+                },
+            },
+        });
 
-    let pathNodeIds = [];
+        if (nodes.length < 2) {
+            return res.status(404).send("One or both node IDs not found");
+        }
 
-    switch (algorithm) {
-      case "AStar":
-        pathNodeIds = shortestPathAStar(
-          startNodeId as string,
-          endNodeId as string,
-          graph
-        );
-        break;
-      case "BFS":
-        pathNodeIds = bfsShortestPath(
-          startNodeId as string,
-          endNodeId as string,
-          graph
-        );
-        break;
-      case "Dijkstra":
-        pathNodeIds = dijkstraShortestPath(
-          startNodeId as string,
-          endNodeId as string,
-          graph
-        );
-        break;
-      default:
-        return res.status(400).send("Unsupported algorithm");
+        const graph = await uniqueGraph.getInstance();
+        //console.log(uniqueGraph.getInitializationCount());
+        let pathNodeIds = [];
+
+        switch (algorithm) {
+            case 'AStar':
+                pathNodeIds = shortestPathAStar(startNodeId as string, endNodeId as string, graph);
+                break;
+            case 'BFS':
+                pathNodeIds = bfsShortestPath(startNodeId as string, endNodeId as string, graph);
+                break;
+            case 'Dijkstra':
+                pathNodeIds = dijkstraShortestPath(startNodeId as string, endNodeId as string, graph);
+                break;
+            default:
+                return res.status(400).send("Unsupported algorithm");
+        }
+
+        res.json({ path: pathNodeIds });
+    } catch (error) {
+        console.error("Error processing pathfinding request:", error);
+        res.status(500).send("Internal server error");
     }
-
-    res.json({ path: pathNodeIds });
-  } catch (error) {
-    console.error("Error processing pathfinding request:", error);
-    res.status(500).send("Internal server error");
-  }
 });
 
 export default router;
