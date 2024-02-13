@@ -94,7 +94,7 @@ const generateEmployee = (nodeIds) => {
       create: [
         {
           nodeID: faker.helpers.arrayElement(nodeIds).nodeID,
-          urgency: faker.helpers.arrayElement(["LOW", "MEDIUM", "HIGH"]),
+          urgency: faker.helpers.arrayElement(["LOW", "MEDIUM", "HIGH","EMERGENCY"]),
           type: faker.helpers.arrayElement([
             "JANI",
             "MECH",

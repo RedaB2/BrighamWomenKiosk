@@ -9,25 +9,27 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_URL")
+  //url      = "postgresql://teamc:teamc40@database.cs.wpi.edu:/teamcdb/?schema=teamc" //comment that connects to online db, only uncomment out if using online database
+  url      = env("POSTGRES_URL")                                                       //if using online database, comment this line out
 }
 
 model Nodes {
-  nodeID    String     @id
-  xcoord    Int
-  ycoord    Int
-  floor     String
-  building  String
-  nodeType  NodeType
-  longName  String
-  shortName String
-  requests  Requests[]
+  nodeID        String     @id
+  xcoord        Int
+  ycoord        Int
+  floor         String
+  building      String
+  nodeType      NodeType
+  longName      String
+  shortName     String
+  requests      Requests[] @relation("origin")
+  destinationTo Requests[] @relation("destination")
 }
 
 model Edges {
   edgeID    String @id
-  startNode String //foreign key watch out for seeding errors when making this a foreign key
-  endNode   String //foreign key watch out for seeding errors when making this a foreign key
+  startNode String // foreign key watch out for seeding errors when making this a foreign key
+  endNode   String // foreign key watch out for seeding errors when making this a foreign key
   weight    Float
 }
 
@@ -47,25 +49,26 @@ enum NodeType {
 }
 
 model Employees {
-  id            Int          @id @default(autoincrement())
-  firstName     String
-  lastName      String
-  username      String
-  password      String
-  role          EmployeeRole
-  requests      Requests[]
-  jobs          EmployeeJobs[]
+  id        Int            @id @default(autoincrement())
+  firstName String
+  lastName  String
+  username  String
+  password  String
+  role      EmployeeRole
+  requests  Requests[]
+  jobs      EmployeeJobs[]
 }
 
 model EmployeeJobs {
-  employeeId     Int
-  job            EmployeeJob
-  employee       Employees       @relation(fields:[employeeId],references:[id])
+  employeeId Int
+  job        EmployeeJob
+  employee   Employees   @relation(fields: [employeeId], references: [id])
 
-  @@id(name:"jobId", [employeeId, job])    //compound key
+  @@id(name: "jobId", [employeeId, job]) // compound key
 }
 
 enum EmployeeJob {
+  NULL // for use in generic users (such as admin)
   JANITOR
   DOCTOR
   NURSE
@@ -78,21 +81,33 @@ enum EmployeeRole {
 }
 
 model Requests {
-  id               Int         @id @default(autoincrement())
+  id               Int           @id @default(autoincrement())
   nodeID           String
   employeeID       Int
-  room             Nodes       @relation(fields: [nodeID], references: [nodeID])
-  employee         Employees   @relation(fields: [employeeID], references: [id])
+  room             Nodes         @relation("origin", fields: [nodeID], references: [nodeID])
+  employee         Employees     @relation(fields: [employeeID], references: [id])
   urgency          Urgency
   type             RequestType
   notes            String?
   completionStatus RequestStatus @default(UNASSIGNED)
+
+  // Medicine Request
+  medicineName   String?
+  medicineDosage String?
+
+  // Maintenance Request
+  maintenanceType MaintenanceType?
+
+  // Patient Relocation Request
+  roomTo    String?
+  newRoomID Nodes?  @relation("destination", fields: [roomTo], references: [nodeID])
 }
 
 enum Urgency {
   LOW // low urgency
   MEDIUM // medium urgency
   HIGH // high urgency
+  EMERGENCY // emergency urgency
 }
 
 enum RequestType {
@@ -105,8 +120,15 @@ enum RequestType {
 }
 
 enum RequestStatus {
-  UNASSIGNED //unassigned
-  ASSIGNED //assigned
-  IN_PROGRESS //in progress
-  COMPLETED //completed
+  UNASSIGNED // unassigned
+  ASSIGNED // assigned
+  IN_PROGRESS // in progress
+  COMPLETED // completed
+}
+
+enum MaintenanceType {
+  ELEC // electrical
+  PLUM // plumbling
+  LOCK // locksmith
+  TECH // technology
 }
