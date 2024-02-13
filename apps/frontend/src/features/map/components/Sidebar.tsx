@@ -14,9 +14,9 @@ import {
 import { CiMenuBurger, CiSearch } from "react-icons/ci";
 import React, { useContext, useEffect, useState } from "react";
 import { Nodes } from "database";
-import { DirectionsContext } from "../components";
+import { DirectionsContext, StartContext, EndContext } from "../components";
 
-import groundFloor from "../assets/00_thegroundfloor.png";
+//import groundFloor from "../assets/00_thegroundfloor.png";
 import lowerLevel1 from "../assets/00_thelowerlevel1.png";
 import lowerLevel2 from "../assets/00_thelowerlevel2.png";
 import firstFloor from "../assets/01_thefirstfloor.png";
@@ -44,16 +44,19 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
   const [nodes, setNodes] = useState<Nodes[]>([]);
   const [startSuggestions, setStartSuggestions] = useState<string[]>([]);
   const [endSuggestions, setEndSuggestions] = useState<string[]>([]);
-  const [startLocation, setStartLocation] = useState<string>("");
-  const [endLocation, setEndLocation] = useState<string>("");
+  //const [startLocation, setStartLocation] = useState<string>("");
+  //const [endLocation, setEndLocation] = useState<string>("");
   const [directions, setDirections] = useState<string[]>([]);
   const [algorithm, setAlgorithm] = useState<string | null>("AStar");
   const newDirections = directions.map((ID) =>
     nodes.filter((node) => node["nodeID"] === ID),
   );
 
+  const { startLocation, setStartLocation } = useContext(StartContext);
+  const { endLocation, setEndLocation } = useContext(EndContext);
   const { path, setPath } = useContext(DirectionsContext);
 
+  path;
   const locations: { nodeID: string; longName: string }[] = nodes.map(
     (node) => {
       return { nodeID: node.nodeID, longName: node.longName };
@@ -174,10 +177,7 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
       if (!res.ok) throw new Error(res.statusText);
       const data = await res.json();
       setDirections(data.path);
-      console.log(newDirections);
       setPath(data.path);
-      console.log(path);
-      console.log(algorithm);
     } catch (error) {
       alert("Failed to find path. Please try again.");
     }
@@ -208,7 +208,8 @@ const Sidebar = ({ setSelectedFloor }: SidebarProps) => {
             id="mapFloor"
             onChange={(e) => setSelectedFloor(e.target.value)}
           >
-            <option value={groundFloor}>Ground Floor</option>
+              {//<option value={groundFloor}>Ground Floor</option>
+              }
             <option value={lowerLevel1}>Lower Level 1</option>
             <option value={lowerLevel2}>Lower Level 2</option>
             <option value={firstFloor}>First Floor</option>
