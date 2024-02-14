@@ -57,7 +57,7 @@ const Map = () => {
         setEndLocation,
       }}
     >
-      <div className="h-screen flex overflow-hidden">
+      <div className="h-screen flex overflow-hidden bg-gray-100 dark:bg-neutral-900">
         <Sidebar />
         <div className="flex-1 overflow-auto">
           <BeefletMap />
