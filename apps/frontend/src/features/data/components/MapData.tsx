@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { DataTable, DataTableColumnHeader } from "@/components";
-import { FileInput, Label, Button, Checkbox, Dropdown } from "flowbite-react";
+import { FileInput, Label, Button, Checkbox } from "flowbite-react";
 import { downloadCSV } from "../utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edges, Nodes } from "database";
-import { MdMoreHoriz } from "react-icons/md";
-import { FaDownload, FaTrash } from "react-icons/fa";
 
 const MapData = () => {
   const [nodes, setNodes] = useState([]);
@@ -226,25 +224,6 @@ const nodesTableColumns: ColumnDef<Nodes>[] = [
     ),
     cell: ({ row }) => row.getValue("shortName"),
   },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: () => {
-      return (
-        <Dropdown
-          label="Actions"
-          renderTrigger={() => (
-            <Button outline pill size="xs">
-              <MdMoreHoriz className="h-4 w-4" />
-            </Button>
-          )}
-        >
-          <Dropdown.Item icon={FaDownload}>Download track</Dropdown.Item>
-          <Dropdown.Item icon={FaTrash}>Delete track</Dropdown.Item>
-        </Dropdown>
-      );
-    },
-  },
 ];
 
 const edgesTableColumns: ColumnDef<Edges>[] = [
@@ -301,25 +280,6 @@ const edgesTableColumns: ColumnDef<Edges>[] = [
       <DataTableColumnHeader column={column} title="Weight" />
     ),
     cell: ({ row }) => row.getValue("weight"),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: () => {
-      return (
-        <Dropdown
-          label="Actions"
-          renderTrigger={() => (
-            <Button outline pill size="xs">
-              <MdMoreHoriz className="h-4 w-4" />
-            </Button>
-          )}
-        >
-          <Dropdown.Item icon={FaDownload}>Download track</Dropdown.Item>
-          <Dropdown.Item icon={FaTrash}>Delete track</Dropdown.Item>
-        </Dropdown>
-      );
-    },
   },
 ];
 

@@ -14,8 +14,6 @@ const SignUp = () => {
       alert("Passwords do not match!");
       return;
     }
-    console.log(username);
-    console.log(password);
     navigate("/");
   };
 

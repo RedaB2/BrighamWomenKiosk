@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from "react";
-import { DirectionsContext } from "../components";
-import { Nodes, Edges } from "database";
+import { useContext, useState } from "react";
+import { MapContext } from "../components";
+import { Nodes } from "database";
 
 import groundFloor from "../assets/00_thegroundfloor.png";
 import lowerLevel1 from "../assets/00_thelowerlevel1.png";
@@ -18,11 +18,9 @@ function Lines(props: {
   right: number;
   selectedFloor: string;
 }) {
-  const { path } = useContext(DirectionsContext);
-  const [nodes, setNodes] = useState<Nodes[]>([]);
-  const [edges, setEdges] = useState<Edges[]>([]);
+  const { nodes, edges, path } = useContext(MapContext);
   const path2 = path.map((nodeID) =>
-    nodes.filter((node) => node.nodeID == nodeID),
+    nodes.filter((node) => node.nodeID == nodeID)
   );
   const [displayV, setdisplayV] = useState(false);
 
@@ -63,31 +61,6 @@ function Lines(props: {
     paths[currentFloor].push(path2.slice(lastCut, path2.length));
   }
 
-  useEffect(() => {
-    const fetchNodes = async () => {
-      try {
-        const res = await fetch("/api/map/nodes");
-        if (!res.ok) throw new Error(res.statusText);
-        const data = await res.json();
-        setNodes(data);
-      } catch (error) {
-        console.error("Failed to fetch nodes:", error);
-      }
-    };
-    const fetchEdges = async () => {
-      try {
-        const res = await fetch("/api/map/edges");
-        if (!res.ok) throw new Error(res.statusText);
-        const data = await res.json();
-        setEdges(data);
-      } catch (error) {
-        console.error("Failed to fetch edges:", error);
-      }
-    };
-    fetchNodes();
-    fetchEdges();
-  }, []);
-
   function stylePost(c: number, d: string) {
     if (d == "x") {
       return ((c / 5000) * (props.right - props.left)).toString();
@@ -117,7 +90,7 @@ function Lines(props: {
 
     const pathElement = document.createElementNS(
       "http://www.w3.org/2000/svg",
-      "path",
+      "path"
     );
     pathElement.setAttribute("d", pathData);
 
@@ -143,7 +116,7 @@ function Lines(props: {
             .filter(
               (edge) =>
                 edge[0][0].floor == floorID() &&
-                edge[0][0].floor == edge[1][0].floor,
+                edge[0][0].floor == edge[1][0].floor
             )
             .map((edge, i) => (
               <line

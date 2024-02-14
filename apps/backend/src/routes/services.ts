@@ -115,11 +115,13 @@ router.post("/upload", upload.single("csv-upload"), async (req, res) => {
       const existingNodes = await tx.nodes.findMany();
       const existingEdges = await tx.edges.findMany();
       const existingEmployees = await tx.employees.findMany();
+      const existingEmployeeJobs = await tx.employeeJobs.findMany();
       // const existingRequests = await tx.requests.findMany();
 
       // 2. Drop all the tables in the order of foreign key dependencies
       await tx.edges.deleteMany();
       await tx.requests.deleteMany();
+      await tx.employeeJobs.deleteMany();
       await tx.employees.deleteMany();
       await tx.nodes.deleteMany();
 
@@ -134,6 +136,10 @@ router.post("/upload", upload.single("csv-upload"), async (req, res) => {
 
       await tx.employees.createMany({
         data: existingEmployees,
+      });
+
+      await tx.employeeJobs.createMany({
+        data: existingEmployeeJobs,
       });
 
       await tx.requests.createMany({

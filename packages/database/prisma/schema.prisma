@@ -62,7 +62,7 @@ model Employees {
 model EmployeeJobs {
   employeeId Int
   job        EmployeeJob
-  employee   Employees   @relation(fields: [employeeId], references: [id])
+  employee   Employees   @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@id(name: "jobId", [employeeId, job]) // compound key
 }

@@ -125,20 +125,18 @@ function DataTable<TData, TValue>({
             <FlowbiteTable striped hoverable>
               <FlowbiteTable.Head>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <FlowbiteTable.HeadCell key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </FlowbiteTable.HeadCell>
-                      );
-                    })}
-                  </>
+                  <React.Fragment key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <FlowbiteTable.HeadCell key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </FlowbiteTable.HeadCell>
+                    ))}
+                  </React.Fragment>
                 ))}
               </FlowbiteTable.Head>
               <FlowbiteTable.Body className="divide-y">

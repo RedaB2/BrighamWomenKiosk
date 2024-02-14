@@ -17,7 +17,6 @@ const MapDisplay = (props: { selectedFloor: string }) => {
         const width = rect.width;
         const height = rect.height;
         setCoords([left, right, top, bottom, width, height]);
-        console.log(rect.top, rect.left, rect.bottom, rect.right);
       }
     };
 

@@ -164,6 +164,34 @@ const requestsTableColumns: ColumnDef<Requests>[] = [
     cell: ({ row }) => row.getValue("notes"),
   },
   {
+    accessorKey: "medicineName",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Medicine Name" />
+    ),
+    cell: ({ row }) => row.getValue("medicineName"),
+  },
+  {
+    accessorKey: "medicineDosage",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Medicine Dosage" />
+    ),
+    cell: ({ row }) => row.getValue("medicineDosage"),
+  },
+  {
+    accessorKey: "maintenanceType",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Maintenance Type" />
+    ),
+    cell: ({ row }) => row.getValue("maintenanceType"),
+  },
+  {
+    accessorKey: "roomTo",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Room To" />
+    ),
+    cell: ({ row }) => row.getValue("roomTo"),
+  },
+  {
     accessorKey: "completionStatus",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Completion Status" />

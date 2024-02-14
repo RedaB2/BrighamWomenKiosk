@@ -15,8 +15,6 @@ const SignIn = () => {
       alert("Wrong Password or Account");
       return;
     }
-    console.log(username);
-    console.log(password);
     navigate("/");
   };
 

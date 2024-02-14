@@ -152,20 +152,40 @@ const ServiceRequest = () => {
       className="mx-auto py-8 flex flex-col space-y-4 max-w-md"
       onSubmit={handleSubmit}
     >
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        Request Service Form
+      </h1>
       {type === "JANI" ? (
-        <p> Request page created by Phil </p>
+        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+          {" "}
+          Request page created by Phil{" "}
+        </p>
       ) : type === "MECH" ? (
-        <p> Request page created by Abe and Miya </p>
+        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+          {" "}
+          Request page created by Abe and Miya{" "}
+        </p>
       ) : type === "MEDI" ? (
-        <p> Request page created by HIEN </p>
+        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+          {" "}
+          Request page created by HIEN{" "}
+        </p>
       ) : type === "RELC" ? (
-        <p> Request page created by Felix and Daniel </p>
+        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+          {" "}
+          Request page created by Felix and Daniel{" "}
+        </p>
       ) : type === "CONS" ? (
-        <p> Request page created by Oliver and Matt </p>
+        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+          {" "}
+          Request page created by Oliver and Matt{" "}
+        </p>
       ) : (
-        <p> Request page created by Felix </p>
+        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+          {" "}
+          Request page created by Felix{" "}
+        </p>
       )}
-      <h1 className="text-2xl font-bold">Request Service Form</h1>
       <div className="space-y-2">
         <Label htmlFor="type">Service type</Label>
         <Select
@@ -250,7 +270,7 @@ const ServiceRequest = () => {
 
       {type === "MEDI" && (
         <div>
-          <label htmlFor="medicineName">
+          <Label htmlFor="medicineName">
             Medicine to be delivered
             <TextInput
               type="text"
@@ -262,9 +282,9 @@ const ServiceRequest = () => {
                 setMedicineName(event.target.value);
               }}
             />
-          </label>
+          </Label>
           <br />
-          <label htmlFor="medicineDosage">
+          <Label htmlFor="medicineDosage">
             Dosage
             <TextInput
               type="text"
@@ -276,7 +296,7 @@ const ServiceRequest = () => {
                 setMedicineDosage(event.target.value);
               }}
             />
-          </label>
+          </Label>
         </div>
       )}
 
