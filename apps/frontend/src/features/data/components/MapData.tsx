@@ -4,21 +4,12 @@ import { FileInput, Label, Button, Checkbox } from "flowbite-react";
 import { downloadCSV } from "../utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { Edges, Nodes } from "database";
-import { useNavigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const MapData = () => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
   const [nodesFile, setNodesFile] = useState("");
   const [edgesFile, setEdgesFile] = useState("");
-
-    const navigate = useNavigate();
-    const { isAuthenticated } = useAuth0();
-
-    if (!isAuthenticated) {
-        navigate("/auth/sign-in");
-    }
 
   useEffect(() => {
     const fetchNodes = async () => {

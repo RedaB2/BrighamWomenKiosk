@@ -1,40 +1,68 @@
-import React, { useEffect } from "react";
-import { LoginButton } from "@/features/auth/components/LoginButton.tsx";
-import { LogoutButton } from "@/features/auth/components/LogoutButton.tsx";
-import { SignupButton } from "@/features/auth/components/SignupButton.tsx";
-import { useAuth0 } from "@auth0/auth0-react";
-/*import { Label } from "flowbite-react";*/
+import { FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
-  const { loginWithRedirect } = useAuth0();
-  const { getAccessTokenSilently } = useAuth0();
-  const { isAuthenticated, isLoading } = useAuth0();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkToken = async () => {
-      try {
-        await getAccessTokenSilently();
-      } catch (error) {
-        await loginWithRedirect({
-          appState: {
-            returnTo: location.pathname,
-          },
-        });
-      }
-    };
-
-    if (!isLoading && isAuthenticated) {
-      checkToken();
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (
+      !(username === "admin" && password === "admin") &&
+      !(username === "softengc24C@gmail.com" && password === "cs3733c24C!")
+    ) {
+      alert("Wrong Password or Account");
+      return;
     }
-  }, [getAccessTokenSilently, isAuthenticated, isLoading, loginWithRedirect]);
+    navigate("/");
+  };
+
+  const handleResetPassword = (e: FormEvent) => {
+    e.preventDefault();
+    navigate("/auth/reset-password");
+  };
+
+  const handleSignUp = (e: FormEvent) => {
+    e.preventDefault();
+    navigate("/auth/sign-up");
+  };
 
   return (
-    <div className="mx-auto py-8 flex flex-col space-y-4 max-w-md">
-      <h1 className="text-2xl font-bold">Sign In Page</h1>
-        {!isAuthenticated && <LoginButton />}
-        {!isAuthenticated && <SignupButton />}
-        {isAuthenticated && <LogoutButton />}
-    </div>
+    <form onSubmit={handleSubmit} className={"centeredElement"}>
+      <h1>Sign In</h1>
+      <div>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Username"
+          required
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <button type="submit">Sign In</button>
+      <br />
+      <button type="button" role="link" onClick={handleResetPassword}>
+        Reset Password
+      </button>
+      <br />
+      <button type="button" role="link" onClick={handleSignUp}>
+        Create an Account
+      </button>
+    </form>
   );
 };
 

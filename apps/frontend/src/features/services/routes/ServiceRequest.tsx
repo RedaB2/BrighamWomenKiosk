@@ -10,8 +10,6 @@ import {
   RequestStatus,
 } from "database";
 import { Autocomplete } from "@/components";
-import { useNavigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const ServiceRequest = () => {
   const [nodes, setNodes] = useState<Nodes[]>([]);
@@ -33,13 +31,6 @@ const ServiceRequest = () => {
 
   const [roomToSuggestions, setRoomToSuggestions] = useState<string[]>([]);
   const [roomTo, setRoomTo] = useState<string>("");
-
-    const navigate = useNavigate();
-    const { isAuthenticated } = useAuth0();
-
-    if (!isAuthenticated) {
-        navigate("/auth/sign-in");
-    }
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -167,7 +158,7 @@ const ServiceRequest = () => {
       {type === "JANI" ? (
         <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
           {" "}
-          Request page created by Phil and Giovanni{" "}
+          Request page created by Phil{" "}
         </p>
       ) : type === "MECH" ? (
         <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
@@ -177,7 +168,7 @@ const ServiceRequest = () => {
       ) : type === "MEDI" ? (
         <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
           {" "}
-          Request page created by HIEN and Luke{" "}
+          Request page created by HIEN{" "}
         </p>
       ) : type === "RELC" ? (
         <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">

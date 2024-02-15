@@ -17,8 +17,6 @@ import { MdMoreHoriz } from "react-icons/md";
 import { LiaUserEditSolid } from "react-icons/lia";
 import { CiTrash } from "react-icons/ci";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const EmployeeContext = createContext<{
   employees: Employees[];
@@ -27,14 +25,6 @@ const EmployeeContext = createContext<{
 }>({ employees: [], setEmployees: () => {} });
 
 const EmployeesData = () => {
-
-    const navigate = useNavigate();
-    const { isAuthenticated } = useAuth0();
-
-    if (!isAuthenticated) {
-        navigate("/auth/sign-in");
-    }
-
   const [employees, setEmployees] = useState<Employees[]>([]);
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [file, setFile] = useState("");

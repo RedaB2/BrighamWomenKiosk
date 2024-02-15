@@ -5,7 +5,6 @@ import { downloadCSV } from "../utils";
 import { RequestStatus, Requests } from "database";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
 
 const ServicesContext = createContext<{
   services: Requests[];
@@ -19,13 +18,7 @@ const ServicesContext = createContext<{
 const ServicesData = () => {
   const [services, setServices] = useState<Requests[]>([]);
   const [file, setFile] = useState("");
-
-    const navigate = useNavigate();
-    const { isAuthenticated } = useAuth0();
-
-    if (!isAuthenticated) {
-        navigate("/auth/sign-in");
-    }
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchServices = async () => {
