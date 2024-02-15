@@ -19,6 +19,7 @@ import { Button } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import CustomButton from "@/features/map/components/Description.tsx";
 import { assetToFloor } from "../utils";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function BeefletMap() {
   // Define the bounds of the image in terms of x and y coordinates
@@ -36,9 +37,11 @@ export default function BeefletMap() {
     setEndLocation,
   } = useContext(MapContext);
 
-  const [toggled, setToggled] = useState(false);
+  const [toggledEdges, setToggledEdges] = useState(false);
+  const [toggledNames, setToggledNames] = useState(false);
   const [clicked, setClicked] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth0();
 
   const nodePath = path.map((nodeID) =>
     nodes.filter((node) => node.nodeID == nodeID)
@@ -108,7 +111,7 @@ export default function BeefletMap() {
       >
         <LayerGroup>
           <ImageOverlay url={selectedFloor} bounds={imageBounds} />
-          {toggled &&
+          {toggledEdges &&
             edges
               .map((edge) => [
                 nodes.filter((node) => node.nodeID == edge.startNode),
@@ -218,31 +221,39 @@ export default function BeefletMap() {
                         >
                           Set End
                         </Button>
-                        <Button
-                          className={"custom-button"}
-                          onClick={() => navigate("/data/services")}
-                        >
-                          View Requests
-                        </Button>
-                        <Button
-                          className={"custom-button"}
-                          onClick={() => navigate("/services")}
-                        >
-                          Make Request
-                        </Button>
-                        <Button className={"custom-button"}>
-                          Schedule Move
-                        </Button>
+                        {isAuthenticated && (
+                          <Button
+                            className={"custom-button"}
+                            onClick={() => navigate("/data/services")}
+                          >
+                            View Requests
+                          </Button>
+                        )}
+                        {isAuthenticated && (
+                          <Button
+                            className={"custom-button"}
+                            onClick={() => navigate("/services")}
+                          >
+                            Make Request
+                          </Button>
+                        )}
+                        {isAuthenticated && (
+                          <Button className={"custom-button"}>
+                            Schedule Move
+                          </Button>
+                        )}
                       </div>
                     ) : (
                       <div>
                         {"Full name: " + node.longName}
                         <br />
                         {"Short name: " + node.shortName}
+                        <br />
+                        {"Node ID: " + node.nodeID}
                       </div>
                     )}
                   </Popup>
-                  {toggled && (
+                  {toggledNames && (
                     <Tooltip
                       permanent={true}
                       className={"customTooltip"}
@@ -273,12 +284,20 @@ export default function BeefletMap() {
           .map((node) => (
             <Marker position={[-node.ycoord, node.xcoord]} key={node.nodeID} />
           ))}
-        <CustomButton
-          title={"Toggle"}
-          onClick={() => setToggled(!toggled)}
-          className={"custom-toggle-button"}
-          position={"bottomleft"}
-        />
+        <div>
+          <CustomButton
+            title={"Toggle Edges"}
+            onClick={() => setToggledEdges(!toggledEdges)}
+            className={"custom-toggle-button"}
+            position={"bottomleft"}
+          />
+          <CustomButton
+            title={"Toggle Names"}
+            onClick={() => setToggledNames(!toggledNames)}
+            className={"custom-toggle-button"}
+            position={"bottomleft"}
+          />
+        </div>
       </MapContainer>
     </div>
   );

@@ -18,7 +18,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className={"centeredElement"}>
+    <form onSubmit={handleSubmit}>
       <h1>Reset Password</h1>
       <div>
         <input

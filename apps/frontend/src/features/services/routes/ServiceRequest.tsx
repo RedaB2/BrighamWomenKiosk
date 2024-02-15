@@ -158,7 +158,7 @@ const ServiceRequest = () => {
       {type === "JANI" ? (
         <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
           {" "}
-          Request page created by Phil{" "}
+          Request page created by Phil and Giovanni{" "}
         </p>
       ) : type === "MECH" ? (
         <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
@@ -168,7 +168,7 @@ const ServiceRequest = () => {
       ) : type === "MEDI" ? (
         <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
           {" "}
-          Request page created by HIEN{" "}
+          Request page created by HIEN and Luke{" "}
         </p>
       ) : type === "RELC" ? (
         <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
