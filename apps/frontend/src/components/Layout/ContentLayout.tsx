@@ -1,5 +1,5 @@
 import logoUrl from "/logo.png";
-import { FaMapMarkedAlt, FaSignInAlt, FaDownload, FaMap } from "react-icons/fa";
+import { FaMapMarkedAlt, FaSignInAlt, FaDownload, FaMap, FaSignOutAlt } from "react-icons/fa";
 import { MdOutlineRoomService } from "react-icons/md";
 import { FaPeopleGroup } from "react-icons/fa6";
 import {
@@ -7,6 +7,7 @@ import {
   DarkThemeToggle,
   CustomFlowbiteTheme,
 } from "flowbite-react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
   root: {
@@ -26,6 +27,9 @@ const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
 };
 
 const SidebarNavigation = () => {
+
+  const { isAuthenticated } = useAuth0();
+
   return (
     <FlowbiteSidebar aria-label="Navigation sidebar" theme={sidebarTheme}>
       <FlowbiteSidebar.Logo href="/" img={logoUrl} imgAlt="Hospital logo" />
@@ -60,9 +64,12 @@ const SidebarNavigation = () => {
             <DarkThemeToggle />
             Switch Theme
           </FlowbiteSidebar.Item>
-          <FlowbiteSidebar.Item href="/auth/sign-in" icon={FaSignInAlt}>
+            {!isAuthenticated && <FlowbiteSidebar.Item href="/auth/sign-in" icon={FaSignInAlt}>
             Sign In
-          </FlowbiteSidebar.Item>
+          </FlowbiteSidebar.Item>}
+            {isAuthenticated && <FlowbiteSidebar.Item href="/auth/sign-in" icon={FaSignOutAlt}>
+                Sign Out
+            </FlowbiteSidebar.Item>}
         </FlowbiteSidebar.ItemGroup>
       </FlowbiteSidebar.Items>
     </FlowbiteSidebar>
