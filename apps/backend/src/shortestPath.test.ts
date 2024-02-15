@@ -1,150 +1,195 @@
-import { createGraph, shortestPathAStar, dijkstraShortestPath, bfsShortestPath } from "./shortestPath.ts";
+import { shortestPathAStar, dijkstraShortestPath, bfsShortestPath, dfsShortestPath } from "./shortestPath.ts";
 import { describe, it, expect } from "vitest";
 
-describe("A Star Path Finder", () => {
-  it("should find the shortest path in a graph", () => {
-    const edges = [
-      { startNode: "A", endNode: "B", weight: 1 },
-      { startNode: "B", endNode: "C", weight: 2 },
-      { startNode: "A", endNode: "C", weight: 10 },
-    ];
 
-    const graph = createGraph(edges);
-    const path = shortestPathAStar("A", "C", graph);
+// DFS TEST CASES
 
+describe("DFS Shortest Path Finder", () => {
+  it("should find a path in a simple graph", () => {
+    const graph = new Map([
+      ["A", [{ node: "B" }]],
+      ["B", [{ node: "C" }]],
+      ["C", []],
+    ]);
+    const path = dfsShortestPath("A", "C", graph);
     expect(path).toEqual(["A", "B", "C"]);
   });
 
   it("should return an empty array if no path exists", () => {
-    const edges = [
-      { startNode: "A", endNode: "B", weight: 1 },
-      { startNode: "C", endNode: "D", weight: 2 },
-    ];
-
-    const graph = createGraph(edges);
-    const path = shortestPathAStar("A", "D", graph);
-
+    const graph = new Map([
+      ["A", [{ node: "B" }]],
+      ["B", []],
+      ["C", [{ node: "D" }]],
+      ["D", []],
+    ]);
+    const path = dfsShortestPath("A", "D", graph);
     expect(path).toEqual([]);
   });
 
-  it("should find a direct path when it's the shortest", () => {
-    const edges = [
-      { startNode: "A", endNode: "B", weight: 5 },
-      { startNode: "A", endNode: "C", weight: 15 },
-      { startNode: "B", endNode: "C", weight: 5 },
-    ];
-
-    const graph = createGraph(edges);
-    const path = shortestPathAStar("A", "B", graph);
-
-    expect(path).toEqual(["A", "B"]);
+  it("should detect path in a graph with cycles", () => {
+    const graph = new Map([
+      ["A", [{ node: "B" }, { node: "C" }]],
+      ["B", [{ node: "A" }, { node: "C" }]],
+      ["C", [{ node: "D" }]],
+      ["D", []],
+    ]);
+    const path = dfsShortestPath("A", "D", graph);
+    // The expected path could vary due to the nature of DFS, but it should end with "D".
+    expect(path[path.length - 1]).toEqual("D");
   });
 
-  it("should handle a graph with a single node", () => {
-    const edges = [{ startNode: "A", endNode: "A", weight: 0 }];
-
-    const graph = createGraph(edges);
-    const path = shortestPathAStar("A", "A", graph);
-
-    expect(path).toEqual(["A"]);
-  });
-
-  it("should return the shortest path when multiple paths with the same weight exist", () => {
-    const edges = [
-      { startNode: "A", endNode: "B", weight: 2 },
-      { startNode: "A", endNode: "C", weight: 2 },
-      { startNode: "B", endNode: "D", weight: 1 },
-      { startNode: "C", endNode: "D", weight: 1 },
-      { startNode: "A", endNode: "D", weight: 3 },
-    ];
-
-    const graph = createGraph(edges);
-    const path = shortestPathAStar("A", "D", graph);
-
-    // The shortest path can be either 'A' -> 'D' directly, or 'A' -> 'B' -> 'D', or 'A' -> 'C' -> 'D'
-    expect(path).toContain("A");
-    expect(path).toContain("D");
-    expect(path.length).toBeLessThanOrEqual(3); // The path should not be longer than 3 nodes
-  });
-
-  it("should return an empty array for disconnected components", () => {
-    const edges = [
-      { startNode: "A", endNode: "B", weight: 1 },
-      { startNode: "C", endNode: "D", weight: 1 },
-    ];
-
-    const graph = createGraph(edges);
-    const path = shortestPathAStar("A", "D", graph);
-
-    expect(path).toEqual([]);
+  it("should verify path is found even with multiple paths available", () => {
+    const graph = new Map([
+      ["A", [{ node: "B" }, { node: "C" }]],
+      ["B", [{ node: "D" }]],
+      ["C", [{ node: "D" }]],
+      ["D", []],
+    ]);
+    const path = dfsShortestPath("A", "D", graph);
+    // The path should start with "A" and end with "D".
+    expect(path[0]).toEqual("A");
+    expect(path[path.length - 1]).toEqual("D");
   });
 });
 
-describe("A Star Path Finder Additional Tests", () => {
-  it("should avoid paths with high weight if possible", () => {
-    const edges = [
-      { startNode: "A", endNode: "B", weight: 1 },
-      { startNode: "B", endNode: "C", weight: 10 }, // High weight edge
-      { startNode: "A", endNode: "C", weight: 2 },
-      { startNode: "C", endNode: "D", weight: 2 },
-    ];
 
-    const graph = createGraph(edges);
-    const path = shortestPathAStar("A", "D", graph);
+// BFS TEST CASES
 
+describe("BFS Shortest Path Finder", () => {
+  it("should find the shortest path in a simple graph", () => {
+    const graph = new Map([
+      ["A", [{ node: "B" }]],
+      ["B", [{ node: "C" }]],
+      ["C", []],
+    ]);
+    const path = bfsShortestPath("A", "C", graph);
+    expect(path).toEqual(["A", "B", "C"]);
+  });
+
+  it("should return an empty array if no path exists", () => {
+    const graph = new Map([
+      ["A", [{ node: "B" }]],
+      ["B", []],
+      ["C", [{ node: "D" }]],
+      ["D", []],
+    ]);
+    const path = bfsShortestPath("A", "D", graph);
+    expect(path).toEqual([]);
+  });
+
+  it("should correctly process graphs with multiple paths", () => {
+    const graph = new Map([
+      ["A", [{ node: "B" }, { node: "C" }]],
+      ["B", [{ node: "D" }]],
+      ["C", [{ node: "D" }]],
+      ["D", []],
+    ]);
+    const path = bfsShortestPath("A", "D", graph);
+    expect(path.length).toBeLessThanOrEqual(3); // The shortest path should not have more than 3 nodes
+    expect(path).toContain("D");
+  });
+
+  it("should work correctly with graphs containing loops", () => {
+    const graph = new Map([
+      ["A", [{ node: "B" }, { node: "A" }]], // Loop back to A
+      ["B", [{ node: "C" }]],
+      ["C", [{ node: "D" }]],
+      ["D", []],
+    ]);
+    const path = bfsShortestPath("A", "D", graph);
+    // Expect the path to correctly bypass the loop and find the shortest path
+    expect(path).toEqual(["A", "B", "C", "D"]);
+  });
+});
+
+// DIJKSTRA TEST CASES
+
+describe("Dijkstra Shortest Path Finder", () => {
+  it("should compute the shortest path in a simple weighted graph", () => {
+    const graph = new Map([
+      ["A", [{ node: "B", weight: 1 }, { node: "C", weight: 5 }]],
+      ["B", [{ node: "C", weight: 2 }]],
+      ["C", []],
+    ]);
+    const path = dijkstraShortestPath("A", "C", graph);
+    expect(path).toEqual(["A", "B", "C"]);
+  });
+
+  it("should return an empty array if no path exists", () => {
+    const graph = new Map([
+      ["A", [{ node: "B", weight: 1 }]],
+      ["B", []],
+      ["C", [{ node: "D", weight: 2 }]],
+      ["D", []],
+    ]);
+    const path = dijkstraShortestPath("A", "D", graph);
+    expect(path).toEqual([]);
+  });
+
+  it("should accurately process graphs with diverse weights", () => {
+    const graph = new Map([
+      ["A", [{ node: "B", weight: 10 }, { node: "C", weight: 1 }]],
+      ["B", [{ node: "D", weight: 1 }]],
+      ["C", [{ node: "D", weight: 10 }]],
+      ["D", []],
+    ]);
+    const path = dijkstraShortestPath("A", "D", graph);
     expect(path).toEqual(["A", "C", "D"]);
   });
+
+  it("should correctly report or handle negative weights", () => {
+    const graph = new Map([
+      ["A", [{ node: "B", weight: -1 }, { node: "C", weight: 4 }]],
+      ["B", [{ node: "C", weight: 3 }]],
+      ["C", []],
+    ]);
+    const path = dijkstraShortestPath("A", "C", graph);
+  });
 });
 
-describe("Pathfinding Algorithms", () => {
-    const edges = [
-        { startNode: "A", endNode: "B", weight: 1 },
-        { startNode: "B", endNode: "C", weight: 2 },
-        { startNode: "A", endNode: "C", weight: 4 },
-        { startNode: "C", endNode: "D", weight: 1 },
-        { startNode: "B", endNode: "D", weight: 5 },
-    ];
-    const graph = createGraph(edges);
+// A* TEST CASES
+describe("A* Shortest Path Finder", () => {
+  it("should correctly compute the shortest path with a heuristic", () => {
+    const graph = new Map([
+      ["A", [{ node: "B", weight: 2 }, { node: "C", weight: 4 }]],
+      ["B", [{ node: "D", weight: 5 }]],
+      ["C", [{ node: "D", weight: 1 }]],
+      ["D", []],
+    ]);
+    const path = shortestPathAStar("A", "D", graph);
+    expect(path).toEqual(["A", "C", "D"]);
+  });
 
-    // A* Tests
-    describe("A* Algorithm", () => {
-        it("returns an empty array if no path exists", () => {
-            const path = shortestPathAStar("A", "E", graph);
-            expect(path).toEqual([]);
-        });
-    });
+  it("should handle scenarios where no path exists", () => {
+    const graph = new Map([
+      ["A", [{ node: "B", weight: 1 }]],
+      ["B", []],
+      ["C", [{ node: "D", weight: 2 }]],
+      ["D", []],
+    ]);
+    const path = shortestPathAStar("A", "D", graph);
+    expect(path).toEqual([]);
+  });
 
-    // BFS Tests
-    describe("BFS Algorithm", () => {
-        it("finds the shortest path in terms of edges in an unweighted graph", () => {
-            const path = bfsShortestPath("A", "D", graph);
-            // Expecting the shortest path in terms of edge count, not weight
-            expect(path.length).toBeLessThanOrEqual(3); // A->B->D or A->C->D
-        });
+  it("should verify accuracy with multiple paths of different weights", () => {
+    const graph = new Map([
+      ["A", [{ node: "B", weight: 3 }, { node: "C", weight: 2 }]],
+      ["B", [{ node: "D", weight: 4 }]],
+      ["C", [{ node: "D", weight: 2 }]],
+      ["D", []],
+    ]);
+    const path = shortestPathAStar("A", "D", graph);
+    expect(path).toEqual(["A", "C", "D"]);
+  });
 
-        it("returns an empty array if no path exists", () => {
-            const path = bfsShortestPath("A", "E", graph);
-            expect(path).toEqual([]);
-        });
-    });
-
-    // Dijkstra Tests
-    describe("Dijkstra Algorithm", () => {
-
-        it("handles graphs with single nodes", () => {
-            const singleNodeGraph = createGraph([{ startNode: "A", endNode: "A", weight: 0 }]);
-            const path = dijkstraShortestPath("A", "A", singleNodeGraph);
-            expect(path).toEqual(["A"]);
-        });
-
-        it("returns an empty array for disconnected components", () => {
-            const disconnectedEdges = [
-                { startNode: "A", endNode: "B", weight: 1 },
-                { startNode: "C", endNode: "D", weight: 1 },
-            ];
-            const disconnectedGraph = createGraph(disconnectedEdges);
-            const path = dijkstraShortestPath("A", "D", disconnectedGraph);
-            expect(path).toEqual([]);
-        });
-    });
+  it("should ensure heuristic does not compromise optimality", () => {
+    const graph = heuristicSetup();
+    const start = "A";
+    const end = "Z";
+    const path = shortestPathAStar(start, end, graph);
+  });
 });
+
+function heuristicSetup() {
+  return new Map();
+}

@@ -465,6 +465,9 @@ const Sidebar = () => {
             <Dropdown.Item onClick={() => setAlgorithm("Dijkstra")}>
               Dijkstra
             </Dropdown.Item>
+            <Dropdown.Item onClick={() => setAlgorithm("DFS")}>
+              DFS
+            </Dropdown.Item>
           </Dropdown>
           <Button type="submit">Submit</Button>
         </form>

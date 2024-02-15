@@ -7,6 +7,7 @@ import {
   shortestPathAStar,
   bfsShortestPath,
   dijkstraShortestPath,
+  dfsShortestPath,
 } from "../shortestPath.ts";
 import uniqueGraph from "../uniqueGraph.ts";
 
@@ -282,7 +283,7 @@ router.post("/pathfinding", async function (req: Request, res: Response) {
     return res.status(400).send("Both startNodeId and endNodeId are required");
   }
 
-  if (!["AStar", "BFS", "Dijkstra"].includes(algorithm)) {
+  if (!["AStar", "BFS", "Dijkstra", "DFS"].includes(algorithm)) {
     return res
       .status(400)
       .send(
@@ -308,6 +309,13 @@ router.post("/pathfinding", async function (req: Request, res: Response) {
     let pathNodeIds = [];
 
     switch (algorithm) {
+      case "DFS":
+        pathNodeIds = dfsShortestPath(
+          startNodeId as string,
+          endNodeId as string,
+          graph
+        );
+        break;
       case "AStar":
         pathNodeIds = shortestPathAStar(
           startNodeId as string,

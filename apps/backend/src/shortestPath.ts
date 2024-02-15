@@ -146,6 +146,37 @@ export function bfsShortestPath(start: string, end: string, graph: Graph): strin
     return [];
 }
 
+
+export function dfsShortestPath(start: string, end: string, graph: Graph): string[] {
+    const visited = new Set<string>();
+    const path: string[] = [];
+
+    function dfs(node: string, end: string, path: string[]): boolean {
+        visited.add(node);
+        path.push(node);
+
+        if (node === end) {
+            return true;
+        }
+
+        const neighbors = graph.get(node) || [];
+        for (const { node: neighbor } of neighbors) {
+            if (!visited.has(neighbor)) {
+                if (dfs(neighbor, end, path)) {
+                    return true;
+                }
+            }
+        }
+
+        path.pop();
+        return false;
+    }
+
+    dfs(start, end, path);
+    return path;
+}
+
+
 export function dijkstraShortestPath(start: string, end: string, graph: Graph): string[] {
     const distances = new Map<string, number>();
     const predecessors: { [key: string]: string } = {};
