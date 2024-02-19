@@ -389,6 +389,7 @@ const ServiceRequest = () => {
           <option value="LOW">Low</option>
           <option value="MEDIUM">Medium</option>
           <option value="HIGH">High</option>
+          <option value="EMERGENCY">Emergency</option>
         </Select>
       </div>
       <div className="space-y-2">
