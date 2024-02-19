@@ -73,6 +73,8 @@ const Sidebar = () => {
   const [startSuggestions, setStartSuggestions] = useState<string[]>([]);
   const [endSuggestions, setEndSuggestions] = useState<string[]>([]);
 
+  let bgAlt = 0;
+
   const nodeDirections = path.map(
     (ID) => nodes.filter((node) => node["nodeID"] === ID)[0]
   );
@@ -99,6 +101,7 @@ const Sidebar = () => {
   };
 
   function turnDirection(floor: string, index: number) {
+    bgAlt++;
     //const floor = floorID.substring(0,floorID.length-1);
     const floorDirections = splitDirections.filter(
       (direction, i, arr) =>
@@ -109,8 +112,11 @@ const Sidebar = () => {
 
     const currDirection = floorDirections[index];
     const prevDirection = index > 0 ? floorDirections[index - 1] : null;
+    //const prevPrevDirection = index > 0 ? floorDirections[index - 2] : null;
     const nextDirection =
       index < floorDirections.length - 1 ? floorDirections[index + 1] : null;
+    const nextNextDirection =
+      index < floorDirections.length - 2 ? floorDirections[index + 2] : null;
 
     if (nextDirection === null && index === floorDirections.length - 1) {
       // Assuming the next direction is already present in newDirections
@@ -174,39 +180,135 @@ const Sidebar = () => {
             const angle = angleBetweenVectors(vector1, vector2);
             // Use crossProductValue to determine left or right turn
             if (angle < -30) {
+              if (nextNextDirection) {
+                const vector3 = {
+                  x: nextDirection.node.xcoord - currDirection.node.xcoord,
+                  y: nextDirection.node.ycoord - currDirection.node.ycoord,
+                };
+                const vector4 = {
+                  x: nextNextDirection.node.xcoord - nextDirection.node.xcoord,
+                  y: nextNextDirection.node.ycoord - nextDirection.node.ycoord,
+                };
+
+                const angle2 = angleBetweenVectors(vector3, vector4);
+                if (angle2 >= -15 && angle2 < 15) {
+                  return (
+                    <>
+                      <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
+                      {"Turn left towards " + nextNextDirection.node.longName}
+                    </>
+                  );
+                }
+              }
               return (
                 <>
                   <BsArrowLeftCircle className="mr-2 ml-1 w-4 h-4 inline" />
-                  {"Turn left towards " + currDirection.node.longName}
+                  {"Turn left towards " + nextDirection.node.longName}
                 </>
               );
             } else if (angle >= -30 && angle < -15) {
+              if (nextNextDirection) {
+                const vector3 = {
+                  x: nextDirection.node.xcoord - currDirection.node.xcoord,
+                  y: nextDirection.node.ycoord - currDirection.node.ycoord,
+                };
+                const vector4 = {
+                  x: nextNextDirection.node.xcoord - nextDirection.node.xcoord,
+                  y: nextNextDirection.node.ycoord - nextDirection.node.ycoord,
+                };
+
+                const angle2 = angleBetweenVectors(vector3, vector4);
+                if (angle2 >= -15 && angle2 < 15) {
+                  return (
+                    <>
+                      <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
+                      {"Bear left towards " + nextNextDirection.node.longName}
+                    </>
+                  );
+                }
+              }
               return (
                 <>
                   <BsArrowUpLeftCircle className="mr-2 ml-1 w-4 h-4 inline" />
-                  {"Bear left towards " + currDirection.node.longName}
+                  {"Bear left towards " + nextDirection.node.longName}
                 </>
               );
             } else if (angle >= -15 && angle < 15) {
+              if (nextNextDirection) {
+                const vector3 = {
+                  x: nextDirection.node.xcoord - currDirection.node.xcoord,
+                  y: nextDirection.node.ycoord - currDirection.node.ycoord,
+                };
+                const vector4 = {
+                  x: nextNextDirection.node.xcoord - nextDirection.node.xcoord,
+                  y: nextNextDirection.node.ycoord - nextDirection.node.ycoord,
+                };
+
+                const angle2 = angleBetweenVectors(vector3, vector4);
+                if (angle2 >= -15 && angle2 < 15) {
+                  bgAlt--;
+                  return;
+                }
+              }
               return (
                 <>
                   <BsArrowUpCircle className="mr-2 ml-1 w-4 h-4 inline" />
-                  {"Continue Straight towards " + currDirection.node.longName}
+                  {"Continue Straight towards " + nextDirection.node.longName}
                 </>
               );
               //return "Head straight towards " + currDirection.longName;
             } else if (angle >= 15 && angle < 30) {
+              if (nextNextDirection) {
+                const vector3 = {
+                  x: nextDirection.node.xcoord - currDirection.node.xcoord,
+                  y: nextDirection.node.ycoord - currDirection.node.ycoord,
+                };
+                const vector4 = {
+                  x: nextNextDirection.node.xcoord - nextDirection.node.xcoord,
+                  y: nextNextDirection.node.ycoord - nextDirection.node.ycoord,
+                };
+
+                const angle2 = angleBetweenVectors(vector3, vector4);
+                if (angle2 >= -15 && angle2 < 15) {
+                  return (
+                    <>
+                      <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
+                      {"Bear right towards " + nextNextDirection.node.longName}
+                    </>
+                  );
+                }
+              }
               return (
                 <>
                   <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
-                  {"Bear right towards " + currDirection.node.longName}
+                  {"Bear right towards " + nextDirection.node.longName}
                 </>
               );
             } else if (angle >= 30) {
+              if (nextNextDirection) {
+                const vector3 = {
+                  x: nextDirection.node.xcoord - currDirection.node.xcoord,
+                  y: nextDirection.node.ycoord - currDirection.node.ycoord,
+                };
+                const vector4 = {
+                  x: nextNextDirection.node.xcoord - nextDirection.node.xcoord,
+                  y: nextNextDirection.node.ycoord - nextDirection.node.ycoord,
+                };
+
+                const angle2 = angleBetweenVectors(vector3, vector4);
+                if (angle2 >= -15 && angle2 < 15) {
+                  return (
+                    <>
+                      <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
+                      {"Turn right towards " + nextNextDirection.node.longName}
+                    </>
+                  );
+                }
+              }
               return (
                 <>
                   <BsArrowRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
-                  {"Turn right towards " + currDirection.node.longName}
+                  {"Turn right towards " + nextDirection.node.longName}
                 </>
               );
             } else {
@@ -221,6 +323,7 @@ const Sidebar = () => {
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+    bgAlt = 0;
     const startNodeId = nodes
       .filter((node) => node["longName"] === startLocation)
       .map((node) => node.nodeID)[0];
@@ -509,9 +612,9 @@ const Sidebar = () => {
                       <List
                         key={i}
                         className={`bg-${colorPicker(
-                          i,
+                          bgAlt,
                           0
-                        )} dark:bg-${colorPicker(i, 1)}`}
+                        )} dark:bg-${colorPicker(bgAlt, 1)}`}
                       >
                         {i < nodeDirections.length && turnDirection(floorID, i)}
                       </List>
