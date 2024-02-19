@@ -95,12 +95,18 @@ model Requests {
   medicineName   String?
   medicineDosage String?
 
-  // Maintenance Request
+  // Mechanical Request
   maintenanceType MaintenanceType?
 
   // Patient Relocation Request
   roomTo    String?
   newRoomID Nodes?  @relation("destination", fields: [roomTo], references: [nodeID])
+
+  //Janitorial Request
+  hazardousWaste   Boolean?
+
+  //Patient Consultation
+  department       MedicalDepartment?
 }
 
 enum Urgency {
@@ -128,7 +134,16 @@ enum RequestStatus {
 
 enum MaintenanceType {
   ELEC // electrical
-  PLUM // plumbling
+  PLUM // plumbing
   LOCK // locksmith
   TECH // technology
+}
+
+enum MedicalDepartment {
+  NEURO // Neurological
+  ORTHO // Orthopedics
+  PEDIA // Pediatric
+  CARDI // Cardiovascular
+  ONCOL // Oncology
+  INTER // Internal Medicine
 }

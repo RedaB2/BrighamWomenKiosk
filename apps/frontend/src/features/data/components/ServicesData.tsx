@@ -192,6 +192,26 @@ const requestsTableColumns: ColumnDef<Requests>[] = [
     cell: ({ row }) => row.getValue("roomTo"),
   },
   {
+    accessorKey: "hazardousWaste",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Hazardous Waste" />
+    ),
+    // undefind -> not show anything, true -> Yes, false -> No
+    cell: ({ row }) =>
+      row.getValue("hazardousWaste") === null
+        ? row.getValue("hazardousWaste")
+        : row.getValue("hazardousWaste")
+        ? "Yes"
+        : "No",
+  },
+  {
+    accessorKey: "department",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Department" />
+    ),
+    cell: ({ row }) => row.getValue("department"),
+  },
+  {
     accessorKey: "completionStatus",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Completion Status" />

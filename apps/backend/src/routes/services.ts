@@ -34,6 +34,8 @@ router.post("/", async (req, res) => {
       medicineName,
       medicineDosage,
       roomTo,
+      hazardousWaste,
+      department,
       type,
       urgency,
       notes,
@@ -77,6 +79,8 @@ router.post("/", async (req, res) => {
         maintenanceType: maintenanceType === "" ? undefined : maintenanceType,
         medicineName: medicineName === "" ? undefined : medicineName,
         medicineDosage: medicineDosage === "" ? undefined : medicineDosage,
+        hazardousWaste,
+        department: department === "" ? undefined : department,
       },
     });
     res.status(200).send("Service request received");
