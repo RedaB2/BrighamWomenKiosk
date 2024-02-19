@@ -57,7 +57,7 @@
 }
 
 .custom-toggle-button {
-  width: 101px; /* Adjust width to fit the word 'toggle' */
+  width: 120px; /* Adjust width to fit the word 'toggle' */
   height: 30px; /* Adjust height as needed */
   background-color: #fff; /* Button background color */
   border: 2px solid #666; /* Button border */

@@ -39,12 +39,13 @@ export default function BeefletMap() {
 
   const [toggledEdges, setToggledEdges] = useState(false);
   const [toggledNames, setToggledNames] = useState(false);
+  const [toggledHallways, setToggledHallways] = useState(false);
   const [clicked, setClicked] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth0();
 
   const nodePath = path.map((nodeID) =>
-    nodes.filter((node) => node.nodeID == nodeID)
+    nodes.filter((node) => node.nodeID == nodeID),
   );
 
   let paths = { G: [], L1: [], L2: [], "1": [], "2": [], "3": [] };
@@ -120,7 +121,7 @@ export default function BeefletMap() {
               .filter(
                 (edge) =>
                   edge[0][0].floor == assetToFloor(selectedFloor) &&
-                  edge[0][0].floor == edge[1][0].floor
+                  edge[0][0].floor == edge[1][0].floor,
               )
               .map((edge) => (
                 <Polyline
@@ -148,6 +149,12 @@ export default function BeefletMap() {
         <FeatureGroup>
           {nodes
             .filter((node) => node.floor == assetToFloor(selectedFloor))
+            .filter((node) => {
+              if (toggledHallways) {
+                return true;
+              }
+              return node.nodeType != "HALL";
+            })
             .map((node, i) => {
               return (
                 <Circle
@@ -270,7 +277,7 @@ export default function BeefletMap() {
           .filter(
             (node) =>
               node.longName == startLocation &&
-              node.floor == assetToFloor(selectedFloor)
+              node.floor == assetToFloor(selectedFloor),
           )
           .map((node) => (
             <Marker position={[-node.ycoord, node.xcoord]} key={node.nodeID} />
@@ -279,7 +286,7 @@ export default function BeefletMap() {
           .filter(
             (node) =>
               node.longName == endLocation &&
-              node.floor == assetToFloor(selectedFloor)
+              node.floor == assetToFloor(selectedFloor),
           )
           .map((node) => (
             <Marker position={[-node.ycoord, node.xcoord]} key={node.nodeID} />
@@ -294,6 +301,12 @@ export default function BeefletMap() {
           <CustomButton
             title={"Toggle Names"}
             onClick={() => setToggledNames(!toggledNames)}
+            className={"custom-toggle-button"}
+            position={"bottomleft"}
+          />
+          <CustomButton
+            title={"Toggle Hallways"}
+            onClick={() => setToggledHallways(!toggledHallways)}
             className={"custom-toggle-button"}
             position={"bottomleft"}
           />
