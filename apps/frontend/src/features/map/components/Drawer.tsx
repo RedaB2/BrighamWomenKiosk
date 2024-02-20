@@ -6,6 +6,7 @@ import {
   FaDownload,
   FaMap,
   FaSignOutAlt,
+  FaInfoCircle,
 } from "react-icons/fa";
 import { MdOutlineRoomService } from "react-icons/md";
 import { FaPeopleGroup } from "react-icons/fa6";
@@ -94,6 +95,9 @@ const Drawer = () => {
               </FlowbiteSidebar.Collapse>
             </>
           )}
+          <FlowbiteSidebar.Item href="/about" icon={FaInfoCircle}>
+            About
+          </FlowbiteSidebar.Item>
         </FlowbiteSidebar.ItemGroup>
         <FlowbiteSidebar.ItemGroup>
           <FlowbiteSidebar.Item>

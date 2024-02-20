@@ -4,6 +4,7 @@ import { AuthRoutes } from "@/features/auth";
 import { MapRoutes } from "@/features/map";
 import { ServicesRoutes } from "@/features/services";
 import { DataRoutes } from "@/features/data";
+import { AboutRoutes } from "@/features/about";
 
 export const AppRoutes = () => {
   const { isAuthenticated } = useAuth0();
@@ -16,6 +17,10 @@ export const AppRoutes = () => {
     {
       path: "/auth/*",
       element: <AuthRoutes />,
+    },
+    {
+      path: "/about/*",
+      element: <AboutRoutes />,
     },
   ];
 
