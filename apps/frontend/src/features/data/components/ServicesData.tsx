@@ -85,7 +85,7 @@ const ServicesData = () => {
           <DataTable
             columns={requestsTableColumns}
             data={services}
-            searchColumn="id"
+            searchColumn="employeeID"
             onAddRow={() => navigate("/services")}
           />
         </ServicesContext.Provider>
@@ -137,6 +137,7 @@ const requestsTableColumns: ColumnDef<Requests>[] = [
   },
   {
     accessorKey: "employeeID",
+    accessorFn: (row) => row.employeeID.toString(),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Employee ID" />
     ),
