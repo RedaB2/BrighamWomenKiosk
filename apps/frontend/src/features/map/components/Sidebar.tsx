@@ -614,9 +614,9 @@ const Sidebar = () => {
                       <List
                         key={i}
                         className={`bg-${colorPicker(
-                          i,
+                          bgAlt,
                           0,
-                        )} dark:bg-${colorPicker(i, 1)}`}
+                        )} dark:bg-${colorPicker(bgAlt, 1)}`}
                       >
                         {i < nodeDirections.length && turnDirection(floorID, i)}
                       </List>
