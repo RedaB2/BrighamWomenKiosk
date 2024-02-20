@@ -68,6 +68,8 @@ const Sidebar = () => {
     setStartLocation,
     endLocation,
     setEndLocation,
+    setStartID,
+    setEndID,
   } = useContext(MapContext);
 
   const [startSuggestions, setStartSuggestions] = useState<string[]>([]);
@@ -134,39 +136,39 @@ const Sidebar = () => {
       switch (index) {
         case 0:
           return (
-            <>
+            <div className="ml-3 mr-3">
               <HiLocationMarker className="mr-2 ml-1 h-5 w-5 inline" />
               {"Start at " + currDirection.node.longName}
-            </>
+            </div>
           );
         case 1000:
           return (
-            <>
+            <div className="ml-3 mr-3">
               <BsArrowUpCircle className="mr-2 ml-1 w-4 h-4 inline " />
               {"Head towards " + currDirection.node.longName}
-            </>
+            </div>
           );
         case nodeDirections.length - 1:
           return (
-            <>
+            <div className="ml-3 mr-3">
               {"Arrive at " + currDirection.node.longName}
               <HiLocationMarker
                 className="mr-2 ml-1 h-4 w-4 inline "
                 style={{ color: "blue" }}
               />
-            </>
+            </div>
           );
         default:
           if (currDirection && nextDirection && prevDirection) {
             if (currDirection.floorID != nextDirection.floorID) {
               return (
-                <>
+                <div className="ml-3 mr-3">
                   <MdElevator className="mr-2 ml-1 h-5 w-5 inline" />
                   {"Take " +
                     currDirection.node.longName +
                     " to Floor " +
                     nextDirection.node.floor}
-                </>
+                </div>
               );
             }
 
@@ -195,18 +197,18 @@ const Sidebar = () => {
                 const angle2 = angleBetweenVectors(vector3, vector4);
                 if (angle2 >= -15 && angle2 < 15) {
                   return (
-                    <>
+                    <div className="ml-3 mr-3">
                       <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
                       {"Turn left towards " + nextNextDirection.node.longName}
-                    </>
+                    </div>
                   );
                 }
               }
               return (
-                <>
+                <div className="ml-3 mr-3">
                   <BsArrowLeftCircle className="mr-2 ml-1 w-4 h-4 inline" />
                   {"Turn left towards " + nextDirection.node.longName}
-                </>
+                </div>
               );
             } else if (angle >= -30 && angle < -15) {
               if (nextNextDirection) {
@@ -222,18 +224,18 @@ const Sidebar = () => {
                 const angle2 = angleBetweenVectors(vector3, vector4);
                 if (angle2 >= -15 && angle2 < 15) {
                   return (
-                    <>
+                    <div className="ml-3 mr-3">
                       <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
                       {"Bear left towards " + nextNextDirection.node.longName}
-                    </>
+                    </div>
                   );
                 }
               }
               return (
-                <>
+                <div className="ml-3 mr-3">
                   <BsArrowUpLeftCircle className="mr-2 ml-1 w-4 h-4 inline" />
                   {"Bear left towards " + nextDirection.node.longName}
-                </>
+                </div>
               );
             } else if (angle >= -15 && angle < 15) {
               if (nextNextDirection) {
@@ -253,10 +255,10 @@ const Sidebar = () => {
                 }
               }
               return (
-                <>
+                <div className="ml-3 mr-3">
                   <BsArrowUpCircle className="mr-2 ml-1 w-4 h-4 inline" />
                   {"Continue Straight towards " + nextDirection.node.longName}
-                </>
+                </div>
               );
               //return "Head straight towards " + currDirection.longName;
             } else if (angle >= 15 && angle < 30) {
@@ -273,18 +275,18 @@ const Sidebar = () => {
                 const angle2 = angleBetweenVectors(vector3, vector4);
                 if (angle2 >= -15 && angle2 < 15) {
                   return (
-                    <>
+                    <div className="ml-3 mr-3">
                       <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
                       {"Bear right towards " + nextNextDirection.node.longName}
-                    </>
+                    </div>
                   );
                 }
               }
               return (
-                <>
+                <div className="ml-3 mr-3">
                   <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
                   {"Bear right towards " + nextDirection.node.longName}
-                </>
+                </div>
               );
             } else if (angle >= 30) {
               if (nextNextDirection) {
@@ -300,18 +302,18 @@ const Sidebar = () => {
                 const angle2 = angleBetweenVectors(vector3, vector4);
                 if (angle2 >= -15 && angle2 < 15) {
                   return (
-                    <>
+                    <div className="ml-3 mr-3">
                       <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
                       {"Turn right towards " + nextNextDirection.node.longName}
-                    </>
+                    </div>
                   );
                 }
               }
               return (
-                <>
+                <div className="ml-3 mr-3">
                   <BsArrowRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
                   {"Turn right towards " + nextDirection.node.longName}
-                </>
+                </div>
               );
             } else {
               return "idk lmfao";
@@ -366,6 +368,17 @@ const Sidebar = () => {
     return "gray-200";
   }
 
+  setStartID(
+    nodes
+      .filter((node) => node["longName"] === startLocation)
+      .map((node) => node.nodeID)[0],
+  );
+  setEndID(
+    nodes
+      .filter((node) => node["longName"] === endLocation)
+      .map((node) => node.nodeID)[0],
+  );
+
   return (
     <FlowbiteSidebar aria-label="Map sidebar" theme={sidebarTheme}>
       <div className="flex space-x-4 items-center">
@@ -413,6 +426,11 @@ const Sidebar = () => {
             rightIcon={CiSearch}
             onFocus={(e) => {
               setStartLocation(e.target.value);
+              setStartID(
+                nodes
+                  .filter((node) => node["longName"] === startLocation)
+                  .map((node) => node.nodeID)[0],
+              );
               if (e.target.value.length > 0) {
                 setStartSuggestions(
                   nodes
@@ -451,10 +469,20 @@ const Sidebar = () => {
               }
             }}
             onBlur={() => {
+              setStartID(
+                nodes
+                  .filter((node) => node["longName"] === startLocation)
+                  .map((node) => node.nodeID)[0],
+              );
               setTimeout(() => setStartSuggestions([]), 200);
             }}
             onChange={(e) => {
               setStartLocation(e.target.value);
+              setStartID(
+                nodes
+                  .filter((node) => node["longName"] === startLocation)
+                  .map((node) => node.nodeID)[0],
+              );
               if (e.target.value.length > 0) {
                 setStartSuggestions(
                   nodes
@@ -491,6 +519,11 @@ const Sidebar = () => {
             rightIcon={CiSearch}
             onChange={(e) => {
               setEndLocation(e.target.value);
+              setEndID(
+                nodes
+                  .filter((node) => node["longName"] === endLocation)
+                  .map((node) => node.nodeID)[0],
+              );
               if (e.target.value.length > 0) {
                 setEndSuggestions(
                   nodes
@@ -515,6 +548,11 @@ const Sidebar = () => {
             }}
             onFocus={(e) => {
               setEndLocation(e.target.value);
+              setEndID(
+                nodes
+                  .filter((node) => node["longName"] === endLocation)
+                  .map((node) => node.nodeID)[0],
+              );
               if (e.target.value.length > 0) {
                 setEndSuggestions(
                   nodes

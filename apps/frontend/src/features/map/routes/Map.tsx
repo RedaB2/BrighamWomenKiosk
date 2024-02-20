@@ -12,6 +12,8 @@ const Map = () => {
   const [algorithm, setAlgorithm] = useState<string>("AStar");
   const [startLocation, setStartLocation] = useState("");
   const [endLocation, setEndLocation] = useState("");
+  const [startID, setStartID] = useState("");
+  const [endID, setEndID] = useState("");
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -55,6 +57,10 @@ const Map = () => {
         setStartLocation,
         endLocation,
         setEndLocation,
+        startID,
+        setStartID,
+        endID,
+        setEndID,
       }}
     >
       <div className="h-screen flex overflow-hidden bg-gray-100 dark:bg-neutral-900">

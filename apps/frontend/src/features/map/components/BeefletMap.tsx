@@ -21,7 +21,8 @@ import CustomButton from "@/features/map/components/Description.tsx";
 import { assetToFloor, floorToAsset } from "../utils";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Nodes } from "database";
-import ElevatorIcon from "../assets/ElevatorIcon.png";
+import ElevatorIcon from "../assets/ElevatorIconBlue.png";
+import StairIcon from "../assets/StairIcon.png";
 import lowerLevel1 from "../assets/00_thelowerlevel1.png";
 import lowerLevel2 from "../assets/00_thelowerlevel2.png";
 import firstFloor from "../assets/01_thefirstfloor.png";
@@ -49,14 +50,16 @@ export default function BeefletMap() {
     setStartLocation,
     //endLocation,
     setEndLocation,
+    startID,
+    setStartID,
+    endID,
+    setEndID,
   } = useContext(MapContext);
 
   const [toggledEdges, setToggledEdges] = useState(false);
   const [toggledNames, setToggledNames] = useState(false);
   const [toggledHallways, setToggledHallways] = useState(false);
   const [clicked, setClicked] = useState(false);
-  const [startID, setStartID] = useState("");
-  const [endID, setEndID] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth0();
 
@@ -336,10 +339,11 @@ export default function BeefletMap() {
               position={[-newFloor.node.ycoord, newFloor.node.xcoord]}
               key={newFloor.node.nodeID}
               icon={L.icon({
-                iconUrl: ElevatorIcon,
-                iconSize: [20, 20], // Adjust size if needed
-                iconAnchor: [10, 10],
-                tooltipAnchor: [0, -10],
+                iconUrl:
+                  newFloor.node.nodeType == "ELEV" ? ElevatorIcon : StairIcon,
+                iconSize: [25, 25], // Adjust size if needed
+                iconAnchor: [12.5, 12.5],
+                tooltipAnchor: [0, -12.5],
               })}
               eventHandlers={{
                 click: async () =>
@@ -366,10 +370,11 @@ export default function BeefletMap() {
               position={[-newFloor.node.ycoord, newFloor.node.xcoord]}
               key={newFloor.node.nodeID}
               icon={L.icon({
-                iconUrl: ElevatorIcon,
-                iconSize: [20, 20], // Adjust size if needed
-                iconAnchor: [10, 10],
-                tooltipAnchor: [0, -10],
+                iconUrl:
+                  newFloor.node.nodeType == "ELEV" ? ElevatorIcon : StairIcon,
+                iconSize: [25, 25], // Adjust size if needed
+                iconAnchor: [12.5, 12.5],
+                tooltipAnchor: [0, -12.5],
               })}
               eventHandlers={{
                 click: async () =>
