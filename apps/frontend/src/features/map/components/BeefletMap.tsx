@@ -31,9 +31,9 @@ export default function BeefletMap() {
     selectedFloor,
     path,
     setPath,
-    startLocation,
+    //startLocation,
     setStartLocation,
-    endLocation,
+    //endLocation,
     setEndLocation,
   } = useContext(MapContext);
 
@@ -41,6 +41,8 @@ export default function BeefletMap() {
   const [toggledNames, setToggledNames] = useState(false);
   const [toggledHallways, setToggledHallways] = useState(false);
   const [clicked, setClicked] = useState(false);
+  const [startID, setStartID] = useState("");
+  const [endID, setEndID] = useState("");
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth0();
 
@@ -71,10 +73,10 @@ export default function BeefletMap() {
       return;
     }
     const startNodeId = nodes
-      .filter((node) => node["longName"] === s)
+      .filter((node) => node["nodeID"] === s)
       .map((node) => node.nodeID)[0];
     const endNodeId = nodes
-      .filter((node) => node["longName"] === e)
+      .filter((node) => node["nodeID"] === e)
       .map((node) => node.nodeID)[0];
     try {
       const res = await fetch("/api/map/pathfinding", {
@@ -161,18 +163,18 @@ export default function BeefletMap() {
                   key={i}
                   center={[-node.ycoord, node.xcoord]}
                   radius={(() => {
-                    if (node.longName == startLocation) {
+                    if (node.nodeID == startID) {
                       return 10;
-                    } else if (node.longName == endLocation) {
+                    } else if (node.nodeID == endID) {
                       return 10;
                     }
                     return 7;
                   })()}
                   pathOptions={{
                     color: (() => {
-                      if (node.longName == startLocation) {
+                      if (node.nodeID == startID) {
                         return "blue";
-                      } else if (node.longName == endLocation) {
+                      } else if (node.nodeID == endID) {
                         return "red";
                       }
                       return "green";
@@ -193,7 +195,8 @@ export default function BeefletMap() {
                       if (clicked || e.originalEvent.ctrlKey) {
                         e.target.closePopup();
                         setStartLocation(node.longName);
-                        await handleSubmit(node.longName, endLocation);
+                        setStartID(node.nodeID);
+                        await handleSubmit(node.nodeID, endID);
                         return;
                       }
                       setClicked(true);
@@ -202,7 +205,8 @@ export default function BeefletMap() {
                       //e.target.preventDefault();
                       e.target.closePopup();
                       setEndLocation(node.longName);
-                      await handleSubmit(startLocation, node.longName);
+                      setEndID(node.nodeID);
+                      await handleSubmit(startID, node.nodeID);
                     },
                   }}
                   fillOpacity={0.8}
@@ -213,7 +217,8 @@ export default function BeefletMap() {
                         <Button
                           onClick={async () => {
                             setStartLocation(node.longName);
-                            await handleSubmit(node.longName, endLocation);
+                            setStartID(node.nodeID);
+                            await handleSubmit(node.nodeID, endID);
                           }}
                           className={"custom-button"}
                         >
@@ -222,7 +227,8 @@ export default function BeefletMap() {
                         <Button
                           onClick={async () => {
                             setEndLocation(node.longName);
-                            await handleSubmit(startLocation, node.longName);
+                            setEndID(node.nodeID);
+                            await handleSubmit(startID, node.nodeID);
                           }}
                           className={"custom-button"}
                         >
@@ -276,7 +282,7 @@ export default function BeefletMap() {
         {nodes
           .filter(
             (node) =>
-              node.longName == startLocation &&
+              node.nodeID == startID &&
               node.floor == assetToFloor(selectedFloor),
           )
           .map((node) => (
@@ -285,7 +291,7 @@ export default function BeefletMap() {
         {nodes
           .filter(
             (node) =>
-              node.longName == endLocation &&
+              node.nodeID == endID && 
               node.floor == assetToFloor(selectedFloor),
           )
           .map((node) => (
