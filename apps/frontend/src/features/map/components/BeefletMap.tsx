@@ -11,15 +11,28 @@ import {
   Tooltip,
   SVGOverlay,
 } from "react-leaflet";
-import { LatLngBounds, CRS } from "leaflet";
+import L, { LatLngBounds, CRS } from "leaflet";
 import { MapContext } from "../components";
 import "./forBeef.css";
 import "leaflet/dist/leaflet.css";
 import { Button } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import CustomButton from "@/features/map/components/Description.tsx";
-import { assetToFloor } from "../utils";
+import { assetToFloor, floorToAsset } from "../utils";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Nodes } from "database";
+import ElevatorIcon from "../assets/ElevatorIcon.png";
+import lowerLevel1 from "../assets/00_thelowerlevel1.png";
+import lowerLevel2 from "../assets/00_thelowerlevel2.png";
+import firstFloor from "../assets/01_thefirstfloor.png";
+import secondFloor from "../assets/02_thesecondfloor.png";
+import thirdFloor from "../assets/03_thethirdfloor.png";
+
+lowerLevel1;
+lowerLevel2;
+firstFloor;
+secondFloor;
+thirdFloor;
 
 export default function BeefletMap() {
   // Define the bounds of the image in terms of x and y coordinates
@@ -29,6 +42,7 @@ export default function BeefletMap() {
     edges,
     algorithm,
     selectedFloor,
+    setSelectedFloor,
     path,
     setPath,
     //startLocation,
@@ -50,7 +64,20 @@ export default function BeefletMap() {
     nodes.filter((node) => node.nodeID == nodeID),
   );
 
+  class newNodeFloorID {
+    node: Nodes;
+    floorID: string;
+
+    constructor(node: Nodes, floorID: string) {
+      this.node = node;
+      this.floorID = floorID;
+    }
+  }
+
   let paths = { G: [], L1: [], L2: [], "1": [], "2": [], "3": [] };
+
+  const floorChanges: newNodeFloorID[] = [];
+  const prevFloors: newNodeFloorID[] = [];
 
   if (nodePath.length > 0) {
     paths = { G: [], L1: [], L2: [], "1": [], "2": [], "3": [] };
@@ -62,6 +89,10 @@ export default function BeefletMap() {
         paths[currentFloor].push(nodePath.slice(lastCut, i));
         currentFloor = nodePath[i][0].floor;
         lastCut = i;
+        floorChanges.push(new newNodeFloorID(nodePath[i - 1][0], currentFloor));
+        prevFloors.push(
+          new newNodeFloorID(nodePath[i][0], nodePath[i - 1][0].floor),
+        );
       }
     }
     // @ts-expect-error type error (any)
@@ -291,11 +322,70 @@ export default function BeefletMap() {
         {nodes
           .filter(
             (node) =>
-              node.nodeID == endID && 
-              node.floor == assetToFloor(selectedFloor),
+              node.nodeID == endID && node.floor == assetToFloor(selectedFloor),
           )
           .map((node) => (
             <Marker position={[-node.ycoord, node.xcoord]} key={node.nodeID} />
+          ))}
+        {floorChanges
+          .filter(
+            (newFloor) => newFloor.node.floor == assetToFloor(selectedFloor),
+          )
+          .map((newFloor) => (
+            <Marker
+              position={[-newFloor.node.ycoord, newFloor.node.xcoord]}
+              key={newFloor.node.nodeID}
+              icon={L.icon({
+                iconUrl: ElevatorIcon,
+                iconSize: [20, 20], // Adjust size if needed
+                iconAnchor: [10, 10],
+                tooltipAnchor: [0, -10],
+              })}
+              eventHandlers={{
+                click: async () =>
+                  setSelectedFloor(
+                    adhocConverterChangePlease(newFloor.floorID),
+                  ),
+              }}
+            >
+              <Tooltip
+                permanent={true}
+                className={"customTooltip"}
+                direction={"top"}
+              >
+                {"Proceed to Floor " + newFloor.floorID}
+              </Tooltip>
+            </Marker>
+          ))}
+        {prevFloors
+          .filter(
+            (newFloor) => newFloor.node.floor == assetToFloor(selectedFloor),
+          )
+          .map((newFloor) => (
+            <Marker
+              position={[-newFloor.node.ycoord, newFloor.node.xcoord]}
+              key={newFloor.node.nodeID}
+              icon={L.icon({
+                iconUrl: ElevatorIcon,
+                iconSize: [20, 20], // Adjust size if needed
+                iconAnchor: [10, 10],
+                tooltipAnchor: [0, -10],
+              })}
+              eventHandlers={{
+                click: async () =>
+                  setSelectedFloor(
+                    adhocConverterChangePlease(newFloor.floorID),
+                  ),
+              }}
+            >
+              <Tooltip
+                permanent={true}
+                className={"customTooltip"}
+                direction={"top"}
+              >
+                {"Arrive from Floor " + newFloor.floorID}
+              </Tooltip>
+            </Marker>
           ))}
         <div>
           <CustomButton
@@ -321,3 +411,9 @@ export default function BeefletMap() {
     </div>
   );
 }
+
+const adhocConverterChangePlease = (floorID: string) => {
+  //const floor = floorID.substring(0, floorID.length - 1);
+  // @ts-expect-error nope
+  return floorToAsset(floorID);
+};

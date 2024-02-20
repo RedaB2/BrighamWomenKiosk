@@ -20,7 +20,7 @@ import firstFloor from "../assets/01_thefirstfloor.png";
 import secondFloor from "../assets/02_thesecondfloor.png";
 import thirdFloor from "../assets/03_thethirdfloor.png";
 import { Autocomplete } from "@/components";
-import { HiChevronUp, HiChevronDown, HiLocationMarker } from "react-icons/hi";
+import { HiChevronDown, HiLocationMarker } from "react-icons/hi";
 import { MdElevator } from "react-icons/md";
 import {
   BsArrowUpLeftCircle,
@@ -590,11 +590,10 @@ const Sidebar = () => {
               >
                 {selectedFloorID === floorID ? (
                   <>
-                    {`Hide Directions for Floor ${floorID.substring(
+                    {`Directions for Floor ${floorID.substring(
                       0,
                       floorID.length - 1,
-                    )}`}
-                    <HiChevronUp className="ml-4 h-4 w-4" />
+                    )}:`}
                   </>
                 ) : (
                   <>
