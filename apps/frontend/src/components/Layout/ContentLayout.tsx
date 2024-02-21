@@ -41,11 +41,7 @@ const SidebarNavigation = () => {
       <FlowbiteSidebar.Logo href="/" img={logoUrl} imgAlt="Hospital logo" />
       <FlowbiteSidebar.Items>
         <FlowbiteSidebar.ItemGroup>
-          <FlowbiteSidebar.Item
-            href="/"
-            icon={FaMapMarkedAlt}
-            className={"mt-2"}
-          >
+          <FlowbiteSidebar.Item href="/" icon={FaMapMarkedAlt}>
             Hospital Map
           </FlowbiteSidebar.Item>
           {isAuthenticated && (
