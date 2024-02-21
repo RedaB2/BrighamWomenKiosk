@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import React, { useContext, useState, useMemo } from "react";
 import {
   MapContainer,
   ImageOverlay,
@@ -10,8 +10,10 @@ import {
   LayerGroup,
   Tooltip,
   SVGOverlay,
+  useMapEvent,
+  useMap,
 } from "react-leaflet";
-import L, { LatLngBounds, CRS } from "leaflet";
+import L, { LatLngBounds, CRS, LatLng } from "leaflet";
 import { MapContext } from "../components";
 import "./forBeef.css";
 import "leaflet/dist/leaflet.css";
@@ -59,12 +61,14 @@ export default function BeefletMap() {
   const [toggledEdges, setToggledEdges] = useState(false);
   const [toggledNames, setToggledNames] = useState(false);
   const [toggledHallways, setToggledHallways] = useState(false);
+  const [colorBlind, setColorBlind] = useState(false);
   const [clicked, setClicked] = useState(false);
+  const [zoom, setZoom] = useState(0);
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth0();
 
   const nodePath = path.map((nodeID) =>
-    nodes.filter((node) => node.nodeID == nodeID),
+    nodes.filter((node) => node.nodeID == nodeID)
   );
 
   class newNodeFloorID {
@@ -94,7 +98,7 @@ export default function BeefletMap() {
         lastCut = i;
         floorChanges.push(new newNodeFloorID(nodePath[i - 1][0], currentFloor));
         prevFloors.push(
-          new newNodeFloorID(nodePath[i][0], nodePath[i - 1][0].floor),
+          new newNodeFloorID(nodePath[i][0], nodePath[i - 1][0].floor)
         );
       }
     }
@@ -133,6 +137,63 @@ export default function BeefletMap() {
     }
   };
 
+  function pathToPoints(pathT: Nodes[][]): {
+    pathData: string;
+    pathLength: number;
+  } {
+    let pathData = "M" + pathT[0][0].xcoord + "," + pathT[0][0].ycoord + " ";
+    pathT.slice(1, pathT.length).forEach((node) => {
+      pathData += "L" + (node[0].xcoord + "," + node[0].ycoord + " ");
+    });
+
+    const pathElement = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "path"
+    );
+    pathElement.setAttribute("d", pathData);
+
+    const pathLength = pathElement.getTotalLength();
+
+    return { pathData, pathLength };
+  }
+
+  const ZoomGetter = () => {
+    const map = useMapEvent("zoom", (event) => {
+      const zoomLevel = event.target.getZoom();
+      setZoom(zoomLevel);
+    });
+    map;
+    // Your component code...
+
+    return null; // or your JSX
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [map, setMap] = useState<any>();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [lastFloor, setLastFloor] = useState<any>();
+  const ResetZoom = (map: { flyTo: (arg0: LatLng, arg1: number) => void }) => {
+    if (lastFloor != selectedFloor) {
+      map.flyTo(new LatLng(-1700, 2500), -2);
+      new LatLng(0, 0);
+      map;
+    }
+  };
+
+  const floor = useMemo(() => {
+    if (map != null) {
+      ResetZoom(map);
+    }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFloor]);
+  floor;
+
+  function MapGetter() {
+    setMap(useMap());
+    setLastFloor(selectedFloor);
+    return null;
+  }
+
   return (
     <div className="w-full h-full">
       <MapContainer
@@ -146,6 +207,8 @@ export default function BeefletMap() {
         bounceAtZoomLimits={true}
         doubleClickZoom={false}
       >
+        <ZoomGetter />
+        <MapGetter />
         <LayerGroup>
           <ImageOverlay url={selectedFloor} bounds={imageBounds} />
           {toggledEdges &&
@@ -157,7 +220,7 @@ export default function BeefletMap() {
               .filter(
                 (edge) =>
                   edge[0][0].floor == assetToFloor(selectedFloor) &&
-                  edge[0][0].floor == edge[1][0].floor,
+                  edge[0][0].floor == edge[1][0].floor
               )
               .map((edge) => (
                 <Polyline
@@ -165,23 +228,78 @@ export default function BeefletMap() {
                     [edge[0][0].ycoord * -1, edge[0][0].xcoord],
                     [edge[1][0].ycoord * -1, edge[1][0].xcoord],
                   ]}
+                  pathOptions={{
+                    color: "black",
+                  }}
                 ></Polyline>
               ))}
           {paths[assetToFloor(selectedFloor)].map((currentPath, i) => (
-            <Polyline
-              key={i}
-              //@ts-expect-error any type error
-              positions={currentPath.map((node) => [
-                -node[0].ycoord,
-                node[0].xcoord,
-              ])}
-              pathOptions={{ color: "black" }}
-              interactive={false}
-              weight={8}
-            />
+            <>
+              <SVGOverlay bounds={new LatLngBounds([0, 0], [-3400, 5000])}>
+                <svg viewBox="0 0 5000 3400" key={i}>
+                  <path
+                    key={i}
+                    id={"movePath" + i.toString()}
+                    d={pathToPoints(currentPath).pathData}
+                    stroke={(() => {
+                      if (colorBlind) {
+                        return "purple";
+                      } else {
+                        return "#0d6102";
+                      }
+                    })()}
+                    fill="none"
+                    strokeWidth={12 * Math.max(1 - zoom, 1)}
+                    strokeLinecap={"round"}
+                  />
+                  <path
+                    key={i}
+                    id={"movePath" + i.toString()}
+                    d={pathToPoints(currentPath).pathData}
+                    stroke={(() => {
+                      if (colorBlind) {
+                        return "#5D3A9B";
+                      } else {
+                        return "green";
+                      }
+                    })()}
+                    fill="none"
+                    strokeWidth={6 * Math.max(1 - zoom, 1)}
+                    strokeLinecap={"round"}
+                  />
+                  {(() => {
+                    const path = pathToPoints(currentPath);
+                    const pathLength = path.pathLength;
+                    const pathData = path.pathData;
+                    const numDots = Math.floor(pathLength / 10);
+                    return [...Array(numDots)].map((_, index) => (
+                      <>
+                        <circle
+                          key={index}
+                          r={3 * Math.max(1 - zoom, 1)}
+                          fill={(() => {
+                            if (colorBlind) {
+                              return "#E66100";
+                            } else {
+                              return "yellow";
+                            }
+                          })()}
+                        >
+                          <animateMotion
+                            dur={Math.floor(numDots / 4).toString() + "s"}
+                            repeatCount="indefinite"
+                            begin={index}
+                            path={pathData}
+                          ></animateMotion>
+                        </circle>
+                      </>
+                    ));
+                  })()}
+                </svg>
+              </SVGOverlay>
+            </>
           ))}
         </LayerGroup>
-        <SVGOverlay bounds={imageBounds}></SVGOverlay>
         <FeatureGroup>
           {nodes
             .filter((node) => node.floor == assetToFloor(selectedFloor))
@@ -196,6 +314,7 @@ export default function BeefletMap() {
                 <Circle
                   key={i}
                   center={[-node.ycoord, node.xcoord]}
+                  fillOpacity={1}
                   radius={(() => {
                     if (node.nodeID == startID) {
                       return 10;
@@ -205,13 +324,15 @@ export default function BeefletMap() {
                     return 7;
                   })()}
                   pathOptions={{
-                    color: (() => {
+                    color: "#0E7490",
+                    weight: 2,
+                    fillColor: (() => {
                       if (node.nodeID == startID) {
                         return "blue";
                       } else if (node.nodeID == endID) {
-                        return "red";
+                        return "yellow";
                       }
-                      return "green";
+                      return "#52BAC2";
                     })(),
                   }}
                   eventHandlers={{
@@ -243,7 +364,6 @@ export default function BeefletMap() {
                       await handleSubmit(startID, node.nodeID);
                     },
                   }}
-                  fillOpacity={0.8}
                 >
                   <Popup className="leaflet-popup-content-wrapper">
                     {clicked ? (
@@ -279,7 +399,11 @@ export default function BeefletMap() {
                         {isAuthenticated && (
                           <Button
                             className={"custom-button"}
-                            onClick={() => navigate("/services")}
+                            onClick={() =>
+                              navigate("/services", {
+                                state: { roomID: node.nodeID },
+                              })
+                            }
                           >
                             Make Request
                           </Button>
@@ -297,6 +421,8 @@ export default function BeefletMap() {
                         {"Short name: " + node.shortName}
                         <br />
                         {"Node ID: " + node.nodeID}
+                        <br />
+                        {"Node type: " + node.nodeType}
                       </div>
                     )}
                   </Popup>
@@ -317,7 +443,7 @@ export default function BeefletMap() {
           .filter(
             (node) =>
               node.nodeID == startID &&
-              node.floor == assetToFloor(selectedFloor),
+              node.floor == assetToFloor(selectedFloor)
           )
           .map((node) => (
             <Marker position={[-node.ycoord, node.xcoord]} key={node.nodeID} />
@@ -325,14 +451,14 @@ export default function BeefletMap() {
         {nodes
           .filter(
             (node) =>
-              node.nodeID == endID && node.floor == assetToFloor(selectedFloor),
+              node.nodeID == endID && node.floor == assetToFloor(selectedFloor)
           )
           .map((node) => (
             <Marker position={[-node.ycoord, node.xcoord]} key={node.nodeID} />
           ))}
         {floorChanges
           .filter(
-            (newFloor) => newFloor.node.floor == assetToFloor(selectedFloor),
+            (newFloor) => newFloor.node.floor == assetToFloor(selectedFloor)
           )
           .map((newFloor) => (
             <Marker
@@ -348,7 +474,7 @@ export default function BeefletMap() {
               eventHandlers={{
                 click: async () =>
                   setSelectedFloor(
-                    adhocConverterChangePlease(newFloor.floorID),
+                    adhocConverterChangePlease(newFloor.floorID)
                   ),
               }}
             >
@@ -363,7 +489,7 @@ export default function BeefletMap() {
           ))}
         {prevFloors
           .filter(
-            (newFloor) => newFloor.node.floor == assetToFloor(selectedFloor),
+            (newFloor) => newFloor.node.floor == assetToFloor(selectedFloor)
           )
           .map((newFloor) => (
             <Marker
@@ -379,7 +505,7 @@ export default function BeefletMap() {
               eventHandlers={{
                 click: async () =>
                   setSelectedFloor(
-                    adhocConverterChangePlease(newFloor.floorID),
+                    adhocConverterChangePlease(newFloor.floorID)
                   ),
               }}
             >
@@ -408,6 +534,12 @@ export default function BeefletMap() {
           <CustomButton
             title={"Toggle Hallways"}
             onClick={() => setToggledHallways(!toggledHallways)}
+            className={"custom-toggle-button"}
+            position={"bottomleft"}
+          />
+          <CustomButton
+            title={"Toggle Colorblind"}
+            onClick={() => setColorBlind(!colorBlind)}
             className={"custom-toggle-button"}
             position={"bottomleft"}
           />

@@ -189,7 +189,7 @@ const requestsTableColumns: ColumnDef<Requests>[] = [
   },
   {
     accessorKey: "employeeID",
-    accessorFn: (row) => row.employeeID.toString(),
+    accessorFn: (row) => row.employeeID?.toString(),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Employee ID" />
     ),

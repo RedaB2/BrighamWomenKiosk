@@ -39,7 +39,7 @@ const SidebarNavigation = () => {
   return (
     <FlowbiteSidebar aria-label="Navigation sidebar" theme={sidebarTheme}>
       <FlowbiteSidebar.Logo href="/" img={logoUrl} imgAlt="Hospital logo" />
-      <FlowbiteSidebar.Items>
+      <FlowbiteSidebar.Items className="pt-4">
         <FlowbiteSidebar.ItemGroup>
           <FlowbiteSidebar.Item href="/" icon={FaMapMarkedAlt}>
             Hospital Map

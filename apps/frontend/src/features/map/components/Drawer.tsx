@@ -60,7 +60,7 @@ const Drawer = () => {
         </Button>
         <FlowbiteSidebar.Logo href="/" img={logoUrl} imgAlt="Hospital logo" />
       </div>
-      <FlowbiteSidebar.Items>
+      <FlowbiteSidebar.Items className="pt-4">
         <FlowbiteSidebar.ItemGroup>
           <FlowbiteSidebar.Item href="/" icon={FaMapMarkedAlt}>
             Hospital Map

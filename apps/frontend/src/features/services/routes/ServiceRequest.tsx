@@ -18,8 +18,11 @@ import {
   MedicalDepartment,
 } from "database";
 import { Autocomplete } from "@/components";
+import { useLocation } from "react-router-dom";
 
 const ServiceRequest = () => {
+  const location = useLocation();
+
   const [nodes, setNodes] = useState<Nodes[]>([]);
   const [roomSuggestions, setRoomSuggestions] = useState<string[]>([]);
   const [room, setRoom] = useState<string>("");
@@ -66,9 +69,19 @@ const ServiceRequest = () => {
         console.error("Failed to fetch employees:", error);
       }
     };
+    const initializeRoom = () => {
+      const initialRoomID = new URLSearchParams(location.state).get("roomID");
+      if (initialRoomID && nodes.length > 0) {
+        const initialRoom = nodes.find((node) => node.nodeID === initialRoomID);
+        if (initialRoom) {
+          setRoom(initialRoom.longName);
+        }
+      }
+    };
     fetchNodes();
     fetchEmployees();
-  }, []);
+    initializeRoom();
+  }, [location.state, nodes]);
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -142,9 +155,10 @@ const ServiceRequest = () => {
     }
   };
 
-  const resetFormChangeServiceType = () => {
+  const resetForm = () => {
     setRoom("");
     setEmployee("");
+    setType("JANI");
     setUrgency("LOW");
     setStatus("UNASSIGNED");
     setNotes("");
@@ -156,7 +170,7 @@ const ServiceRequest = () => {
     setDepartment("");
   };
 
-  const resetForm = () => {
+  const resetFormChangeServiceType = () => {
     resetFormChangeServiceType();
     setType("JANI");
   };
@@ -284,7 +298,7 @@ const ServiceRequest = () => {
 
       {type === "MEDI" && (
         <div>
-          <label htmlFor="medicineName">
+          <Label htmlFor="medicineName">
             Medicine to be delivered
             <TextInput
               type="text"
@@ -296,9 +310,9 @@ const ServiceRequest = () => {
                 setMedicineName(event.target.value);
               }}
             />
-          </label>
+          </Label>
           <br />
-          <label htmlFor="medicineDosage">
+          <Label htmlFor="medicineDosage">
             Dosage
             <TextInput
               type="text"
@@ -310,7 +324,7 @@ const ServiceRequest = () => {
                 setMedicineDosage(event.target.value);
               }}
             />
-          </label>
+          </Label>
         </div>
       )}
 
@@ -406,7 +420,6 @@ const ServiceRequest = () => {
           <option value="COMPLETED">Completed</option>
         </Select>
       </div>
-
       {type === "JANI" && (
         <div className="space-y-2">
           <Checkbox
@@ -418,7 +431,6 @@ const ServiceRequest = () => {
           <Label htmlFor="hazardousWaste">Includes hazardous waste?</Label>
         </div>
       )}
-
       <div className="space-y-2">
         <Label htmlFor="notes">Additional notes</Label>
         <Textarea
