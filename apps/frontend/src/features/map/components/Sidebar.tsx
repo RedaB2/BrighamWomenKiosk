@@ -20,7 +20,7 @@ import firstFloor from "../assets/01_thefirstfloor.png";
 import secondFloor from "../assets/02_thesecondfloor.png";
 import thirdFloor from "../assets/03_thethirdfloor.png";
 import { Autocomplete } from "@/components";
-import { HiChevronDown, HiLocationMarker } from "react-icons/hi";
+import { HiChevronUp, HiChevronDown, HiLocationMarker } from "react-icons/hi";
 import { MdElevator } from "react-icons/md";
 import {
   BsArrowUpLeftCircle,
@@ -29,7 +29,6 @@ import {
   BsArrowRightCircle,
   BsArrowUpCircle,
 } from "react-icons/bs";
-import { floorToAsset } from "../utils";
 
 const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
   root: {
@@ -74,7 +73,6 @@ const Sidebar = () => {
 
   const [startSuggestions, setStartSuggestions] = useState<string[]>([]);
   const [endSuggestions, setEndSuggestions] = useState<string[]>([]);
-  const [selectedFloorID, setSelectedFloorID] = useState("");
 
   let bgAlt = 0;
 
@@ -98,10 +96,19 @@ const Sidebar = () => {
   }
 
   const splitDirections = separateFloors(nodeDirections);
+  const [openFloors, setOpenFloors] = useState<string[]>([]);
 
   const handleFloorClick = (floorID: string) => {
-    setSelectedFloor(adhocConverterChangePlease(floorID));
-    setSelectedFloorID(floorID);
+    // Check if the floor is already open
+    if (openFloors.includes(floorID)) {
+      // If open, close the floor
+      setOpenFloors((prevOpenFloors) =>
+        prevOpenFloors.filter((openFloor) => openFloor !== floorID)
+      );
+    } else {
+      // If not open, add it to the open floors
+      setOpenFloors((prevOpenFloors) => [...prevOpenFloors, floorID]);
+    }
   };
 
   function turnDirection(floor: string, index: number) {
@@ -623,12 +630,13 @@ const Sidebar = () => {
                 label={`Floor ${floorID}`}
                 onClick={() => handleFloorClick(floorID)}
               >
-                {selectedFloorID === floorID ? (
+                {openFloors.includes(floorID) ? (
                   <>
-                    {`Directions for Floor ${floorID.substring(
+                    {`Hide Directions for Floor ${floorID.substring(
                       0,
                       floorID.length - 1
-                    )}:`}
+                    )}`}
+                    <HiChevronUp className="ml-4 h-4 w-4" />
                   </>
                 ) : (
                   <>
@@ -640,7 +648,7 @@ const Sidebar = () => {
                   </>
                 )}
               </Button>
-              {selectedFloorID === floorID && (
+              {openFloors.includes(floorID) && (
                 <List key={floorID}>
                   {splitDirections
                     .filter((direction) => direction?.floorID === floorID)
@@ -664,13 +672,13 @@ const Sidebar = () => {
     </FlowbiteSidebar>
   );
 };
-
+/*
 const adhocConverterChangePlease = (floorID: string) => {
   const floor = floorID.substring(0, floorID.length - 1);
   // @ts-expect-error nope
   return floorToAsset(floor);
 };
-
+*/
 function angleBetweenVectors(
   v1: { x: number; y: number },
   v2: { x: number; y: number }

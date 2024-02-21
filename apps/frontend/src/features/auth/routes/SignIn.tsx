@@ -35,17 +35,17 @@ const SignIn = () => {
 
   return (
     <div className="mx-auto py-8 flex flex-col space-y-4 max-w-md">
-      <Card className="shadow-[0_0px_25px_0px_rgba(45,105,135,.5)]">
+      <Card className="shadow-[0_0px_25px_0px_rgba(45,105,135,.5)] dark:text-white">
         <h1
           className="text-2xl font-bold"
           style={{ display: "flex", justifyContent: "center" }}
         >
           Sign In Page
         </h1>
+        <ProfileContext />
+        <LoginButton />
+        <SignUpButton />
       </Card>
-      <ProfileContext />
-      <LoginButton />
-      <SignUpButton />
     </div>
   );
 };

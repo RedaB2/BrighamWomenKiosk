@@ -84,7 +84,7 @@ const MapData = () => {
                   <Label htmlFor="csv-upload" value="Upload new Nodes Data:" />
                 </div>
                 <FileInput
-                  className="w-96"
+                  className="w-50%"
                   id="csv-upload"
                   name="csv-upload"
                   accept="text/csv"
@@ -110,7 +110,7 @@ const MapData = () => {
                   <Label htmlFor="csv-upload" value="Upload new Edges Data:" />
                 </div>
                 <FileInput
-                  className="w-96"
+                  className="w-50%"
                   id="csv-upload"
                   name="csv-upload"
                   accept="text/csv"

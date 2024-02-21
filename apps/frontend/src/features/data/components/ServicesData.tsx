@@ -116,7 +116,7 @@ const ServicesData = () => {
                   <Label htmlFor="csv-upload" value="Upload new CSV Data:" />
                 </div>
                 <FileInput
-                  className="w-96"
+                  className="w-50%"
                   id="csv-upload"
                   name="csv-upload"
                   accept="text/csv"

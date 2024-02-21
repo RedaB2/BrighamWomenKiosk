@@ -550,12 +550,6 @@ export default function BeefletMap() {
           ))}
         <div>
           <CustomButton
-            title={"Toggle Nodes"}
-            onClick={() => setToggledNodes(!toggledNodes)}
-            className={"custom-toggle-button"}
-            position={"bottomleft"}
-          />
-          <CustomButton
             title={"Toggle Edges"}
             onClick={() => setToggledEdges(!toggledEdges)}
             className={"custom-toggle-button"}
@@ -576,6 +570,12 @@ export default function BeefletMap() {
           <CustomButton
             title={"Toggle Colorblind"}
             onClick={() => setColorBlind(!colorBlind)}
+            className={"custom-toggle-button"}
+            position={"bottomleft"}
+          />
+          <CustomButton
+            title={"Toggle Nodes"}
+            onClick={() => setToggledNodes(!toggledNodes)}
             className={"custom-toggle-button"}
             position={"bottomleft"}
           />
