@@ -4,6 +4,7 @@ import {
   FaSignInAlt,
   FaDownload,
   FaMap,
+  FaUserAlt,
   FaSignOutAlt,
   FaInfoCircle,
 } from "react-icons/fa";
@@ -34,7 +35,15 @@ const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
 };
 
 const SidebarNavigation = () => {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, logout } = useAuth0();
+
+  const handleLogout = () => {
+    logout({
+      logoutParams: {
+        returnTo: window.location.origin,
+      },
+    });
+  };
 
   return (
     <FlowbiteSidebar aria-label="Navigation sidebar" theme={sidebarTheme}>
@@ -83,13 +92,22 @@ const SidebarNavigation = () => {
             <DarkThemeToggle />
             Switch Theme
           </FlowbiteSidebar.Item>
+          {isAuthenticated && (
+            <FlowbiteSidebar.Item href="/auth/profile" icon={FaUserAlt}>
+              Profile
+            </FlowbiteSidebar.Item>
+          )}
           {!isAuthenticated && (
             <FlowbiteSidebar.Item href="/auth/sign-in" icon={FaSignInAlt}>
               Sign In
             </FlowbiteSidebar.Item>
           )}
           {isAuthenticated && (
-            <FlowbiteSidebar.Item href="/auth/sign-in" icon={FaSignOutAlt}>
+            <FlowbiteSidebar.Item
+              href="/"
+              onClick={handleLogout}
+              icon={FaSignOutAlt}
+            >
               Sign Out
             </FlowbiteSidebar.Item>
           )}

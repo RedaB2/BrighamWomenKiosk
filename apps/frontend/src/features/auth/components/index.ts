@@ -1,3 +1,5 @@
 export * from "./LoginButton";
 export * from "./LogoutButton";
-export * from "./SignupButton";
+export * from "./SignUpButton";
+export * from "./ProfileContext";
+export * from "./ProfileTable";

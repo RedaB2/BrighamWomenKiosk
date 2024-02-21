@@ -2,20 +2,24 @@ import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "flowbite-react";
 
-export const LoginButton: React.FC = () => {
+export const SignUpButton: React.FC = () => {
   const { loginWithRedirect } = useAuth0();
 
-  const handleLogin = async () => {
+  const handleSignUp = async () => {
     await loginWithRedirect({
       appState: {
         returnTo: location.pathname,
+      },
+      authorizationParams: {
+        prompt: "login",
+        screen_hint: "signup",
       },
     });
   };
 
   return (
-    <Button className="login" onClick={handleLogin}>
-      Log In
+    <Button className="signup" onClick={handleSignUp}>
+      Sign Up
     </Button>
   );
 };
