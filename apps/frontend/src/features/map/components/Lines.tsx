@@ -20,7 +20,7 @@ function Lines(props: {
 }) {
   const { nodes, edges, path } = useContext(MapContext);
   const path2 = path.map((nodeID) =>
-    nodes.filter((node) => node.nodeID == nodeID)
+    nodes.filter((node) => node.nodeID == nodeID),
   );
   const [displayV, setdisplayV] = useState(false);
 
@@ -90,7 +90,7 @@ function Lines(props: {
 
     const pathElement = document.createElementNS(
       "http://www.w3.org/2000/svg",
-      "path"
+      "path",
     );
     pathElement.setAttribute("d", pathData);
 
@@ -116,7 +116,7 @@ function Lines(props: {
             .filter(
               (edge) =>
                 edge[0][0].floor == floorID() &&
-                edge[0][0].floor == edge[1][0].floor
+                edge[0][0].floor == edge[1][0].floor,
             )
             .map((edge, i) => (
               <line

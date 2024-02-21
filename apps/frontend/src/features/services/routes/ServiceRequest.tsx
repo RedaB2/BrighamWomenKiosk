@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Label,
-  Select,
-  Textarea,
-  TextInput,
-  Checkbox,
-} from "flowbite-react";
+import { Button, Label, Select, Textarea, TextInput } from "flowbite-react";
 import { FaPerson, FaLocationDot } from "react-icons/fa6";
 import { CiLocationOn } from "react-icons/ci";
 import {
@@ -15,11 +8,13 @@ import {
   RequestType,
   Urgency,
   RequestStatus,
-  MedicalDepartment,
 } from "database";
 import { Autocomplete } from "@/components";
+import { useLocation } from "react-router-dom";
 
 const ServiceRequest = () => {
+  const location = useLocation();
+
   const [nodes, setNodes] = useState<Nodes[]>([]);
   const [roomSuggestions, setRoomSuggestions] = useState<string[]>([]);
   const [room, setRoom] = useState<string>("");
@@ -39,11 +34,6 @@ const ServiceRequest = () => {
 
   const [roomToSuggestions, setRoomToSuggestions] = useState<string[]>([]);
   const [roomTo, setRoomTo] = useState<string>("");
-
-  const [hazardousWaste, setHazardousWaste] = useState<boolean | undefined>(
-    undefined
-  );
-  const [department, setDepartment] = useState<string>("");
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -66,9 +56,19 @@ const ServiceRequest = () => {
         console.error("Failed to fetch employees:", error);
       }
     };
+    const initializeRoom = () => {
+      const initialRoomID = new URLSearchParams(location.state).get('roomID');
+      if (initialRoomID && nodes.length > 0) {
+        const initialRoom = nodes.find((node) => node.nodeID === initialRoomID);
+        if (initialRoom) {
+          setRoom(initialRoom.longName);
+        }
+      }
+    };
     fetchNodes();
     fetchEmployees();
-  }, []);
+    initializeRoom();
+  }, [location.state, nodes]);
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -116,13 +116,6 @@ const ServiceRequest = () => {
           medicineName,
           medicineDosage,
           roomTo: selectedNodeID,
-          hazardousWaste:
-            hazardousWaste === undefined
-              ? type === "JANI"
-                ? false
-                : undefined
-              : hazardousWaste,
-          department,
           type,
           urgency,
           notes,
@@ -142,6 +135,19 @@ const ServiceRequest = () => {
     }
   };
 
+  const resetForm = () => {
+    setRoom("");
+    setEmployee("");
+    setType("JANI");
+    setUrgency("LOW");
+    setStatus("UNASSIGNED");
+    setNotes("");
+    setMaintenanceType("");
+    setMedicineName("");
+    setMedicineDosage("");
+    setRoomTo("");
+  };
+
   const resetFormChangeServiceType = () => {
     setRoom("");
     setEmployee("");
@@ -152,13 +158,6 @@ const ServiceRequest = () => {
     setMedicineName("");
     setMedicineDosage("");
     setRoomTo("");
-    setHazardousWaste(undefined);
-    setDepartment("");
-  };
-
-  const resetForm = () => {
-    resetFormChangeServiceType();
-    setType("JANI");
   };
 
   return (
@@ -284,7 +283,7 @@ const ServiceRequest = () => {
 
       {type === "MEDI" && (
         <div>
-          <label htmlFor="medicineName">
+          <Label htmlFor="medicineName">
             Medicine to be delivered
             <TextInput
               type="text"
@@ -296,9 +295,9 @@ const ServiceRequest = () => {
                 setMedicineName(event.target.value);
               }}
             />
-          </label>
+          </Label>
           <br />
-          <label htmlFor="medicineDosage">
+          <Label htmlFor="medicineDosage">
             Dosage
             <TextInput
               type="text"
@@ -310,7 +309,7 @@ const ServiceRequest = () => {
                 setMedicineDosage(event.target.value);
               }}
             />
-          </label>
+          </Label>
         </div>
       )}
 
@@ -342,25 +341,6 @@ const ServiceRequest = () => {
         }}
       />
 
-      {type === "CONS" && (
-        <div className="space-y-2">
-          <Label htmlFor="department">Medical Department</Label>
-          <Select
-            id="department"
-            required
-            value={department}
-            onChange={(e) => setDepartment(e.target.value as MedicalDepartment)}
-          >
-            <option value="NEURO">Neurological</option>
-            <option value="ORTHO">Orthopedics</option>
-            <option value="PEDIA">Pediatric</option>
-            <option value="CARDI">Cardiovascular</option>
-            <option value="ONCOL">Oncology</option>
-            <option value="INTER">Internal Medicine</option>
-          </Select>
-        </div>
-      )}
-
       {type === "MECH" && (
         <div className="space-y-2">
           <Label htmlFor="maintenanceType">Maintenence Type</Label>
@@ -389,7 +369,6 @@ const ServiceRequest = () => {
           <option value="LOW">Low</option>
           <option value="MEDIUM">Medium</option>
           <option value="HIGH">High</option>
-          <option value="EMERGENCY">Emergency</option>
         </Select>
       </div>
       <div className="space-y-2">
@@ -406,19 +385,6 @@ const ServiceRequest = () => {
           <option value="COMPLETED">Completed</option>
         </Select>
       </div>
-
-      {type === "JANI" && (
-        <div className="space-y-2">
-          <Checkbox
-            id="hazardousWaste"
-            className="mr-2"
-            checked={hazardousWaste}
-            onChange={(e) => setHazardousWaste(e.target.checked)}
-          />
-          <Label htmlFor="hazardousWaste">Includes hazardous waste?</Label>
-        </div>
-      )}
-
       <div className="space-y-2">
         <Label htmlFor="notes">Additional notes</Label>
         <Textarea
