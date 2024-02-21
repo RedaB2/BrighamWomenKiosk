@@ -1,4 +1,4 @@
-import { Table as FlowbiteTable } from "flowbite-react";
+import { Table as FlowbiteTable, Card } from "flowbite-react";
 
 const About = () => {
   return (
@@ -9,79 +9,88 @@ const About = () => {
       <h1 className="py-1 text-md italic font-semibold text-gray-500 dark:text-gray-400">
         Prof. Wilson Wong, Coach: Ari Schechter
       </h1>
+
       <div className="py-12 mx-auto max-w-screen-xl px-4 lg:px-12">
-        <div className="relative shadow-md sm:rounded-lg overflow-hidden">
-          <div className="overflow-x-auto ">
-            <FlowbiteTable className="dark:bg-gray-800 text-gray-900 dark:text-white">
-              <FlowbiteTable.Head>
-                <FlowbiteTable.HeadCell key={"Name"}>
-                  Name
-                </FlowbiteTable.HeadCell>
-                <FlowbiteTable.HeadCell key={"Position"}>
-                  Position
-                </FlowbiteTable.HeadCell>
-              </FlowbiteTable.Head>
-              <FlowbiteTable.Body className="divide-y text-md">
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>Reda Boutayeb</FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>
-                    Assistant Lead Software + Algorithms
-                  </FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>Abraham Dionne</FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>
-                    Scrum Master + Front End
-                  </FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>Daniel Feng</FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>
-                    Project Manager + Front End
-                  </FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>Oliver Gates</FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>Front End</FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>Philip Heney</FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>
-                    Documentation Analyst + Front End
-                  </FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>Hien Hoang</FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>Database + Algorithms</FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>Miya Judy</FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>
-                    Product Owner + Front End
-                  </FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>Lucas Lamenha</FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>
-                    Assistant Lead Software Engineer + Databases
-                  </FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>
-                    Giovanni Larson Vasquez
-                  </FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>Front end + database</FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-                <FlowbiteTable.Row>
-                  <FlowbiteTable.Cell>Thinh (Felix) Nguyen</FlowbiteTable.Cell>
-                  <FlowbiteTable.Cell>
-                    Lead Software Engineer + Front end + Databases
-                  </FlowbiteTable.Cell>
-                </FlowbiteTable.Row>
-              </FlowbiteTable.Body>
-            </FlowbiteTable>
+        <Card className="shadow-[0_0px_25px_0px_rgba(45,105,135,.5)]">
+          <div className="relative shadow-md sm:rounded-lg overflow-hidden">
+            <div className="overflow-x-auto ">
+              <FlowbiteTable className="dark:bg-gray-800 text-gray-900 dark:text-white">
+                <FlowbiteTable.Head>
+                  <FlowbiteTable.HeadCell key={"Name"}>
+                    Name
+                  </FlowbiteTable.HeadCell>
+                  <FlowbiteTable.HeadCell key={"Position"}>
+                    Position
+                  </FlowbiteTable.HeadCell>
+                </FlowbiteTable.Head>
+                <FlowbiteTable.Body className="divide-y text-md">
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>Reda Boutayeb</FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>
+                      Assistant Lead Software + Algorithms
+                    </FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>Abraham Dionne</FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>
+                      Scrum Master + Front End
+                    </FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>Daniel Feng</FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>
+                      Project Manager + Front End
+                    </FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>Oliver Gates</FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>Front End</FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>Philip Heney</FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>
+                      Documentation Analyst + Front End
+                    </FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>Hien Hoang</FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>
+                      Database + Algorithms
+                    </FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>Miya Judy</FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>
+                      Product Owner + Front End
+                    </FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>Lucas Lamenha</FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>
+                      Assistant Lead Software Engineer + Databases
+                    </FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>
+                      Giovanni Larson Vasquez
+                    </FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>
+                      Front end + database
+                    </FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                  <FlowbiteTable.Row>
+                    <FlowbiteTable.Cell>
+                      Thinh (Felix) Nguyen
+                    </FlowbiteTable.Cell>
+                    <FlowbiteTable.Cell>
+                      Lead Software Engineer + Front end + Databases
+                    </FlowbiteTable.Cell>
+                  </FlowbiteTable.Row>
+                </FlowbiteTable.Body>
+              </FlowbiteTable>
+            </div>
           </div>
-        </div>
+        </Card>
       </div>
 
       <p className="py-4 text-md italic font-semibold text-gray-500 dark:text-gray-400">

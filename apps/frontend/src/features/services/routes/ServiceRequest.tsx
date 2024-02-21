@@ -155,10 +155,9 @@ const ServiceRequest = () => {
     }
   };
 
-  const resetForm = () => {
+  const resetFormChangeServiceType = () => {
     setRoom("");
     setEmployee("");
-    setType("JANI");
     setUrgency("LOW");
     setStatus("UNASSIGNED");
     setNotes("");
@@ -170,116 +169,85 @@ const ServiceRequest = () => {
     setDepartment("");
   };
 
-  const resetFormChangeServiceType = () => {
+  const resetForm = () => {
     resetFormChangeServiceType();
     setType("JANI");
   };
 
   return (
-    <form
-      className="mx-auto py-8 flex flex-col space-y-4 max-w-md"
-      onSubmit={handleSubmit}
-    >
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-        Request Service Form
-      </h1>
-      {type === "JANI" ? (
-        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
-          {" "}
-          Request page created by Phil and Giovanni{" "}
-        </p>
-      ) : type === "MECH" ? (
-        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
-          {" "}
-          Request page created by Abe and Miya{" "}
-        </p>
-      ) : type === "MEDI" ? (
-        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
-          {" "}
-          Request page created by HIEN and Luke{" "}
-        </p>
-      ) : type === "RELC" ? (
-        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
-          {" "}
-          Request page created by Felix and Daniel{" "}
-        </p>
-      ) : type === "CONS" ? (
-        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
-          {" "}
-          Request page created by Oliver and Matt{" "}
-        </p>
-      ) : (
-        <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
-          {" "}
-          Request page created by Felix{" "}
-        </p>
-      )}
-      <div className="space-y-2">
-        <Label htmlFor="type">Service type</Label>
-        <Select
-          id="type"
-          required
-          value={type}
-          onChange={(e) => {
-            setType(e.target.value as RequestType);
-            resetFormChangeServiceType();
-          }}
-        >
-          <option value="JANI">Janitorial</option>
-          <option value="MECH">Maintenance request</option>
-          <option value="MEDI">Medicine delivery</option>
-          <option value="RELC">Patient relocation</option>
-          <option value="CONS">Patient consultation</option>
-          <option value="CUST">Other</option>
-        </Select>
-      </div>
-
-      <Autocomplete
-        suggestions={roomSuggestions}
-        setSuggestions={setRoomSuggestions}
-        value={room}
-        setValue={setRoom}
-        id="room"
-        htmlFor="room"
-        label={type === "RELC" ? "From room" : "Assign to room"}
-        placeholder="Nuclear Medicine Floor L1"
-        required
-        rightIcon={CiLocationOn}
-        onChange={(e) => {
-          setRoom(e.target.value);
-          if (e.target.value.length > 0) {
-            setRoomSuggestions(
-              nodes
-                .map((loc) => {
-                  return loc.longName;
-                })
-                .filter((loc) =>
-                  loc.toLowerCase().includes(e.target.value.toLowerCase())
-                )
-                .slice(0, 10)
-            );
-          } else {
-            setRoomSuggestions([]);
-          }
-        }}
-      />
-
-      {type === "RELC" && (
+    <div className="h-full p-16">
+      <form
+        className="shadow-[0_0px_25px_0px_rgba(45,105,135,.5)] mx-auto p-8 flex flex-col space-y-4 max-w-md rounded-lg bg-gray-50 dark:bg-neutral-800"
+        onSubmit={handleSubmit}
+      >
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Request Service Form
+        </h1>
+        {type === "JANI" ? (
+          <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+            {" "}
+            Request page created by Phil and Giovanni{" "}
+          </p>
+        ) : type === "MECH" ? (
+          <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+            {" "}
+            Request page created by Abe and Miya{" "}
+          </p>
+        ) : type === "MEDI" ? (
+          <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+            {" "}
+            Request page created by HIEN and Luke{" "}
+          </p>
+        ) : type === "RELC" ? (
+          <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+            {" "}
+            Request page created by Felix and Daniel{" "}
+          </p>
+        ) : type === "CONS" ? (
+          <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+            {" "}
+            Request page created by Oliver and Matt{" "}
+          </p>
+        ) : (
+          <p className="text-md italic font-semibold text-gray-500 dark:text-gray-400">
+            {" "}
+            Request page created by Felix{" "}
+          </p>
+        )}
+        <div className="space-y-2">
+          <Label htmlFor="type">Service type</Label>
+          <Select
+            id="type"
+            required
+            value={type}
+            onChange={(e) => {
+              setType(e.target.value as RequestType);
+              resetFormChangeServiceType();
+            }}
+          >
+            <option value="JANI">Janitorial</option>
+            <option value="MECH">Maintenance request</option>
+            <option value="MEDI">Medicine delivery</option>
+            <option value="RELC">Patient relocation</option>
+            <option value="CONS">Patient consultation</option>
+            <option value="CUST">Other</option>
+          </Select>
+        </div>
         <Autocomplete
-          suggestions={roomToSuggestions}
-          setSuggestions={setRoomToSuggestions}
-          value={roomTo}
-          setValue={setRoomTo}
-          id="room-to"
-          htmlFor="room-to"
-          label="To room"
-          placeholder="Jen Center for Primary Care"
+          suggestions={roomSuggestions}
+          setSuggestions={setRoomSuggestions}
+          value={room}
+          setValue={setRoom}
+          id="room"
+          htmlFor="room"
+          label={type === "RELC" ? "From room" : "Assign to room"}
+          placeholder="Nuclear Medicine Floor L1"
           required
-          rightIcon={FaLocationDot}
+          rightIcon={CiLocationOn}
           onChange={(e) => {
-            setRoomTo(e.target.value);
+            setRoom(e.target.value);
             if (e.target.value.length > 0) {
-              setRoomToSuggestions(
+              setRoomSuggestions(
                 nodes
                   .map((loc) => {
                     return loc.longName;
@@ -290,158 +258,195 @@ const ServiceRequest = () => {
                   .slice(0, 10)
               );
             } else {
-              setRoomToSuggestions([]);
+              setRoomSuggestions([]);
             }
           }}
         />
-      )}
-
-      {type === "MEDI" && (
-        <div>
-          <Label htmlFor="medicineName">
-            Medicine to be delivered
-            <TextInput
-              type="text"
-              name="medicineName"
-              id="medicineName"
-              placeholder="Ibuprofen"
-              value={medicineName}
-              onChange={(event) => {
-                setMedicineName(event.target.value);
-              }}
-            />
-          </Label>
-          <br />
-          <Label htmlFor="medicineDosage">
-            Dosage
-            <TextInput
-              type="text"
-              name="medicineDosage"
-              id="medicineDosage"
-              placeholder="0"
-              value={medicineDosage}
-              onChange={(event) => {
-                setMedicineDosage(event.target.value);
-              }}
-            />
-          </Label>
-        </div>
-      )}
-
-      <Autocomplete
-        suggestions={employeeSuggestions}
-        setSuggestions={setEmployeeSuggestions}
-        value={employee}
-        setValue={setEmployee}
-        id="employee"
-        htmlFor="employee"
-        label="Assign to employee"
-        placeholder="John Doe"
-        required
-        rightIcon={FaPerson}
-        onChange={(e) => {
-          setEmployee(e.target.value);
-          if (e.target.value.length > 0) {
-            setEmployeeSuggestions(
-              employees
-                .map((emp) => emp.firstName + " " + emp.lastName)
-                .filter((emp) =>
-                  emp.toLowerCase().includes(e.target.value.toLowerCase())
-                )
-                .slice(0, 10)
-            );
-          } else {
-            setEmployeeSuggestions([]);
-          }
-        }}
-      />
-
-      {type === "CONS" && (
-        <div className="space-y-2">
-          <Label htmlFor="department">Medical Department</Label>
-          <Select
-            id="department"
+        {type === "RELC" && (
+          <Autocomplete
+            suggestions={roomToSuggestions}
+            setSuggestions={setRoomToSuggestions}
+            value={roomTo}
+            setValue={setRoomTo}
+            id="room-to"
+            htmlFor="room-to"
+            label="To room"
+            placeholder="Jen Center for Primary Care"
             required
-            value={department}
-            onChange={(e) => setDepartment(e.target.value as MedicalDepartment)}
-          >
-            <option value="NEURO">Neurological</option>
-            <option value="ORTHO">Orthopedics</option>
-            <option value="PEDIA">Pediatric</option>
-            <option value="CARDI">Cardiovascular</option>
-            <option value="ONCOL">Oncology</option>
-            <option value="INTER">Internal Medicine</option>
-          </Select>
-        </div>
-      )}
-
-      {type === "MECH" && (
-        <div className="space-y-2">
-          <Label htmlFor="maintenanceType">Maintenence Type</Label>
-          <Select
-            id="maintenanceType"
-            required
-            value={maintenanceType}
-            onChange={(e) => setMaintenanceType(e.target.value as string)}
-          >
-            <option value="ELEC">Electrical</option>
-            <option value="LOCK">Locksmith</option>
-            <option value="PLUM">Plumbing</option>
-            <option value="TECH">Technology</option>
-          </Select>
-        </div>
-      )}
-
-      <div className="space-y-2">
-        <Label htmlFor="urgency">Urgency</Label>
-        <Select
-          id="urgency"
-          required
-          value={urgency}
-          onChange={(e) => setUrgency(e.target.value as Urgency)}
-        >
-          <option value="LOW">Low</option>
-          <option value="MEDIUM">Medium</option>
-          <option value="HIGH">High</option>
-          <option value="EMERGENCY">Emergency</option>
-        </Select>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
-        <Select
-          id="status"
-          required
-          value={status}
-          onChange={(e) => setStatus(e.target.value as RequestStatus)}
-        >
-          <option value="UNASSIGNED">Unassigned</option>
-          <option value="ASSIGNED">Assigned</option>
-          <option value="IN_PROGRESS">In Progress</option>
-          <option value="COMPLETED">Completed</option>
-        </Select>
-      </div>
-      {type === "JANI" && (
-        <div className="space-y-2">
-          <Checkbox
-            id="hazardousWaste"
-            className="mr-2"
-            checked={hazardousWaste}
-            onChange={(e) => setHazardousWaste(e.target.checked)}
+            rightIcon={FaLocationDot}
+            onChange={(e) => {
+              setRoomTo(e.target.value);
+              if (e.target.value.length > 0) {
+                setRoomToSuggestions(
+                  nodes
+                    .map((loc) => {
+                      return loc.longName;
+                    })
+                    .filter((loc) =>
+                      loc.toLowerCase().includes(e.target.value.toLowerCase())
+                    )
+                    .slice(0, 10)
+                );
+              } else {
+                setRoomToSuggestions([]);
+              }
+            }}
           />
-          <Label htmlFor="hazardousWaste">Includes hazardous waste?</Label>
-        </div>
-      )}
-      <div className="space-y-2">
-        <Label htmlFor="notes">Additional notes</Label>
-        <Textarea
-          id="notes"
-          name="notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+        )}
+        {type === "MEDI" && (
+          <div className="space-y-2">
+            <Label
+              className="text-sm font-medium dark:text-white"
+              htmlFor="medicineName"
+            >
+              Medicine to be delivered
+              <TextInput
+                type="text"
+                name="medicineName"
+                id="medicineName"
+                placeholder="Ibuprofen"
+                value={medicineName}
+                onChange={(event) => {
+                  setMedicineName(event.target.value);
+                }}
+              />
+            </Label>
+          </div>
+        )}
+        {type === "MEDI" && (
+          <div className="space-y-2">
+            <Label
+              className="text-sm font-medium dark:text-white"
+              htmlFor="medicineDosage"
+            >
+              Dosage
+              <TextInput
+                type="text"
+                name="medicineDosage"
+                id="medicineDosage"
+                placeholder="0"
+                value={medicineDosage}
+                onChange={(event) => {
+                  setMedicineDosage(event.target.value);
+                }}
+              />
+            </Label>
+          </div>
+        )}
+        <Autocomplete
+          suggestions={employeeSuggestions}
+          setSuggestions={setEmployeeSuggestions}
+          value={employee}
+          setValue={setEmployee}
+          id="employee"
+          htmlFor="employee"
+          label="Assign to employee"
+          placeholder="John Doe"
+          required
+          rightIcon={FaPerson}
+          onChange={(e) => {
+            setEmployee(e.target.value);
+            if (e.target.value.length > 0) {
+              setEmployeeSuggestions(
+                employees
+                  .map((emp) => emp.firstName + " " + emp.lastName)
+                  .filter((emp) =>
+                    emp.toLowerCase().includes(e.target.value.toLowerCase())
+                  )
+                  .slice(0, 10)
+              );
+            } else {
+              setEmployeeSuggestions([]);
+            }
+          }}
         />
-      </div>
-      <Button type="submit">Submit</Button>
-    </form>
+        {type === "CONS" && (
+          <div className="space-y-2">
+            <Label htmlFor="department">Medical Department</Label>
+            <Select
+              id="department"
+              required
+              value={department}
+              onChange={(e) =>
+                setDepartment(e.target.value as MedicalDepartment)
+              }
+            >
+              <option value="NEURO">Neurological</option>
+              <option value="ORTHO">Orthopedics</option>
+              <option value="PEDIA">Pediatric</option>
+              <option value="CARDI">Cardiovascular</option>
+              <option value="ONCOL">Oncology</option>
+              <option value="INTER">Internal Medicine</option>
+            </Select>
+          </div>
+        )}
+        {type === "MECH" && (
+          <div className="space-y-2">
+            <Label htmlFor="maintenanceType">Maintenence Type</Label>
+            <Select
+              id="maintenanceType"
+              required
+              value={maintenanceType}
+              onChange={(e) => setMaintenanceType(e.target.value as string)}
+            >
+              <option value="ELEC">Electrical</option>
+              <option value="LOCK">Locksmith</option>
+              <option value="PLUM">Plumbing</option>
+              <option value="TECH">Technology</option>
+            </Select>
+          </div>
+        )}
+        <div className="space-y-2">
+          <Label htmlFor="urgency">Urgency</Label>
+          <Select
+            id="urgency"
+            required
+            value={urgency}
+            onChange={(e) => setUrgency(e.target.value as Urgency)}
+          >
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+            <option value="EMERGENCY">Emergency</option>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="status">Status</Label>
+          <Select
+            id="status"
+            required
+            value={status}
+            onChange={(e) => setStatus(e.target.value as RequestStatus)}
+          >
+            <option value="UNASSIGNED">Unassigned</option>
+            <option value="ASSIGNED">Assigned</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="COMPLETED">Completed</option>
+          </Select>
+        </div>
+        {type === "JANI" && (
+          <div className="space-y-2">
+            <Checkbox
+              id="hazardousWaste"
+              className="mr-2"
+              checked={hazardousWaste}
+              onChange={(e) => setHazardousWaste(e.target.checked)}
+            />
+            <Label htmlFor="hazardousWaste">Includes hazardous waste?</Label>
+          </div>
+        )}
+        <div className="space-y-2">
+          <Label htmlFor="notes">Additional notes</Label>
+          <Textarea
+            id="notes"
+            name="notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
+        </div>
+        <Button type="submit">Submit</Button>
+      </form>
+    </div>
   );
 };
 

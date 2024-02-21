@@ -123,7 +123,7 @@ type ContentLayoutProps = {
 
 const ContentLayout = ({ children }: ContentLayoutProps) => {
   return (
-    <div className="h-screen flex overflow-hidden bg-gray-100 dark:bg-neutral-900">
+    <div className="h-screen flex overflow-hidden bg-[#D5E2ED] dark:bg-slate-950">
       <SidebarNavigation />
       <div className="flex-1 overflow-auto">{children}</div>
     </div>

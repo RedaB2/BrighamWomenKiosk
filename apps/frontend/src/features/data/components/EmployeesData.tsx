@@ -4,6 +4,7 @@ import {
   FileInput,
   Label,
   Button,
+  Card,
   Checkbox,
   Dropdown,
   Modal,
@@ -27,13 +28,12 @@ const EmployeeContext = createContext<{
 }>({ employees: [], setEmployees: () => {} });
 
 const EmployeesData = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth0();
 
-    const navigate = useNavigate();
-    const { isAuthenticated } = useAuth0();
-
-    if (!isAuthenticated) {
-        navigate("/auth/sign-in");
-    }
+  if (!isAuthenticated) {
+    navigate("/auth/sign-in");
+  }
 
   const [employees, setEmployees] = useState<Employees[]>([]);
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -133,35 +133,42 @@ const EmployeesData = () => {
 
   return (
     <>
-      <form
-        action="/api/employees/upload"
-        method="post"
-        encType="multipart/form-data"
-        onSubmit={handleSubmit}
-      >
-        <div className="mb-2 block">
-          <Label htmlFor="csv-upload" value="Upload new CSV Data:" />
-        </div>
-        <FileInput
-          className="w-96"
-          id="csv-upload"
-          name="csv-upload"
-          accept="text/csv"
-          value={file}
-          helperText="CSV files only."
-          onChange={(e) => setFile(e.target.value)}
-        />
-        <br />
-        <Button type="submit">Upload File</Button>
-      </form>
-
-      <div className="mt-4 flex space-x-4 w-96">
-        <Button onClick={() => downloadCSV("/api/employees/download")}>
-          Download Employees CSV
-        </Button>
+      <div className="px-16 py-8">
+        <Card className="shadow-[0_0px_25px_0px_rgba(45,105,135,.5)]">
+          <div className="px-16 space-y-4">
+            <form
+              action="/api/employees/upload"
+              method="post"
+              encType="multipart/form-data"
+              onSubmit={handleSubmit}
+            >
+              <div className="mb-2 block">
+                <Label htmlFor="csv-upload" value="Upload new CSV Data:" />
+              </div>
+              <div>
+                <FileInput
+                  className="w-96"
+                  id="csv-upload"
+                  name="csv-upload"
+                  accept="text/csv"
+                  value={file}
+                  helperText="CSV files only."
+                  onChange={(e) => setFile(e.target.value)}
+                />
+              </div>
+              <br />
+              <div>
+                <Button type="submit">Upload File</Button>
+              </div>
+            </form>
+            <Button onClick={() => downloadCSV("/api/employees/download")}>
+              Download Employees CSV
+            </Button>
+          </div>
+        </Card>
       </div>
 
-      <div className="flex">
+      <div className="flex flex-col px-16 py-8">
         <EmployeeContext.Provider value={{ employees, setEmployees }}>
           <DataTable
             data={employees}
