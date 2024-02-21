@@ -553,7 +553,7 @@ export default function BeefletMap() {
           />
           <CustomButton
             title={
-              "How To Use Map <br> Double click node to set as start location <br> Control click node to set as start location <br> Right click node to set as end location"
+              "How To Use Map <br> Control click node to set as start location <br> Right click node to set as end location"
             }
             className={"instructions"}
             position={"bottomright"}
