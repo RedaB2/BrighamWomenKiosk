@@ -232,10 +232,10 @@ export default function BeefletMap() {
                   }}
                 ></Polyline>
               ))}
-          {paths[assetToFloor(selectedFloor)].map((currentPath, i) => (
-            <>
-              <SVGOverlay bounds={new LatLngBounds([0, 0], [-3400, 5000])}>
-                <svg viewBox="0 0 5000 3400" key={i}>
+          <SVGOverlay bounds={new LatLngBounds([0, 0], [-3400, 5000])}>
+              <svg viewBox="0 0 5000 3400">
+              {paths[assetToFloor(selectedFloor)].map((currentPath, i) => (
+                <>
                   <path
                     key={i}
                     id={"movePath" + i.toString()}
@@ -248,7 +248,7 @@ export default function BeefletMap() {
                       }
                     })()}
                     fill="none"
-                    strokeWidth={12 * Math.max(1 - zoom, 1)}
+                    strokeWidth={12 * (Math.max(1 - zoom, 1/2) * 1.5)}
                     strokeLinecap={"round"}
                   />
                   <path
@@ -263,41 +263,26 @@ export default function BeefletMap() {
                       }
                     })()}
                     fill="none"
-                    strokeWidth={6 * Math.max(1 - zoom, 1)}
-                    strokeLinecap={"round"}
+                    strokeWidth={6 * (Math.max(1 - zoom, 1/2) * 1.5)}
+                    strokeLinecap ={"round"}
                   />
-                  {(() => {
-                    const path = pathToPoints(currentPath);
-                    const pathLength = path.pathLength;
-                    const pathData = path.pathData;
-                    const numDots = Math.floor(pathLength / 10);
-                    return [...Array(numDots)].map((_, index) => (
-                      <>
-                        <circle
-                          key={index}
-                          r={3 * Math.max(1 - zoom, 1)}
-                          fill={(() => {
-                            if (colorBlind) {
-                              return "#E66100";
-                            } else {
-                              return "yellow";
-                            }
-                          })()}
-                        >
-                          <animateMotion
-                            dur={Math.floor(numDots / 4).toString() + "s"}
-                            repeatCount="indefinite"
-                            begin={index}
-                            path={pathData}
-                          ></animateMotion>
-                        </circle>
-                      </>
-                    ));
-                  })()}
+                  <path 
+                    key={i}
+                    id={"movePath" + i.toString()}
+                    d={pathToPoints(currentPath).pathData}
+                    stroke={(() => {
+                      if (colorBlind) {
+                        return "orange";
+                      } else {
+                        return "yellow";
+                      }
+                    })()}
+                    strokeWidth={3 * (Math.max(1 - zoom, 1/2) * 1.5)}
+                    className="custom-path"/>
+                  </>
+              ))}
                 </svg>
               </SVGOverlay>
-            </>
-          ))}
         </LayerGroup>
         <FeatureGroup>
           {toggledNodes &&
