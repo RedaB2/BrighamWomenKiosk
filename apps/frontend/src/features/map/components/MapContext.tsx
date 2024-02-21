@@ -1,4 +1,4 @@
-import { Edges, Nodes } from "database";
+import { Edges, Nodes, Requests } from "database";
 import { createContext, Dispatch, SetStateAction } from "react";
 
 const MapContext = createContext<{
@@ -20,6 +20,8 @@ const MapContext = createContext<{
   setStartID: Dispatch<SetStateAction<string>>;
   endID: string;
   setEndID: Dispatch<SetStateAction<string>>;
+  requests: Requests[];
+  setRequests: Dispatch<SetStateAction<Requests[]>>;
 }>({
   nodes: [],
   // eslint-disable-next-line no-empty-function
@@ -48,6 +50,9 @@ const MapContext = createContext<{
   endID: "",
   // eslint-disable-next-line no-empty-function
   setEndID: () => {},
+  requests: [],
+  // eslint-disable-next-line no-empty-function
+  setRequests: () => {},
 });
 
 export { MapContext };

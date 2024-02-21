@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import firstFloor from "../assets/01_thefirstfloor.png";
 import { Sidebar, MapContext } from "../components";
 import BeefletMap from "@/features/map/components/BeefletMap.tsx";
-import { Edges, Nodes } from "database";
+import { Edges, Nodes, Requests } from "database";
 
 const Map = () => {
   const [nodes, setNodes] = useState<Nodes[]>([]);
@@ -14,6 +14,7 @@ const Map = () => {
   const [endLocation, setEndLocation] = useState("");
   const [startID, setStartID] = useState("");
   const [endID, setEndID] = useState("");
+  const [requests, setRequests] = useState<Requests[]>([]);
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -36,8 +37,19 @@ const Map = () => {
         console.error("Failed to fetch edges:", error);
       }
     };
+    const fetchServices = async () => {
+      try {
+        const res = await fetch("/api/services");
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        setRequests(data);
+      } catch (error) {
+        console.error("Failed to fetch services:", error);
+      }
+    };
     fetchNodes();
     fetchEdges();
+    fetchServices();
   }, []);
 
   return (
@@ -61,6 +73,8 @@ const Map = () => {
         setStartID,
         endID,
         setEndID,
+        requests,
+        setRequests,
       }}
     >
       <div className="h-screen flex overflow-hidden bg-gray-100 dark:bg-neutral-900">
