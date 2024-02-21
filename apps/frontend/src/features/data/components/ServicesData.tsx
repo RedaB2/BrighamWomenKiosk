@@ -5,6 +5,7 @@ import { downloadCSV } from "../utils";
 import { RequestStatus, Requests } from "database";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
+import { PieChart } from "@/components";
 
 const ServicesContext = createContext<{
   services: Requests[];
@@ -20,19 +21,39 @@ const ServicesData = () => {
   const [file, setFile] = useState("");
   const navigate = useNavigate();
 
+  const [pieChartServices, setPieChartServices] = useState<Requests[]>([]);
+  const [selectedEmployeeType, setSelectedEmployeeType] = useState<
+    string | null
+  >(null);
+
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const res = await fetch("/api/services");
         if (!res.ok) throw new Error(res.statusText);
         const data = await res.json();
+
+        const employeesRes = await fetch("/api/employees");
+        if (!employeesRes.ok) throw new Error(employeesRes.statusText);
+        const employeesData = await employeesRes.json();
+
+        const filteredDataForPieChart = selectedEmployeeType
+          ? data.filter((service: { employeeID: string }) => {
+              const employee = employeesData.find(
+                (emp: { id: string }) => emp.id === service.employeeID
+              );
+              return employee?.role === selectedEmployeeType;
+            })
+          : data;
+
         setServices(data);
+        setPieChartServices(filteredDataForPieChart);
       } catch (error) {
         console.error("Failed to fetch nodes:", error);
       }
     };
     fetchServices();
-  }, []);
+  }, [selectedEmployeeType]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,36 +71,67 @@ const ServicesData = () => {
     }
   };
 
+  const typeLabelsMap: Record<string, string> = {
+    JANI: "Janitorial",
+    MECH: "Mechanical Maintenance",
+    MEDI: "Medicine Delivery",
+    RELC: "Patient Relocation",
+    CONS: "Patient Consultation",
+    CUST: "Customer Service",
+  };
+
+  const totalRequests = pieChartServices.length;
+  const requestTypesMap = pieChartServices.reduce((map, service) => {
+    const type = service.type;
+    const userFriendlyLabel = typeLabelsMap[type];
+    map[userFriendlyLabel] = (map[userFriendlyLabel] || 0) + 1;
+    return map;
+  }, {} as Record<string, number>);
+
+  const series = Object.values(requestTypesMap).map((count) =>
+    Number(((count / totalRequests) * 100).toFixed(2))
+  );
+  const labels = Object.keys(requestTypesMap);
+
   return (
     <>
-      <form
-        action="/api/services/upload"
-        method="post"
-        encType="multipart/form-data"
-        onSubmit={handleSubmit}
-      >
-        <div className="mb-2 block">
-          <Label htmlFor="csv-upload" value="Upload new CSV Data:" />
+      <div className="flex space-x-4 my-4">
+        <div>
+          <form
+            action="/api/services/upload"
+            method="post"
+            encType="multipart/form-data"
+            onSubmit={handleSubmit}
+          >
+            <div className="mb-2 block">
+              <Label htmlFor="csv-upload" value="Upload new CSV Data:" />
+            </div>
+            <FileInput
+              className="w-96"
+              id="csv-upload"
+              name="csv-upload"
+              accept="text/csv"
+              value={file}
+              helperText="CSV files only."
+              onChange={(e) => setFile(e.target.value)}
+            />
+            <br />
+            <Button type="submit">Upload File</Button>
+          </form>
+          <div className="mt-4 flex space-x-4 w-96">
+            <Button onClick={() => downloadCSV("/api/services/download")}>
+              Download Service Requests CSV
+            </Button>
+          </div>
         </div>
-        <FileInput
-          className="w-96"
-          id="csv-upload"
-          name="csv-upload"
-          accept="text/csv"
-          value={file}
-          helperText="CSV files only."
-          onChange={(e) => setFile(e.target.value)}
-        />
-        <br />
-        <Button type="submit">Upload File</Button>
-      </form>
-
-      <div className="mt-4 flex space-x-4 w-96">
-        <Button onClick={() => downloadCSV("/api/services/download")}>
-          Download Service Requests CSV
-        </Button>
+        <div className="flex-1">
+          <PieChart
+            series={series}
+            labels={labels}
+            onChangeEmployeeType={setSelectedEmployeeType}
+          />
+        </div>
       </div>
-
       <div className="flex">
         <ServicesContext.Provider value={{ services, setServices }}>
           <DataTable
