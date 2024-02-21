@@ -147,7 +147,7 @@ const EmployeesData = () => {
               </div>
               <div>
                 <FileInput
-                  className="w-100%"
+                  className="w-96"
                   id="csv-upload"
                   name="csv-upload"
                   accept="text/csv"

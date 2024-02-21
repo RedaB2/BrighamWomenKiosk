@@ -29,6 +29,7 @@ import {
   BsArrowRightCircle,
   BsArrowUpCircle,
 } from "react-icons/bs";
+import { floorToAsset } from "../utils";
 
 const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
   root: {
@@ -108,6 +109,7 @@ const Sidebar = () => {
     } else {
       // If not open, add it to the open floors
       setOpenFloors((prevOpenFloors) => [...prevOpenFloors, floorID]);
+      setSelectedFloor(adhocConverterChangePlease(floorID));
     }
   };
 
@@ -409,7 +411,13 @@ const Sidebar = () => {
             className="w-full"
             name="mapFloor"
             id="mapFloor"
-            onChange={(e) => setSelectedFloor(e.target.value)}
+            onChange={(e) => {
+              setSelectedFloor(e.target.value);
+              setOpenFloors((prevOpenFloors) => [
+                ...prevOpenFloors,
+                adhocConverterChangePlease(e.target.value),
+              ]);
+            }}
             value={selectedFloor}
           >
             <option value={lowerLevel1}>Lower Level 1</option>
@@ -672,13 +680,16 @@ const Sidebar = () => {
     </FlowbiteSidebar>
   );
 };
-/*
+
 const adhocConverterChangePlease = (floorID: string) => {
+  if (floorID.length > 3) {
+    return floorID;
+  }
   const floor = floorID.substring(0, floorID.length - 1);
   // @ts-expect-error nope
   return floorToAsset(floor);
 };
-*/
+
 function angleBetweenVectors(
   v1: { x: number; y: number },
   v2: { x: number; y: number }
