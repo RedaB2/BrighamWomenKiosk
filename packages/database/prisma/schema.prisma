@@ -83,9 +83,9 @@ enum EmployeeRole {
 model Requests {
   id               Int           @id @default(autoincrement())
   nodeID           String
-  employeeID       Int
+  employeeID       Int?          
   room             Nodes         @relation("origin", fields: [nodeID], references: [nodeID])
-  employee         Employees     @relation(fields: [employeeID], references: [id], onDelete: Cascade)
+  employee         Employees?    @relation(fields: [employeeID], references: [id], onDelete: SetNull) 
   urgency          Urgency
   type             RequestType
   notes            String?
