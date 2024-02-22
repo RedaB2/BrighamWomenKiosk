@@ -47,7 +47,7 @@ const ServicesData = () => {
         const filteredDataForPieChart = selectedEmployeeType
           ? data.filter((service: { employeeID: string }) => {
               const employee = employeesData.find(
-                (emp: { id: string }) => emp.id === service.employeeID
+                (emp: { id: string }) => emp.id === service.employeeID,
               );
               return employee?.role === selectedEmployeeType;
             })
@@ -88,15 +88,18 @@ const ServicesData = () => {
   };
 
   const totalRequests = pieChartServices.length;
-  const requestTypesMap = pieChartServices.reduce((map, service) => {
-    const type = service.type;
-    const userFriendlyLabel = typeLabelsMap[type];
-    map[userFriendlyLabel] = (map[userFriendlyLabel] || 0) + 1;
-    return map;
-  }, {} as Record<string, number>);
+  const requestTypesMap = pieChartServices.reduce(
+    (map, service) => {
+      const type = service.type;
+      const userFriendlyLabel = typeLabelsMap[type];
+      map[userFriendlyLabel] = (map[userFriendlyLabel] || 0) + 1;
+      return map;
+    },
+    {} as Record<string, number>,
+  );
 
   const series = Object.values(requestTypesMap).map((count) =>
-    Number(((count / totalRequests) * 100).toFixed(2))
+    Number(((count / totalRequests) * 100).toFixed(2)),
   );
   const labels = Object.keys(requestTypesMap);
 
@@ -104,7 +107,7 @@ const ServicesData = () => {
     <>
       <div className="px-16 py-8">
         <Card className="shadow-[0_0px_25px_0px_rgba(45,105,135,.5)]">
-          <div className="flex space-x-32">
+          <div className="flex justify-between space-x-8">
             <div>
               <form
                 action="/api/services/upload"
@@ -264,8 +267,8 @@ const requestsTableColumns: ColumnDef<Requests>[] = [
       row.getValue("hazardousWaste") === null
         ? row.getValue("hazardousWaste")
         : row.getValue("hazardousWaste")
-        ? "Yes"
-        : "No",
+          ? "Yes"
+          : "No",
   },
   {
     accessorKey: "department",
@@ -299,7 +302,7 @@ const ServicesActions = ({ row }: ServicesActionsProps) => {
 
   const changeCompletionStatus = async (
     id: number,
-    newStatus: RequestStatus
+    newStatus: RequestStatus,
   ) => {
     try {
       const res = await fetch(`/api/services/${id}`, {
@@ -313,7 +316,7 @@ const ServicesActions = ({ row }: ServicesActionsProps) => {
       const updatedServices = services.map((service) =>
         service.id === id
           ? { ...service, completionStatus: newStatus }
-          : service
+          : service,
       );
       setServices(updatedServices);
     } catch (error) {
