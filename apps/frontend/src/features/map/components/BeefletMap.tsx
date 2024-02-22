@@ -17,9 +17,10 @@ import L, { LatLngBounds, CRS, LatLng } from "leaflet";
 import { MapContext } from "../components";
 import "./forBeef.css";
 import "leaflet/dist/leaflet.css";
-import { Button } from "flowbite-react";
+import { Button, Alert, Card, ToggleSwitch } from "flowbite-react";
+import { HiInformationCircle } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-import CustomButton from "@/features/map/components/Description.tsx";
+//import CustomButton from "@/features/map/components/Description.tsx";
 import { assetToFloor, floorToAsset } from "../utils";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Nodes } from "database";
@@ -538,45 +539,53 @@ export default function BeefletMap() {
               </Tooltip>
             </Marker>
           ))}
-        <div>
-          <CustomButton
-            title={"Toggle Edges"}
-            onClick={() => setToggledEdges(!toggledEdges)}
-            className={"custom-toggle-button"}
-            position={"bottomleft"}
-          />
-          <CustomButton
-            title={"Toggle Names"}
-            onClick={() => setToggledNames(!toggledNames)}
-            className={"custom-toggle-button"}
-            position={"bottomleft"}
-          />
-          <CustomButton
-            title={"Toggle Hallways"}
-            onClick={() => setToggledHallways(!toggledHallways)}
-            className={"custom-toggle-button"}
-            position={"bottomleft"}
-          />
-          <CustomButton
-            title={"Toggle Colorblind"}
-            onClick={() => setColorBlind(!colorBlind)}
-            className={"custom-toggle-button"}
-            position={"bottomleft"}
-          />
-          <CustomButton
-            title={"Toggle Nodes"}
-            onClick={() => setToggledNodes(!toggledNodes)}
-            className={"custom-toggle-button"}
-            position={"bottomleft"}
-          />
-          <CustomButton
-            title={
-              "How To Use Map <br>  Control click node to set as start location <br> Right click node to set as end location"
-            }
-            className={"instructions"}
-            position={"bottomright"}
-          />
-        </div>
+        <Card className="leaflet-left leaflet-bottom bg-gray-50 dark:bg-gray-800">
+          <ToggleSwitch
+            onChange={() => setToggledEdges(!toggledEdges)}
+            checked={toggledEdges}
+            //position={"bottomleft"}
+            className={" pointer-events-auto focus:ring-0"}
+            label={"Edges"}
+          ></ToggleSwitch>
+          <ToggleSwitch
+            onChange={() => setToggledNames(!toggledNames)}
+            checked={toggledNames}
+            //position={"bottomleft"}
+            className={" pointer-events-auto focus:ring-0"}
+            label={"Names"}
+          ></ToggleSwitch>
+          <ToggleSwitch
+            onChange={() => setToggledHallways(!toggledHallways)}
+            checked={toggledHallways}
+            //position={"bottomleft"}
+            className={" pointer-events-auto focus:ring-0"}
+            label={"Hallways"}
+          ></ToggleSwitch>
+          <ToggleSwitch
+            onChange={() => setColorBlind(!colorBlind)}
+            checked={colorBlind}
+            //position={"bottomleft"}
+            className={" pointer-events-auto focus:ring-0"}
+            label={"Colorblind"}
+          ></ToggleSwitch>
+          <ToggleSwitch
+            onChange={() => setToggledNodes(!toggledNodes)}
+            checked={toggledNodes}
+            //position={"bottomleft"}
+            className={" pointer-events-auto focus:ring-0"}
+            label={"Nodes"}
+          ></ToggleSwitch>
+        </Card>
+        <Alert
+          color="cyan"
+          className={"leaflet-bottom leaflet-right pointer-events-auto"}
+          //position={"bottomright"}
+          icon={HiInformationCircle}
+          rounded
+        >
+          How To Use Map: <br /> Control click node to set as start location{" "}
+          <br /> Right click node to set as end location
+        </Alert>
       </MapContainer>
     </div>
   );
