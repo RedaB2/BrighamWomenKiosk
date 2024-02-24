@@ -22,10 +22,6 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
       const nodeA = graph.getNode(nodeIdA);
       const nodeB = graph.getNode(nodeIdB);
 
-      if (!nodeA || !nodeB) {
-        return Infinity;
-      }
-
       const mapFloorToNumber = (floorLabel: string | number): number => {
         const mappings: { [key: string]: number } = {
           L1: -1,
@@ -36,25 +32,25 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
         };
         return mappings[floorLabel.toString()] || 0;
       };
+      if (!nodeA || !nodeB) return Infinity;
 
-      const floorA = mapFloorToNumber(nodeA.floor);
-      const floorB = mapFloorToNumber(nodeB.floor);
-      const sameFloor = floorA === floorB;
-      let distance;
+      const nodeAFloor = mapFloorToNumber(nodeA.floor);
+      const nodeBFloor = mapFloorToNumber(nodeB.floor);
 
-      if (sameFloor) {
-        const dx = nodeA.xcoord - nodeB.xcoord;
-        const dy = nodeA.ycoord - nodeB.ycoord;
-        distance = Math.sqrt(dx * dx + dy * dy);
+      const verticalDistance = Math.abs(nodeAFloor - nodeBFloor);
+      const horizontalDistance = Math.sqrt(
+        Math.pow(nodeA.xcoord - nodeB.xcoord, 2) +
+          Math.pow(nodeA.ycoord - nodeB.ycoord, 2)
+      );
 
-        if (nodeA.nodeType === "ELEV" || nodeB.nodeType === "ELEV") {
-          distance += 10000;
-        }
-      } else {
-        distance = Math.abs(floorA - floorB) * 100;
-      }
+      const verticalCostMultiplier =
+        verticalDistance > 0
+          ? nodeA.nodeType === "ELEV" || nodeB.nodeType === "ELEV"
+            ? 1
+            : 2
+          : 0;
 
-      return distance;
+      return horizontalDistance + verticalCostMultiplier * verticalDistance;
     };
 
     openSet.push({
@@ -82,35 +78,36 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
       openSet = openSet.filter((node) => node.nodeId !== current.nodeId);
       closedSet.add(current.nodeId);
 
-      const neighbors = graph.getNeighbors(current.nodeId);
-      if (neighbors) {
-        for (const neighbor of neighbors) {
-          if (closedSet.has(neighbor.endNode)) continue;
-
-          const tentativeGCost = current.gCost + neighbor.weight;
-          let neighborNode = openSet.find((n) => n.nodeId === neighbor.endNode);
-          let isNewPathShorter = false;
-
-          if (!neighborNode) {
-            neighborNode = {
-              nodeId: neighbor.endNode,
-              gCost: Infinity,
-              hCost: heuristic(neighbor.endNode, endNodeId),
-              fCost: Infinity,
-            };
-            openSet.push(neighborNode);
-            isNewPathShorter = true;
-          } else if (tentativeGCost < neighborNode.gCost) {
-            isNewPathShorter = true;
-          }
-
-          if (isNewPathShorter) {
-            neighborNode.gCost = tentativeGCost;
-            neighborNode.fCost = neighborNode.gCost + neighborNode.hCost;
-            neighborNode.parent = current;
-          }
-        }
+      const currentNodeId = graph.getNeighbors(current.nodeId);
+      if (!currentNodeId) {
+        return [];
       }
+      currentNodeId.forEach((neighbor) => {
+        if (closedSet.has(neighbor.endNode)) return;
+
+        const tentativeGCost = current.gCost + neighbor.weight;
+        let neighborNode = openSet.find((n) => n.nodeId === neighbor.endNode);
+        let isNewPathShorter = false;
+
+        if (!neighborNode) {
+          neighborNode = {
+            nodeId: neighbor.endNode,
+            gCost: Infinity,
+            hCost: heuristic(neighbor.endNode, endNodeId),
+            fCost: Infinity,
+          };
+          openSet.push(neighborNode);
+          isNewPathShorter = true;
+        } else if (tentativeGCost < neighborNode.gCost) {
+          isNewPathShorter = true;
+        }
+
+        if (isNewPathShorter) {
+          neighborNode.gCost = tentativeGCost;
+          neighborNode.fCost = neighborNode.gCost + neighborNode.hCost;
+          neighborNode.parent = current;
+        }
+      });
     }
 
     return [];
