@@ -15,6 +15,8 @@ const Map = () => {
   const [startID, setStartID] = useState("");
   const [endID, setEndID] = useState("");
   const [requests, setRequests] = useState<Requests[]>([]);
+  const [floorSections, setFloorSections] = useState<unknown[]>([]);
+  const [selectedFID, setSelectedFID] = useState("1");
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -75,6 +77,10 @@ const Map = () => {
         setEndID,
         requests,
         setRequests,
+        floorSections,
+        setFloorSections,
+        selectedFID,
+        setSelectedFID,
       }}
     >
       <div className="h-screen flex overflow-hidden bg-gray-100 dark:bg-neutral-900">

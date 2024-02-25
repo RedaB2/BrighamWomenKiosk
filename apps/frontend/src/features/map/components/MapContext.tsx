@@ -22,6 +22,10 @@ const MapContext = createContext<{
   setEndID: Dispatch<SetStateAction<string>>;
   requests: Requests[];
   setRequests: Dispatch<SetStateAction<Requests[]>>;
+  floorSections: unknown[];
+  setFloorSections: Dispatch<SetStateAction<unknown[]>>;
+  selectedFID: string;
+  setSelectedFID: Dispatch<SetStateAction<string>>;
 }>({
   nodes: [],
   // eslint-disable-next-line no-empty-function
@@ -53,6 +57,12 @@ const MapContext = createContext<{
   requests: [],
   // eslint-disable-next-line no-empty-function
   setRequests: () => {},
+  floorSections: [],
+  // eslint-disable-next-line no-empty-function
+  setFloorSections: () => {},
+  selectedFID: "1",
+  // eslint-disable-next-line no-empty-function
+  setSelectedFID: () => {},
 });
 
 export { MapContext };
