@@ -18,35 +18,37 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
         let openSet: AStarNode[] = [];
         const closedSet: Set<string> = new Set();
 
+        const startNode = graph.getNode(startNodeId);
+        const endNode = graph.getNode(endNodeId);
+        if (!startNode || !endNode) return [];
+
+        const mapFloorToNumber = (floorLabel: string | number): number => {
+            const mappings: { [key: string]: number } = {
+                L1: -1, L2: -2, "1": 1, "2": 2, "3": 3, 
+            };
+            return mappings[floorLabel.toString()] || 0;
+        };
+
+        const startFloor = mapFloorToNumber(startNode.floor);
+        const endFloor = mapFloorToNumber(endNode.floor);
+        const sameFloor = startFloor === endFloor;
+
         const heuristic = (nodeIdA: string, nodeIdB: string): number => {
             const nodeA = graph.getNode(nodeIdA);
             const nodeB = graph.getNode(nodeIdB);
 
             if (!nodeA || !nodeB) return Infinity;
 
-            const mapFloorToNumber = (floorLabel: string | number): number => {
-                const mappings: { [key: string]: number } = {
-                    L1: -1,
-                    L2: -2,
-                    "1": 1,
-                    "2": 2,
-                    "3": 3,
-                };
-                return mappings[floorLabel.toString()] || 0;
-            };
-
             const nodeAFloor = mapFloorToNumber(nodeA.floor);
             const nodeBFloor = mapFloorToNumber(nodeB.floor);
 
-            
             const verticalDistance = Math.abs(nodeAFloor - nodeBFloor);
             const horizontalDistance = Math.sqrt(
                 Math.pow(nodeA.xcoord - nodeB.xcoord, 2) +
                 Math.pow(nodeA.ycoord - nodeB.ycoord, 2)
             );
-
-           
-            const verticalCostMultiplier = verticalDistance > 0 ? 50 : 0; 
+            
+            const verticalCostMultiplier = sameFloor && verticalDistance > 0 ? 100 : 50;
 
             return horizontalDistance + verticalCostMultiplier * verticalDistance;
         };
@@ -75,16 +77,23 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
             closedSet.add(current.nodeId);
 
             const neighbors = graph.getNeighbors(current.nodeId);
-            if (!neighbors) {
+
+            if (!neighbors){
                 return [];
             }
 
             neighbors.forEach((neighbor) => {
                 if (closedSet.has(neighbor.endNode)) return;
 
+                const neighborNodeData = graph.getNode(neighbor.endNode);
+                if (!neighborNodeData) return;
+
                 const tentativeGCost = current.gCost + neighbor.weight;
                 let neighborNode = openSet.find((n) => n.nodeId === neighbor.endNode);
                 let isNewPathShorter = false;
+
+                const neighborFloor = mapFloorToNumber(neighborNodeData.floor);
+                const unnecessaryFloorChangePenalty = sameFloor && neighborFloor !== startFloor ? 1000 : 0;
 
                 if (!neighborNode) {
                     neighborNode = {
@@ -95,12 +104,12 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
                     };
                     openSet.push(neighborNode);
                     isNewPathShorter = true;
-                } else if (tentativeGCost < neighborNode.gCost) {
+                } else if (tentativeGCost + unnecessaryFloorChangePenalty < neighborNode.gCost) {
                     isNewPathShorter = true;
                 }
 
                 if (isNewPathShorter) {
-                    neighborNode.gCost = tentativeGCost;
+                    neighborNode.gCost = tentativeGCost + unnecessaryFloorChangePenalty;
                     neighborNode.fCost = neighborNode.gCost + neighborNode.hCost;
                     neighborNode.parent = current;
                 }
