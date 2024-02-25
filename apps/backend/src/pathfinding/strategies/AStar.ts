@@ -1,4 +1,4 @@
-import { IPathfindingStrategy } from "../IPathfindingStrategy.ts";
+import { BasePathfindingStrategy } from "../BasePathfindingStrategy.ts";
 import { Graph } from "../GraphSingleton.ts";
 
 interface AStarNode {
@@ -9,14 +9,17 @@ interface AStarNode {
     parent?: AStarNode;
 }
 
-class AStarPathfindingStrategy implements IPathfindingStrategy {
-    async findPath(
-        startNodeId: string,
-        endNodeId: string,
-        graph: Graph
-    ): Promise<string[]> {
-        let openSet: AStarNode[] = [];
-        const closedSet: Set<string> = new Set();
+class AStarPathfindingStrategy extends BasePathfindingStrategy {
+
+    private openSet: AStarNode[] = [];
+    private closedSet: Set<string> = new Set();
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    protected setup(startNodeId: string, endNodeId: string, graph: Graph): boolean {
+        return true;
+    }
+
+    protected async algorithm(startNodeId: string, endNodeId: string, graph: Graph): Promise<string[]> {
 
         const startNode = graph.getNode(startNodeId);
         const endNode = graph.getNode(endNodeId);
@@ -24,7 +27,7 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
 
         const mapFloorToNumber = (floorLabel: string | number): number => {
             const mappings: { [key: string]: number } = {
-                L1: -1, L2: -2, "1": 1, "2": 2, "3": 3, 
+                L1: -1, L2: -2, "1": 1, "2": 2, "3": 3,
             };
             return mappings[floorLabel.toString()] || 0;
         };
@@ -47,21 +50,21 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
                 Math.pow(nodeA.xcoord - nodeB.xcoord, 2) +
                 Math.pow(nodeA.ycoord - nodeB.ycoord, 2)
             );
-            
+
             const verticalCostMultiplier = sameFloor && verticalDistance > 0 ? 100 : 50;
 
             return horizontalDistance + verticalCostMultiplier * verticalDistance;
         };
 
-        openSet.push({
+        this.openSet.push({
             nodeId: startNodeId,
             gCost: 0,
             hCost: heuristic(startNodeId, endNodeId),
             fCost: heuristic(startNodeId, endNodeId),
         });
 
-        while (openSet.length > 0) {
-            let current = openSet.reduce((prev, curr) => prev.fCost < curr.fCost ? prev : curr);
+        while (this.openSet.length > 0) {
+            let current = this.openSet.reduce((prev, curr) => prev.fCost < curr.fCost ? prev : curr);
 
             if (current.nodeId === endNodeId) {
                 const path = [];
@@ -73,8 +76,8 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
                 return path;
             }
 
-            openSet = openSet.filter((node) => node.nodeId !== current.nodeId);
-            closedSet.add(current.nodeId);
+            this.openSet = this.openSet.filter((node) => node.nodeId !== current.nodeId);
+            this.closedSet.add(current.nodeId);
 
             const neighbors = graph.getNeighbors(current.nodeId);
 
@@ -83,13 +86,13 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
             }
 
             neighbors.forEach((neighbor) => {
-                if (closedSet.has(neighbor.endNode)) return;
+                if (this.closedSet.has(neighbor.endNode)) return;
 
                 const neighborNodeData = graph.getNode(neighbor.endNode);
                 if (!neighborNodeData) return;
 
                 const tentativeGCost = current.gCost + neighbor.weight;
-                let neighborNode = openSet.find((n) => n.nodeId === neighbor.endNode);
+                let neighborNode = this.openSet.find((n) => n.nodeId === neighbor.endNode);
                 let isNewPathShorter = false;
 
                 const neighborFloor = mapFloorToNumber(neighborNodeData.floor);
@@ -102,7 +105,7 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
                         hCost: heuristic(neighbor.endNode, endNodeId),
                         fCost: Infinity,
                     };
-                    openSet.push(neighborNode);
+                    this.openSet.push(neighborNode);
                     isNewPathShorter = true;
                 } else if (tentativeGCost + unnecessaryFloorChangePenalty < neighborNode.gCost) {
                     isNewPathShorter = true;
@@ -117,6 +120,13 @@ class AStarPathfindingStrategy implements IPathfindingStrategy {
         }
 
         return [];
+    }
+
+    protected teardown(path: string[]): string[] {
+        // Reset state for potential reuse
+        this.openSet = [];
+        this.closedSet.clear();
+        return path; // No modification to path in teardown
     }
 }
 
