@@ -248,9 +248,8 @@ export default function BeefletMap() {
           <SVGOverlay bounds={new LatLngBounds([0, 0], [-3400, 5000])}>
             <svg viewBox="0 0 5000 3400">
               {paths[assetToFloor(selectedFloor)].map((currentPath, i) => (
-                <>
+                <React.Fragment key={i}>
                   <path
-                    key={i}
                     id={"movePath" + i.toString()}
                     d={pathToPoints(currentPath).pathData}
                     stroke={(() => {
@@ -265,7 +264,6 @@ export default function BeefletMap() {
                     strokeLinecap={"round"}
                   />
                   <path
-                    key={i}
                     id={"movePath" + i.toString()}
                     d={pathToPoints(currentPath).pathData}
                     stroke={(() => {
@@ -280,7 +278,6 @@ export default function BeefletMap() {
                     strokeLinecap={"round"}
                   />
                   <path
-                    key={i}
                     id={"movePath" + i.toString()}
                     d={pathToPoints(currentPath).pathData}
                     stroke={(() => {
@@ -293,7 +290,7 @@ export default function BeefletMap() {
                     strokeWidth={3 * (Math.max(1 - zoom, 1 / 2) * 1.5)}
                     className="custom-path"
                   />
-                </>
+                </React.Fragment>
               ))}
             </svg>
           </SVGOverlay>
@@ -609,7 +606,7 @@ export default function BeefletMap() {
         >
           {floors.length > 1 &&
             (floors as newNodeFloorID[]).map((floor, i) => (
-              <div className={"flex"}>
+              <div className={"flex"} key={i}>
                 {i > 0 && (
                   <MdDoubleArrow
                     className={"align-content-center"}
