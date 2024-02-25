@@ -10,6 +10,7 @@ import {
   GraphSingleton,
   PathfindingContext,
   DijkstraPathfindingStrategy,
+  NearestPOIFindingStrategy,
 } from "../pathfinding";
 
 const router: Router = express.Router();
@@ -277,12 +278,40 @@ router.get("/download/edges", async function (req: Request, res: Response) {
   }
 });
 
-router.post("/pathfinding", async function (req: Request, res: Response) {
-    const { startNodeId, endNodeId, algorithm } = req.body;
+const poiTypes = ['ELEV', 'REST', 'STAI', 'DEPT', 'LABS', 'INFO', 'CONF', 'EXIT', 'RETL', 'SERV', 'HALL', 'BATH'];
 
-    if (!startNodeId || !endNodeId) {
-        return res.status(400).send("Both startNodeId and endNodeId are required");
+router.post("/pathfinding", async function (req: Request, res: Response) {
+    const { startNodeId, endNodeId, algorithm, poiType } = req.body;
+
+
+    if (!startNodeId) {
+        return res.status(400).send("startNodeId is required");
     }
+
+
+    if (poiType && !poiTypes.includes(poiType)) {
+        return res.status(400).send(`Invalid POI Type. Valid options are: ${poiTypes.join(', ')}.`);
+    }
+
+
+    if (poiType && !endNodeId) {
+        try {
+            const graph = await GraphSingleton.getInstance();
+            const poiStrategy = new NearestPOIFindingStrategy([poiType]);
+            const context = new PathfindingContext(poiStrategy);
+            const pathNodeIds = await context.findPath(startNodeId, '', graph);
+            return res.json({ path: pathNodeIds });
+        } catch (error) {
+            console.error("Error processing nearest POI request:", error);
+            return res.status(500).send("Internal server error");
+        }
+    }
+
+
+    if (!endNodeId) {
+        return res.status(400).send("endNodeId is required for specific destination pathfinding");
+    }
+
 
     if (!["AStar", "BFS", "DFS", "Dijkstra"].includes(algorithm)) {
         return res
@@ -297,13 +326,13 @@ router.post("/pathfinding", async function (req: Request, res: Response) {
             where: { nodeID: { in: [startNodeId, endNodeId] } },
         });
 
-        if (nodes.length < 2) {
+        if (nodes.length < 2 && !poiType) {
             return res.status(404).send("One or both node IDs not found");
         }
 
         const graph = await GraphSingleton.getInstance();
         let strategy;
-      
+
         switch (algorithm) {
             case "AStar":
                 strategy = new AStarPathfindingStrategy();
