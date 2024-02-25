@@ -69,6 +69,11 @@ const ServiceRequest = () => {
         console.error("Failed to fetch employees:", error);
       }
     };
+    fetchNodes();
+    fetchEmployees();
+  }, []);
+
+  useEffect(() => {
     const initializeRoom = () => {
       const initialRoomID = new URLSearchParams(location.state).get("roomID");
       if (initialRoomID && nodes.length > 0) {
@@ -78,8 +83,6 @@ const ServiceRequest = () => {
         }
       }
     };
-    fetchNodes();
-    fetchEmployees();
     initializeRoom();
   }, [location.state, nodes]);
 

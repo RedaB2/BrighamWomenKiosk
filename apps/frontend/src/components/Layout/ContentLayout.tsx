@@ -16,6 +16,7 @@ import {
   CustomFlowbiteTheme,
 } from "flowbite-react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
 
 const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
   root: {
@@ -47,17 +48,25 @@ const SidebarNavigation = () => {
 
   return (
     <FlowbiteSidebar aria-label="Navigation sidebar" theme={sidebarTheme}>
-      <FlowbiteSidebar.Logo href="/" img={logoUrl} imgAlt="Hospital logo" />
+      <Link to="/" reloadDocument>
+        <img src={logoUrl} alt="Hospital logo" />
+      </Link>
       <FlowbiteSidebar.Items className="pt-4">
         <FlowbiteSidebar.ItemGroup>
-          <FlowbiteSidebar.Item href="/" icon={FaMapMarkedAlt}>
+          <FlowbiteSidebar.Item
+            icon={FaMapMarkedAlt}
+            as={Link}
+            to="/"
+            reloadDocument
+          >
             Hospital Map
           </FlowbiteSidebar.Item>
           {isAuthenticated && (
             <>
               <FlowbiteSidebar.Item
-                href="/services"
                 icon={MdOutlineRoomService}
+                as={Link}
+                to="/services"
               >
                 Request Services
               </FlowbiteSidebar.Item>
@@ -65,25 +74,27 @@ const SidebarNavigation = () => {
                 icon={FaDownload}
                 label="Import/Export Data"
               >
-                <FlowbiteSidebar.Item href="/data/map" icon={FaMap}>
+                <FlowbiteSidebar.Item icon={FaMap} as={Link} to="/data/map">
                   Map Data
                 </FlowbiteSidebar.Item>
                 <FlowbiteSidebar.Item
-                  href="/data/employees"
                   icon={FaPeopleGroup}
+                  as={Link}
+                  to="/data/employees"
                 >
                   Employees Data
                 </FlowbiteSidebar.Item>
                 <FlowbiteSidebar.Item
-                  href="/data/services"
                   icon={MdOutlineRoomService}
+                  as={Link}
+                  to="/data/services"
                 >
                   Service Requests Data
                 </FlowbiteSidebar.Item>
               </FlowbiteSidebar.Collapse>
             </>
           )}
-          <FlowbiteSidebar.Item href="/about" icon={FaInfoCircle}>
+          <FlowbiteSidebar.Item icon={FaInfoCircle} as={Link} to="/about">
             About
           </FlowbiteSidebar.Item>
         </FlowbiteSidebar.ItemGroup>
@@ -93,20 +104,25 @@ const SidebarNavigation = () => {
             Switch Theme
           </FlowbiteSidebar.Item>
           {isAuthenticated && (
-            <FlowbiteSidebar.Item href="/auth/profile" icon={FaUserAlt}>
+            <FlowbiteSidebar.Item icon={FaUserAlt} as={Link} to="/auth/profile">
               Profile
             </FlowbiteSidebar.Item>
           )}
           {!isAuthenticated && (
-            <FlowbiteSidebar.Item href="/auth/sign-in" icon={FaSignInAlt}>
+            <FlowbiteSidebar.Item
+              icon={FaSignInAlt}
+              as={Link}
+              to="/auth/sign-in"
+            >
               Sign In
             </FlowbiteSidebar.Item>
           )}
           {isAuthenticated && (
             <FlowbiteSidebar.Item
-              href="/"
               onClick={handleLogout}
               icon={FaSignOutAlt}
+              as={Link}
+              to="/"
             >
               Sign Out
             </FlowbiteSidebar.Item>

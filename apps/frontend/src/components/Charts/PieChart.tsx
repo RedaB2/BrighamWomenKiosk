@@ -27,28 +27,28 @@ const PieChart: React.FC<PieChartProps> = ({
         aria-labelledby="dropdownDefaultButton"
       >
         <li>
-          <a
-            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+          <button
+            className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
             onClick={() => handleEmployeeTypeChange("")}
           >
             All
-          </a>
+          </button>
         </li>
         <li>
-          <a
-            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+          <button
+            className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
             onClick={() => handleEmployeeTypeChange("ADMIN")}
           >
             Admin
-          </a>
+          </button>
         </li>
         <li>
-          <a
-            className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+          <button
+            className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
             onClick={() => handleEmployeeTypeChange("REGULAR")}
           >
             Regular
-          </a>
+          </button>
         </li>
       </ul>
     </div>

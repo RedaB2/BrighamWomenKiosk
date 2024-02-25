@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import firstFloor from "../assets/01_thefirstfloor.png";
-import { Sidebar, MapContext } from "../components";
+import { Sidebar, MapContext, NodeFloorID } from "../components";
 import BeefletMap from "@/features/map/components/BeefletMap.tsx";
 import { Edges, Nodes, Requests } from "database";
 
@@ -15,7 +15,7 @@ const Map = () => {
   const [startID, setStartID] = useState("");
   const [endID, setEndID] = useState("");
   const [requests, setRequests] = useState<Requests[]>([]);
-  const [floorSections, setFloorSections] = useState<unknown[]>([]);
+  const [floorSections, setFloorSections] = useState<NodeFloorID[]>([]);
   const [selectedFID, setSelectedFID] = useState("1");
 
   useEffect(() => {

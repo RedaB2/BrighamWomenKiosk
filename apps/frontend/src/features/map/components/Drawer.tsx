@@ -19,6 +19,7 @@ import {
 } from "flowbite-react";
 import { IoMdClose } from "react-icons/io";
 import { useAuth0 } from "@auth0/auth0-react";
+import { Link } from "react-router-dom";
 
 const drawerTheme: CustomFlowbiteTheme["sidebar"] = {
   root: {
@@ -52,6 +53,7 @@ const Drawer = () => {
   return (
     <FlowbiteSidebar
       aria-label="Navigation drawer"
+      aria-labelledby={drawerId}
       theme={drawerTheme}
       tabIndex={-1}
       id={drawerId}
@@ -67,18 +69,21 @@ const Drawer = () => {
           <IoMdClose />
           <span className="sr-only">Close navigation drawer</span>
         </Button>
-        <FlowbiteSidebar.Logo href="/" img={logoUrl} imgAlt="Hospital logo" />
+        <Link to="/" className="h-full flex-1 flex justify-center items-center">
+          <img src={logoUrl} alt="Hospital logo" />
+        </Link>
       </div>
       <FlowbiteSidebar.Items className="pt-4">
         <FlowbiteSidebar.ItemGroup>
-          <FlowbiteSidebar.Item href="/" icon={FaMapMarkedAlt}>
+          <FlowbiteSidebar.Item icon={FaMapMarkedAlt} as={Link} to="/">
             Hospital Map
           </FlowbiteSidebar.Item>
           {isAuthenticated && (
             <>
               <FlowbiteSidebar.Item
-                href="/services"
                 icon={MdOutlineRoomService}
+                as={Link}
+                to="/services"
               >
                 Request Services
               </FlowbiteSidebar.Item>
@@ -86,25 +91,27 @@ const Drawer = () => {
                 icon={FaDownload}
                 label="Import/Export Data"
               >
-                <FlowbiteSidebar.Item href="/data/map" icon={FaMap}>
+                <FlowbiteSidebar.Item icon={FaMap} as={Link} to="/data/map">
                   Map Data
                 </FlowbiteSidebar.Item>
                 <FlowbiteSidebar.Item
-                  href="/data/employees"
                   icon={FaPeopleGroup}
+                  as={Link}
+                  to="/data/employees"
                 >
                   Employees Data
                 </FlowbiteSidebar.Item>
                 <FlowbiteSidebar.Item
-                  href="/data/services"
                   icon={MdOutlineRoomService}
+                  as={Link}
+                  to="/data/services"
                 >
                   Service Requests Data
                 </FlowbiteSidebar.Item>
               </FlowbiteSidebar.Collapse>
             </>
           )}
-          <FlowbiteSidebar.Item href="/about" icon={FaInfoCircle}>
+          <FlowbiteSidebar.Item icon={FaInfoCircle} as={Link} to="/about">
             About
           </FlowbiteSidebar.Item>
         </FlowbiteSidebar.ItemGroup>
@@ -114,20 +121,25 @@ const Drawer = () => {
             Switch Theme
           </FlowbiteSidebar.Item>
           {isAuthenticated && (
-            <FlowbiteSidebar.Item href="/auth/profile" icon={FaUserAlt}>
+            <FlowbiteSidebar.Item icon={FaUserAlt} as={Link} to="/auth/profile">
               Profile
             </FlowbiteSidebar.Item>
           )}
           {!isAuthenticated && (
-            <FlowbiteSidebar.Item href="/auth/sign-in" icon={FaSignInAlt}>
+            <FlowbiteSidebar.Item
+              icon={FaSignInAlt}
+              as={Link}
+              to="/auth/sign-in"
+            >
               Sign In
             </FlowbiteSidebar.Item>
           )}
           {isAuthenticated && (
             <FlowbiteSidebar.Item
-              href="/"
               onClick={handleLogout}
               icon={FaSignOutAlt}
+              as={Link}
+              to="/"
             >
               Sign Out
             </FlowbiteSidebar.Item>

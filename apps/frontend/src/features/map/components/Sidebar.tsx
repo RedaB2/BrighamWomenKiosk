@@ -10,6 +10,7 @@ import {
 } from "flowbite-react";
 import { CiMenuBurger, CiSearch } from "react-icons/ci";
 import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Nodes } from "database";
 import { MapContext } from "../components";
 import lowerLevel1 from "../assets/00_thelowerlevel1.png";
@@ -43,7 +44,7 @@ const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
 };
 
 // A class to temporarily hold nodes with an associated floorID, so that nodes on separate areas of the same floor can be differentiated
-class NodeFloorID {
+export class NodeFloorID {
   node: Nodes;
   floorID: string;
 
@@ -83,16 +84,18 @@ const Sidebar = () => {
   // assigns nodes IDs so that nodes on separate areas of the same floor can be differentiated
 
   function chooseFID(floor: string): string {
+    if (!floorSections[0]) {
+      return "";
+    }
     for (const anFID in floorSections) {
       if (anFID.substring(0, anFID.length - 1) == floor) {
         return anFID;
       }
     }
-    return floorSections[0] as string;
+    return floorSections[0].floorID;
   }
 
   useEffect(() => {
-    //console.log("Path updated");
     function separateFloors(newDirections: Nodes[]) {
       let lastFloor = "";
       const floors: NodeFloorID[] = [];
@@ -457,7 +460,9 @@ const Sidebar = () => {
           <CiMenuBurger />
           <span className="sr-only">Open navigation drawer</span>
         </Button>
-        <FlowbiteSidebar.Logo href="/" img={logoUrl} imgAlt="Hospital logo" />
+        <Link to="/" className="h-full flex-1 flex justify-center items-center">
+          <img src={logoUrl} alt="Hospital logo" />
+        </Link>
       </div>
 
       <div className="flex flex-col space-y-4 my-4">

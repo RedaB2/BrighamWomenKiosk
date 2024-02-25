@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import {
   MapContainer,
   ImageOverlay,
@@ -26,18 +26,29 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Nodes } from "database";
 import ElevatorIcon from "../assets/ElevatorIconBlue.png";
 import StairIcon from "../assets/StairIcon.png";
-import lowerLevel1 from "../assets/00_thelowerlevel1.png";
-import lowerLevel2 from "../assets/00_thelowerlevel2.png";
-import firstFloor from "../assets/01_thefirstfloor.png";
-import secondFloor from "../assets/02_thesecondfloor.png";
-import thirdFloor from "../assets/03_thethirdfloor.png";
 import { MdDoubleArrow } from "react-icons/md";
 
-lowerLevel1;
-lowerLevel2;
-firstFloor;
-secondFloor;
-thirdFloor;
+const ZoomGetter = ({ setZoom }: { setZoom: (arg0: number) => void }) => {
+  useMapEvent("zoom", (event) => {
+    const zoomLevel = event.target.getZoom();
+    setZoom(zoomLevel);
+  });
+  return null;
+};
+
+function MapGetter({
+  setMap,
+  setLastFloor,
+  selectedFloor,
+}: {
+  setMap: (arg0: L.Map) => void;
+  setLastFloor: (arg0: string) => void;
+  selectedFloor: string;
+}) {
+  setMap(useMap());
+  setLastFloor(selectedFloor);
+  return null;
+}
 
 export default function BeefletMap() {
   // Define the bounds of the image in terms of x and y coordinates
@@ -74,10 +85,8 @@ export default function BeefletMap() {
   const [colorBlind, setColorBlind] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [zoom, setZoom] = useState(0);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [map, setMap] = useState<any>();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [lastFloor, setLastFloor] = useState<any>();
+  const [map, setMap] = useState<L.Map>();
+  const [lastFloor, setLastFloor] = useState<string>();
   const [floors, setFloors] = useState<newNodeFloorID[]>([]);
 
   const nodePath = path.map((nodeID) =>
@@ -175,34 +184,22 @@ export default function BeefletMap() {
     return { pathData, pathLength };
   }
 
-  const ZoomGetter = () => {
-    useMapEvent("zoom", (event) => {
-      const zoomLevel = event.target.getZoom();
-      setZoom(zoomLevel);
-    });
-    return null;
-  };
+  const resetZoom = useCallback(
+    (map: { flyTo: (arg0: LatLng, arg1: number) => void }) => {
+      if (lastFloor != selectedFloor) {
+        map.flyTo(new LatLng(-1700, 2500), -2);
+        new LatLng(0, 0);
+        map;
+      }
+    },
+    [lastFloor, selectedFloor]
+  );
 
-  const ResetZoom = (map: { flyTo: (arg0: LatLng, arg1: number) => void }) => {
-    if (lastFloor != selectedFloor) {
-      map.flyTo(new LatLng(-1700, 2500), -2);
-      new LatLng(0, 0);
-      map;
+  useEffect(() => {
+    if (map) {
+      resetZoom(map);
     }
-  };
-
-  useMemo(() => {
-    if (map != null) {
-      ResetZoom(map);
-    }
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFloor]);
-
-  function MapGetter() {
-    setMap(useMap());
-    setLastFloor(selectedFloor);
-    return null;
-  }
+  }, [map, resetZoom]);
 
   return (
     <div className="w-full h-full">
@@ -217,8 +214,12 @@ export default function BeefletMap() {
         bounceAtZoomLimits={true}
         doubleClickZoom={false}
       >
-        <ZoomGetter />
-        <MapGetter />
+        <ZoomGetter setZoom={setZoom} />
+        <MapGetter
+          setMap={setMap}
+          setLastFloor={setLastFloor}
+          selectedFloor={selectedFloor}
+        />
         <LayerGroup>
           <ImageOverlay url={selectedFloor} bounds={imageBounds} />
           {toggledEdges &&
@@ -234,6 +235,7 @@ export default function BeefletMap() {
               )
               .map((edge) => (
                 <Polyline
+                  key={edge[0][0].nodeID + edge[1][0].nodeID}
                   positions={[
                     [edge[0][0].ycoord * -1, edge[0][0].xcoord],
                     [edge[1][0].ycoord * -1, edge[1][0].xcoord],
@@ -241,7 +243,7 @@ export default function BeefletMap() {
                   pathOptions={{
                     color: "black",
                   }}
-                ></Polyline>
+                />
               ))}
           <SVGOverlay bounds={new LatLngBounds([0, 0], [-3400, 5000])}>
             <svg viewBox="0 0 5000 3400">
