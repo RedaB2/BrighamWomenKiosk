@@ -15,6 +15,15 @@ router.get("/", async function (req: Request, res: Response) {
   res.json(requests);
 });
 
+router.get("/with-employee", async function (req: Request, res: Response) {
+  const requests = await PrismaClient.requests.findMany({
+    include: {
+      employee: true,
+    },
+  });
+  res.json(requests);
+});
+
 router.get("/download", async function (req: Request, res: Response) {
   try {
     const services = await PrismaClient.requests.findMany();
