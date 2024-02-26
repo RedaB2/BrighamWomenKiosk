@@ -10,6 +10,7 @@ const MapData = () => {
   const [edges, setEdges] = useState([]);
   const [nodesFile, setNodesFile] = useState("");
   const [edgesFile, setEdgesFile] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -68,6 +69,27 @@ const MapData = () => {
     }
   };
 
+  const handleSubmitAll = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData();
+    selectedFiles.forEach((file, index) => {
+      formData.append(`file${index + 1}`, file);
+    });
+
+    try {
+      const res = await fetch("api/map/upload/all", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error(res.statusText);
+      setSelectedFiles([]);
+      alert("Files uploaded successfully!");
+    } catch (error) {
+      alert("Failed to upload files. Please try again.");
+    }
+  };
+
   return (
     <>
       <div className="px-16 py-8">
@@ -123,6 +145,41 @@ const MapData = () => {
               </form>
               <Button onClick={() => downloadCSV("/api/map/download/edges")}>
                 Download Edges CSV
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <form
+                action="/api/map/upload/edges"
+                method="post"
+                encType="multipart/form-data"
+                onSubmit={handleSubmitAll}
+              >
+                <div className="mb-2 block">
+                  <Label
+                    htmlFor="csv-upload"
+                    value="Upload new Nodes/Edges/Employee Data:"
+                  />
+                </div>
+                <FileInput
+                  className="w-50%"
+                  id="csv-upload"
+                  name="csv-upload"
+                  accept="text/csv"
+                  multiple
+                  helperText="CSV files only."
+                  onChange={(e) => {
+                    if (!e.target.files) {
+                      return;
+                    }
+                    const files = Array.from(e.target.files) as File[];
+                    setSelectedFiles(files);
+                  }}
+                />
+                <br />
+                <Button type="submit">Upload Files</Button>
+              </form>
+              <Button onClick={() => downloadCSV("/api/map/download/all")}>
+                Download All
               </Button>
             </div>
           </div>

@@ -3933,6 +3933,7 @@ const RAW_RUNTIME_STATE =
           ["http-errors", "npm:1.6.3"],\
           ["http-terminator", "npm:3.2.0"],\
           ["jose", "npm:4.15.4"],\
+          ["jszip", "npm:3.10.1"],\
           ["morgan", "npm:1.9.1"],\
           ["multer", "npm:1.4.5-lts.1"],\
           ["nodemon", "npm:3.0.3"],\
@@ -7636,6 +7637,19 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["jszip", [\
+      ["npm:3.10.1", {\
+        "packageLocation": "./.yarn/cache/jszip-npm-3.10.1-2862546cfb-bfbfbb9b0a.zip/node_modules/jszip/",\
+        "packageDependencies": [\
+          ["jszip", "npm:3.10.1"],\
+          ["lie", "npm:3.3.0"],\
+          ["pako", "npm:1.0.11"],\
+          ["readable-stream", "npm:2.3.8"],\
+          ["setimmediate", "npm:1.0.5"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["keyv", [\
       ["npm:4.5.4", {\
         "packageLocation": "./.yarn/cache/keyv-npm-4.5.4-4c8e2cf7f7-167eb6ef64.zip/node_modules/keyv/",\
@@ -7707,6 +7721,14 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/lie-npm-3.1.1-91350720d9-c2c7d9dcc3.zip/node_modules/lie/",\
         "packageDependencies": [\
           ["lie", "npm:3.1.1"],\
+          ["immediate", "npm:3.0.6"]\
+        ],\
+        "linkType": "HARD"\
+      }],\
+      ["npm:3.3.0", {\
+        "packageLocation": "./.yarn/cache/lie-npm-3.3.0-35ddd11a4d-f335ce67fe.zip/node_modules/lie/",\
+        "packageDependencies": [\
+          ["lie", "npm:3.3.0"],\
           ["immediate", "npm:3.0.6"]\
         ],\
         "linkType": "HARD"\
@@ -9760,6 +9782,15 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
+    ["pako", [\
+      ["npm:1.0.11", {\
+        "packageLocation": "./.yarn/cache/pako-npm-1.0.11-b8f1b69d3e-1ad07210e8.zip/node_modules/pako/",\
+        "packageDependencies": [\
+          ["pako", "npm:1.0.11"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
     ["parent-module", [\
       ["npm:1.0.1", {\
         "packageLocation": "./.yarn/cache/parent-module-npm-1.0.1-1fae11b095-6ba8b25514.zip/node_modules/parent-module/",\
@@ -11597,6 +11628,15 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["set-getter", "npm:0.1.1"],\
           ["to-object-path", "npm:0.3.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["setimmediate", [\
+      ["npm:1.0.5", {\
+        "packageLocation": "./.yarn/cache/setimmediate-npm-1.0.5-54587459b6-76e3f5d7f4.zip/node_modules/setimmediate/",\
+        "packageDependencies": [\
+          ["setimmediate", "npm:1.0.5"]\
         ],\
         "linkType": "HARD"\
       }]\
