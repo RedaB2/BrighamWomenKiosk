@@ -7,11 +7,12 @@ import {
   Label,
   List,
   Dropdown,
+  Modal,
 } from "flowbite-react";
 import { CiMenuBurger, CiSearch } from "react-icons/ci";
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Nodes } from "database";
+import type { Nodes } from "database";
 import { MapContext } from "../components";
 import lowerLevel1 from "../assets/00_thelowerlevel1.png";
 import lowerLevel2 from "../assets/00_thelowerlevel2.png";
@@ -29,6 +30,36 @@ import {
   BsArrowUpCircle,
 } from "react-icons/bs";
 import { floorToAsset } from "../utils";
+
+const nodeType = {
+  ELEV: "ELEV",
+  REST: "REST",
+  STAI: "STAI",
+  DEPT: "DEPT",
+  LABS: "LABS",
+  INFO: "INFO",
+  CONF: "CONF",
+  EXIT: "EXIT",
+  RETL: "RETL",
+  SERV: "SERV",
+  HALL: "HALL",
+  BATH: "BATH",
+};
+
+const nodeTypeLabel = {
+  ELEV: "Elevator",
+  REST: "Restroom",
+  STAI: "Stairs",
+  DEPT: "Department",
+  LABS: "Laboratory",
+  INFO: "Information",
+  CONF: "Conference Room",
+  EXIT: "Exit",
+  RETL: "Retail",
+  SERV: "Service",
+  HALL: "Hallway",
+  BATH: "Bathroom",
+};
 
 const sidebarTheme: CustomFlowbiteTheme["sidebar"] = {
   root: {
@@ -75,7 +106,10 @@ const Sidebar = () => {
     setSelectedFID,
     setCenter,
   } = useContext(MapContext);
-
+  const [openPoiModal, setOpenPoiModal] = useState(false);
+  const [poiType, setPoiType] = useState<
+    (typeof nodeType)[keyof typeof nodeType] | ""
+  >("");
   const [startSuggestions, setStartSuggestions] = useState<string[]>([]);
   const [endSuggestions, setEndSuggestions] = useState<string[]>([]);
   const [splitDirections, setSplitDirections] = useState<NodeFloorID[]>([]);
@@ -209,7 +243,6 @@ const Sidebar = () => {
       setSelectedFID(floorID);
     }
   };
-
   function turnDirection(floor: string, index: number) {
     bgAlt++;
     //const floor = floorID.substring(0,floorID.length-1);
@@ -751,24 +784,203 @@ const Sidebar = () => {
               setTimeout(() => setEndSuggestions([]), 200);
             }}
           />
-          <Dropdown
-            label={`Search Method${algorithm ? `: ${algorithm}` : ""}`}
-            size="xs"
-            dismissOnClick={true}
-          >
-            <Dropdown.Item onClick={() => setAlgorithm("AStar")}>
-              AStar
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setAlgorithm("BFS")}>
-              BFS
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setAlgorithm("DFS")}>
-              DFS
-            </Dropdown.Item>
-            <Dropdown.Item onClick={() => setAlgorithm("Dijkstra")}>
-              Dijkstra
-            </Dropdown.Item>
-          </Dropdown>
+          <div className="flex justify-between">
+            <Button onClick={() => setOpenPoiModal(true)} size="sm">
+              Find nearest
+            </Button>
+            <Modal
+              dismissible
+              size="lg"
+              show={openPoiModal}
+              onClose={() => setOpenPoiModal(false)}
+              className="z-[99999]"
+            >
+              <Modal.Header>Nearby Search</Modal.Header>
+              <Modal.Body className="space-y-6">
+                <Autocomplete
+                  suggestions={startSuggestions}
+                  setSuggestions={setStartSuggestions}
+                  value={startLocation}
+                  setValue={setStartLocation}
+                  id="startLocation"
+                  htmlFor="startLocation"
+                  label="Enter starting point"
+                  placeholder="Medical Records Conference Room Floor L1"
+                  required
+                  rightIcon={CiSearch}
+                  onFocus={(e) => {
+                    setStartLocation(e.target.value);
+                    setStartID(
+                      nodes
+                        .filter((node) => node["longName"] === startLocation)
+                        .map((node) => node.nodeID)[0]
+                    );
+                    if (e.target.value.length > 0) {
+                      setStartSuggestions(
+                        nodes
+                          .map((loc) => loc.longName)
+                          .filter((loc) =>
+                            loc
+                              .toLowerCase()
+                              .includes(e.target.value.toLowerCase())
+                          )
+                          .filter(
+                            (loc) =>
+                              (!loc.toLowerCase().includes("hall") &&
+                                !loc.toLowerCase().includes("stair") &&
+                                !loc.toLowerCase().includes("elevator")) ||
+                              loc.toLowerCase() ===
+                                "carrie m. hall conference center floor 2"
+                          )
+                          .sort()
+                          .slice(0, 10)
+                      );
+                    } else {
+                      setStartSuggestions(
+                        nodes
+                          .map((loc) => loc.longName)
+                          .filter((loc) =>
+                            loc
+                              .toLowerCase()
+                              .includes(e.target.value.toLowerCase())
+                          )
+                          .filter(
+                            (loc) =>
+                              (!loc.toLowerCase().includes("hall") &&
+                                !loc.toLowerCase().includes("stair") &&
+                                !loc.toLowerCase().includes("elevator")) ||
+                              loc.toLowerCase() ===
+                                "carrie m. hall conference center floor 2"
+                          )
+                          .sort()
+                      );
+                    }
+                  }}
+                  onBlur={() => {
+                    setStartID(
+                      nodes
+                        .filter((node) => node["longName"] === startLocation)
+                        .map((node) => node.nodeID)[0]
+                    );
+                    setTimeout(() => setStartSuggestions([]), 200);
+                  }}
+                  onChange={(e) => {
+                    setStartLocation(e.target.value);
+                    setStartID(
+                      nodes
+                        .filter((node) => node["longName"] === startLocation)
+                        .map((node) => node.nodeID)[0]
+                    );
+                    if (e.target.value.length > 0) {
+                      setStartSuggestions(
+                        nodes
+                          .map((loc) => loc.longName)
+                          .filter((loc) =>
+                            loc
+                              .toLowerCase()
+                              .includes(e.target.value.toLowerCase())
+                          )
+                          .filter(
+                            (loc) =>
+                              (!loc.toLowerCase().includes("hall") &&
+                                !loc.toLowerCase().includes("stair") &&
+                                !loc.toLowerCase().includes("elevator")) ||
+                              loc.toLowerCase() ===
+                                "carrie m. hall conference center floor 2"
+                          )
+                          .sort()
+                          .slice(0, 10)
+                      );
+                    } else {
+                      setStartSuggestions([]);
+                    }
+                  }}
+                />
+                <Dropdown
+                  label={`Landmark${
+                    poiType !== ""
+                      ? `: ${nodeTypeLabel[poiType as keyof typeof nodeType]}`
+                      : ""
+                  }`}
+                  dismissOnClick={true}
+                >
+                  {Object.values(nodeType).map((type, i) => (
+                    <Dropdown.Item
+                      key={i}
+                      onClick={() => {
+                        setPoiType(type);
+                      }}
+                    >
+                      {nodeTypeLabel[type as keyof typeof nodeType]}
+                    </Dropdown.Item>
+                  ))}
+                  <Dropdown.Item onClick={() => setPoiType("")}>
+                    Clear
+                  </Dropdown.Item>
+                </Dropdown>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button
+                  type="button"
+                  onClick={async () => {
+                    if (!startLocation) {
+                      alert("Please enter a starting point.");
+                      return;
+                    }
+                    if (!poiType) {
+                      alert("Please select a landmark type.");
+                      return;
+                    }
+                    const startNodeId = nodes
+                      .filter((node) => node["longName"] === startLocation)
+                      .map((node) => node.nodeID)[0];
+                    try {
+                      const res = await fetch("/api/map/pathfinding", {
+                        method: "POST",
+                        body: JSON.stringify({
+                          startNodeId,
+                          endNodeId: "",
+                          poiType,
+                        }),
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                      });
+                      if (!res.ok) throw new Error(res.statusText);
+                      const data = await res.json();
+                      setPath(data.path);
+                      setOpenPoiModal(false);
+                    } catch (error) {
+                      alert("Failed to find path. Please try again.");
+                    }
+                  }}
+                >
+                  Search
+                </Button>
+                <Button color="gray" onClick={() => setOpenPoiModal(false)}>
+                  Cancel
+                </Button>
+              </Modal.Footer>
+            </Modal>
+            <Dropdown
+              label={`Search Method${algorithm ? `: ${algorithm}` : ""}`}
+              size="xs"
+              dismissOnClick={true}
+            >
+              <Dropdown.Item onClick={() => setAlgorithm("AStar")}>
+                AStar
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setAlgorithm("BFS")}>
+                BFS
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setAlgorithm("DFS")}>
+                DFS
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => setAlgorithm("Dijkstra")}>
+                Dijkstra
+              </Dropdown.Item>
+            </Dropdown>
+          </div>
           <Button type="submit">Submit</Button>
         </form>
         {/* Displaying directions organized by floor */}

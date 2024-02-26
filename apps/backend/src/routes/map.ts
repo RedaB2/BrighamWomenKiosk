@@ -571,7 +571,7 @@ router.post("/pathfinding", async function (req: Request, res: Response) {
       .send(`Invalid POI Type. Valid options are: ${poiTypes.join(", ")}.`);
   }
 
-  if (poiType && !endNodeId) {
+  if (poiType && endNodeId === "") {
     try {
       const graph = await GraphSingleton.getInstance();
       const poiStrategy = new NearestPOIFindingStrategy([poiType]);
