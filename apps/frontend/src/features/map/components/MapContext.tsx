@@ -27,6 +27,8 @@ const MapContext = createContext<{
   setFloorSections: Dispatch<SetStateAction<NodeFloorID[]>>;
   selectedFID: string;
   setSelectedFID: Dispatch<SetStateAction<string>>;
+  center: number[];
+  setCenter: Dispatch<number[]>;
 }>({
   nodes: [],
   // eslint-disable-next-line no-empty-function
@@ -61,9 +63,12 @@ const MapContext = createContext<{
   floorSections: [],
   // eslint-disable-next-line no-empty-function
   setFloorSections: () => {},
-  selectedFID: "1",
+  selectedFID: "",
   // eslint-disable-next-line no-empty-function
   setSelectedFID: () => {},
+  center: [],
+  // eslint-disable-next-line no-empty-function
+  setCenter: () => {},
 });
 
 export { MapContext };

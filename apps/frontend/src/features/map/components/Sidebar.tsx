@@ -73,6 +73,7 @@ const Sidebar = () => {
     setFloorSections,
     selectedFID,
     setSelectedFID,
+    setCenter,
   } = useContext(MapContext);
 
   const [startSuggestions, setStartSuggestions] = useState<string[]>([]);
@@ -134,16 +135,60 @@ const Sidebar = () => {
       })
     );
     setSelectedFID(
-      splitDirections[0] ? splitDirections[0].floorID : chooseFID("1")
+      splitDirections[0] ? splitDirections[0].floorID : chooseFID("")
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [splitDirections]);
 
   useEffect(() => {
+    if (selectedFID === "") {
+      return;
+    }
     if (!openFloors.includes(selectedFID)) {
       // If not open, add it to the open floors
       setOpenFloors([selectedFID]);
       setSelectedFloor(adhocConverterChangePlease(selectedFID));
+      const floorDirections = splitDirections.filter(
+        (direction, i, arr) =>
+          direction?.floorID === selectedFID ||
+          (i > 0 && arr[i - 1].floorID === selectedFID) ||
+          (i === arr.length - 1 && arr[i].floorID === selectedFID)
+      );
+      let maxX = 0.1;
+      let maxY = 0.1;
+      let minX = 0.1;
+      let minY = 0.1;
+      for (const aNode of floorDirections) {
+        if (maxX % 1 != 0) {
+          maxX = aNode.node.xcoord;
+        }
+        if (maxY % 1 != 0) {
+          maxY = aNode.node.ycoord;
+        }
+        if (minX % 1 != 0) {
+          minX = aNode.node.xcoord;
+        }
+        if (minY % 1 != 0) {
+          minY = aNode.node.ycoord;
+        }
+        if (aNode.node.xcoord > maxX) {
+          maxX = aNode.node.xcoord;
+        }
+        if (aNode.node.ycoord > maxY) {
+          maxY = aNode.node.ycoord;
+        }
+        if (aNode.node.xcoord < minX) {
+          minX = aNode.node.xcoord;
+        }
+        if (aNode.node.ycoord < minY) {
+          minY = aNode.node.ycoord;
+        }
+      }
+      setCenter([
+        minX + (maxX - minX) / 2,
+        minY + (maxY - minY) / 2,
+        -0.00035 * Math.sqrt((maxX - minX) ** 2 + (maxY - minY) ** 2),
+      ]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFID]);
@@ -248,7 +293,7 @@ const Sidebar = () => {
 
             const angle = angleBetweenVectors(vector1, vector2);
             // Use crossProductValue to determine left or right turn
-            if (angle < -30) {
+            if (angle < -35) {
               if (nextNextDirection) {
                 const vector3 = {
                   x: nextDirection.node.xcoord - currDirection.node.xcoord,
@@ -260,7 +305,7 @@ const Sidebar = () => {
                 };
 
                 const angle2 = angleBetweenVectors(vector3, vector4);
-                if (angle2 >= -15 && angle2 < 15) {
+                if (angle2 >= -20 && angle2 < 20) {
                   return (
                     <div className="ml-3 mr-3">
                       <BsArrowUpCircle className="mr-2 ml-1 w-4 h-4 inline" />
@@ -276,7 +321,7 @@ const Sidebar = () => {
                   {"Turn left towards " + nextDirection.node.longName}
                 </div>
               );
-            } else if (angle >= -30 && angle < -15) {
+            } else if (angle >= -35 && angle < -20) {
               if (nextNextDirection) {
                 const vector3 = {
                   x: nextDirection.node.xcoord - currDirection.node.xcoord,
@@ -303,7 +348,7 @@ const Sidebar = () => {
                   {"Bear left towards " + nextDirection.node.longName}
                 </div>
               );
-            } else if (angle >= -15 && angle < 15) {
+            } else if (angle >= -20 && angle < 20) {
               if (nextNextDirection) {
                 const vector3 = {
                   x: nextDirection.node.xcoord - currDirection.node.xcoord,
@@ -315,7 +360,7 @@ const Sidebar = () => {
                 };
 
                 const angle2 = angleBetweenVectors(vector3, vector4);
-                if (angle2 >= -15 && angle2 < 15) {
+                if (angle2 >= -20 && angle2 < 20) {
                   bgAlt--;
                   return;
                 }
@@ -327,7 +372,7 @@ const Sidebar = () => {
                 </div>
               );
               //return "Head straight towards " + currDirection.longName;
-            } else if (angle >= 15 && angle < 30) {
+            } else if (angle >= 20 && angle < 35) {
               if (nextNextDirection) {
                 const vector3 = {
                   x: nextDirection.node.xcoord - currDirection.node.xcoord,
@@ -339,7 +384,7 @@ const Sidebar = () => {
                 };
 
                 const angle2 = angleBetweenVectors(vector3, vector4);
-                if (angle2 >= -15 && angle2 < 15) {
+                if (angle2 >= -20 && angle2 < 20) {
                   return (
                     <div className="ml-3 mr-3">
                       <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
@@ -354,7 +399,7 @@ const Sidebar = () => {
                   {"Bear right towards " + nextDirection.node.longName}
                 </div>
               );
-            } else if (angle >= 30) {
+            } else if (angle >= 35) {
               if (nextNextDirection) {
                 const vector3 = {
                   x: nextDirection.node.xcoord - currDirection.node.xcoord,
@@ -366,7 +411,7 @@ const Sidebar = () => {
                 };
 
                 const angle2 = angleBetweenVectors(vector3, vector4);
-                if (angle2 >= -15 && angle2 < 15) {
+                if (angle2 >= -20 && angle2 < 20) {
                   return (
                     <div className="ml-3 mr-3">
                       <BsArrowUpRightCircle className="mr-2 ml-1 w-4 h-4 inline" />
@@ -736,7 +781,10 @@ const Sidebar = () => {
                 className="w-full"
                 outline
                 label={`Floor ${floorID}`}
-                onClick={() => handleFloorClick(floorID)}
+                onClick={() => {
+                  handleFloorClick(floorID);
+                  setSelectedFID(floorID);
+                }}
               >
                 {openFloors.includes(floorID) ? (
                   <>
@@ -761,16 +809,36 @@ const Sidebar = () => {
                   {splitDirections
                     .filter((direction) => direction?.floorID === floorID)
                     .map((row, i: number) => (
-                      <List
+                      <div
                         key={i}
                         className={`bg-${colorPicker(
                           bgAlt,
                           0
-                        )} dark:bg-${colorPicker(bgAlt, 1)}`}
+                        )} dark:bg-${colorPicker(bgAlt, 1)} text-left w-full`}
+                        role="button"
+                        aria-label="direction"
+                        tabIndex={0}
+                        onClick={() => {
+                          const floorDirections = splitDirections.filter(
+                            (direction, i, arr) =>
+                              direction?.floorID === floorID ||
+                              (i > 0 && arr[i - 1].floorID === floorID) ||
+                              (i === arr.length - 1 &&
+                                arr[i].floorID === floorID)
+                          );
+
+                          const currDirection = floorDirections[i];
+                          setCenter([
+                            currDirection.node.xcoord,
+                            currDirection.node.ycoord,
+                            1,
+                          ]);
+                          setSelectedFloor(adhocConverterChangePlease(floorID));
+                        }}
                       >
                         {i < splitDirections.length &&
                           turnDirection(floorID, i)}
-                      </List>
+                      </div>
                     ))}
                 </List>
               )}

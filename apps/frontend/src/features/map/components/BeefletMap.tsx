@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   MapContainer,
   ImageOverlay,
@@ -20,7 +20,7 @@ import "leaflet/dist/leaflet.css";
 import { Button, Alert, Card, ToggleSwitch } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
-//import CustomButton from "@/features/map/components/Description.tsx";
+// import CustomButton from "@/features/map/components/Description.tsx";
 import { assetToFloor, floorToAsset } from "../utils";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Nodes } from "database";
@@ -73,6 +73,7 @@ export default function BeefletMap() {
     floorSections,
     selectedFID,
     setSelectedFID,
+    center,
   } = useContext(MapContext);
 
   const navigate = useNavigate();
@@ -184,22 +185,20 @@ export default function BeefletMap() {
     return { pathData, pathLength };
   }
 
-  const resetZoom = useCallback(
-    (map: { flyTo: (arg0: LatLng, arg1: number) => void }) => {
+  useEffect(() => {
+    if (map) {
       if (lastFloor != selectedFloor) {
         map.flyTo(new LatLng(-1700, 2500), -2);
-        new LatLng(0, 0);
-        map;
       }
-    },
-    [lastFloor, selectedFloor]
-  );
+    }
+  }, [lastFloor, map, selectedFloor]);
 
   useEffect(() => {
     if (map) {
-      resetZoom(map);
+      map.flyTo(new LatLng(-center[1], center[0]), center[2]);
     }
-  }, [map, resetZoom]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [center]);
 
   return (
     <div className="w-full h-full">
@@ -364,6 +363,9 @@ export default function BeefletMap() {
                   >
                     <Popup className="leaflet-popup-content-wrapper">
                       {(() => {
+                        const reqNum = requests.filter(
+                          (req) => req.nodeID === node.nodeID
+                        ).length;
                         if (viewRequests) {
                           return (
                             <table className="table">
@@ -419,8 +421,11 @@ export default function BeefletMap() {
                                     e.stopPropagation();
                                     setViewRequests(true);
                                   }}
+                                  disabled={reqNum <= 0}
                                 >
-                                  View Requests
+                                  {reqNum > 0
+                                    ? "View Requests (" + reqNum + ")"
+                                    : "No Requests"}
                                 </Button>
                               )}
                               {isAuthenticated && (
@@ -617,9 +622,8 @@ export default function BeefletMap() {
                 <Button
                   pill
                   key={floor.floorID} // Make sure to provide a unique key
-                  className={"pointer-events-auto focus:ring-2"}
-                  style={{ width: "50px" }}
-                  color={floor.floorID === selectedFID ? undefined : "gray"}
+                  className="pointer-events-auto focus:ring-2 w-12"
+                  color={floor.floorID === selectedFID ? undefined : "light"}
                   onClick={() => {
                     setSelectedFloor(
                       adhocConverterChangePlease(floor.node.floor)
