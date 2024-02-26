@@ -166,7 +166,7 @@ const ServicesData = () => {
     <>
       <div className="px-16 py-8">
         <Card className="shadow-[0_0px_25px_0px_rgba(45,105,135,.5)]">
-          <div className="flex space-x-8">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <form
                 action="/api/services/upload"
@@ -198,12 +198,12 @@ const ServicesData = () => {
                 </Button>
               </div>
             </div>
-            <div className="flex flex-col space-y-2 w-[500px]">
+            <div className="flex flex-col space-y-2 h-96">
               <Label htmlFor="status" value="Filter by employee role:" />
               <Select
                 id="status"
                 sizing="sm"
-                className="w-32"
+                className="max-w-xs"
                 value={selectedEmployeeType}
                 onChange={(e) => {
                   setSelectedEmployeeType(
@@ -215,17 +215,13 @@ const ServicesData = () => {
                 <option value="REGULAR">Regular</option>
                 <option value="ADMIN">Admin</option>
               </Select>
-              <div className="w-full flex-1">
-                <PieChart
-                  title="Requests statistics"
-                  series={seriesPie}
-                  labels={labelsPie}
-                />
-              </div>
+              <PieChart
+                title="Requests statistics"
+                series={seriesPie}
+                labels={labelsPie}
+              />
             </div>
             <DonutChart series={seriesDonut} labels={labelsDonut} />
-          </div>
-          <div className="px-16 py-8">
             <StackedHorizontalBarChart data={seriesBar} categories={typesBar} />
           </div>
         </Card>

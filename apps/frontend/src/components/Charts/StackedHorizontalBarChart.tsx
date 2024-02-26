@@ -15,7 +15,7 @@ const StackedHorizontalBarChart: React.FC<StackedHorizontalBarChartProps> = ({
 }) => {
   return (
     <div className="max-w-3xl w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
-      <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white pe-1">
+      <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white pe-1 mb-4">
         Request types completion status
       </h5>
       <ReactApexChart
