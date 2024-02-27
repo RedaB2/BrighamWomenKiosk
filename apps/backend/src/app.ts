@@ -15,7 +15,7 @@ app.use(
       // This is a "hack" that gets the output to appear in the remote debugger :)
       write: (msg) => console.info(msg),
     },
-  })
+  }),
 ); // This records all HTTP requests
 app.use(express.json()); // This processes requests as JSON
 app.use(express.urlencoded({ extended: false })); // URL parser
@@ -26,6 +26,11 @@ app.use(cookieParser()); // Cookie parser
 app.use("/api/map", mapRouter);
 app.use("/api/services", servicesRouter);
 app.use("/api/employees", employeesRouter);
+
+app.use("/healthcheck", function (req: Request, res:Response): void{
+  res.sendStatus(200);
+});
+
 
 /**
  * Catch all 404 errors, and forward them to the error handler

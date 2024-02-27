@@ -1,6 +1,5 @@
 # Production arguments passed to both containers
-x-prod-args: &prod-args
-  # Port that both servers will run production on
+x-prod-args: &prod-args # Port that both servers will run production on
   PRODUCTION_PORT: &prod-port 80
   PORT: *prod-port # Duplicate this under the name that the env variable will expect. Build args will override as necessary
 
@@ -15,7 +14,7 @@ x-db-loc: &db-loc
   POSTGRES_PORT: &pg-port "5432"
 
   # The environment variables will expect this to already be formed, build args will override it
-  POSTGRES_URL: "postgresql://postgres:kTtH68Ptj17iGcsaK1EB@team-mqp-prod.ctzj5mykyp9v.us-east-1.rds.amazonaws.com:5432/postgres?schema=public"
+  POSTGRES_URL: "postgresql://postgres:HLzJzXpLOaQpzcvSjkfm@team-c-prod.cvco2acumbrn.us-east-2.rds.amazonaws.com:5432/postgres?schema=public"
 
 # Health check for all processes
 x-health-check: &health-check
@@ -93,8 +92,7 @@ services:
       - "traefik.http.services.frontend-https.loadbalancer.server.port=80"
     image: teamcprodc24/softeng-teamc-prod:frontend
     restart: always
-    healthcheck:
-      *health-check
+    healthcheck: *health-check
 
   # Backend (API)
   backend:
@@ -105,7 +103,7 @@ services:
     # Environment allows this to work with prebuilt images
     environment:
       # Ignore the warnings, this just merges those three
-      <<: [ *prod-args, *db-args, *db-loc ]
+      <<: [*prod-args, *db-args, *db-loc]
     build:
       # Taken from our github repo
       context: .
@@ -128,7 +126,6 @@ services:
       - "traefik.http.services.backend-https.loadbalancer.server.port=80"
     image: teamcprodc24/softeng-teamc-prod:backend
     restart: always
-    healthcheck:
-      *health-check
+    healthcheck: *health-check
 volumes:
   acme_cert:
