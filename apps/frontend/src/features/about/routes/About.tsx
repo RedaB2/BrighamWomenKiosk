@@ -328,7 +328,22 @@ const About = () => {
             <Modal.Body>
               <div className="space-y-6">
                 <p className="text-base leading-relaxed text-gray-500 dark:text-white">
-                  "In Memory of Matt" - Team C
+                  "Welcome! I’m Matt and here my top 7 reasons why I should be
+                  on Survivor 47. Reason Number 1: I am really good at making
+                  Fire. Puzzles? No Problem! My Puzzle Soling Skills are
+                  unmatched. Reason Number 3: I am really good at foraging for
+                  Food. Reason Number 4: Shelter is crucial for Survivor.
+                  Luckily, I am a master shelter builder. Reason Number 5: I am
+                  Stealthy as a Ninja, so they’ll Never see me coming. Oh Hello,
+                  I didn’t see you there. In survivor, being centered and being
+                  one step ahead of your opponent is crucial. I am harnessing my
+                  inner Zen to anticipate my opponents moves [Bong] Reason
+                  Number 7: I train in the most extreme elements every day, so I
+                  am ready for anything survivor throws my way. Well, there you
+                  have it. 7 Indisputable reasons why I am the perfect candidate
+                  for Survivor. Give me the call and I will give you even more
+                  ways I can outwit, outplay, and outlast the competition." -
+                  Matt
                 </p>
               </div>
             </Modal.Body>
