@@ -8,6 +8,7 @@ import {
   FaUserAlt,
   FaSignOutAlt,
   FaInfoCircle,
+  FaBook,
 } from "react-icons/fa";
 import { MdOutlineRoomService } from "react-icons/md";
 import { FaPeopleGroup } from "react-icons/fa6";
@@ -113,6 +114,9 @@ const Drawer = () => {
           )}
           <FlowbiteSidebar.Item icon={FaInfoCircle} as={Link} to="/about">
             About
+          </FlowbiteSidebar.Item>
+          <FlowbiteSidebar.Item icon={FaBook} as={Link} to="/credit">
+            Credit
           </FlowbiteSidebar.Item>
         </FlowbiteSidebar.ItemGroup>
         <FlowbiteSidebar.ItemGroup>
