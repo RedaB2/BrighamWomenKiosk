@@ -4,17 +4,17 @@ x-prod-args: &prod-args # Port that both servers will run production on
   PORT: *prod-port # Duplicate this under the name that the env variable will expect. Build args will override as necessary
 
 x-db-info: &db-args
-  POSTGRES_PASSWORD: HLzJzXpLOaQpzcvSjkfm
+  POSTGRES_PASSWORD: nsvfPsfAfDPrr0j1A3nM
   POSTGRES_USER: postgres
   POSTGRES_DB: postgres
 
 # Port and URL for the DB
 x-db-loc: &db-loc
-  POSTGRES_CONTAINER: team-c-prod.cvco2acumbrn.us-east-2.rds.amazonaws.com
+  POSTGRES_CONTAINER: team-c-production.cvco2acumbrn.us-east-2.rds.amazonaws.com
   POSTGRES_PORT: &pg-port "5432"
 
   # The environment variables will expect this to already be formed, build args will override it
-  POSTGRES_URL: "postgresql://postgres:HLzJzXpLOaQpzcvSjkfm@team-c-prod.cvco2acumbrn.us-east-2.rds.amazonaws.com:5432/postgres?schema=public"
+  POSTGRES_URL: "postgresql://postgres:nsvfPsfAfDPrr0j1A3nM@team-c-production.cvco2acumbrn.us-east-2.rds.amazonaws.com:5432/postgres?schema=public"
 
 # Health check for all processes
 x-health-check: &health-check
@@ -85,7 +85,7 @@ services:
 
       # The 443 entrypoint is the actual site
       - "traefik.http.routers.frontend-https.entrypoints=websecure"
-      - "traefik.http.routers.frontend-https.rule=Host(`ec2-3-21-205-87.us-east-2.compute.amazonaws.com`)"
+      - "traefik.http.routers.frontend-https.rule=Host(`ec2-3-14-27-215.us-east-2.compute.amazonaws.com`)"
       - "traefik.http.routers.frontend-https.tls=true"
 
       # Despite the "loadbalancer" naming, this just describes what port this container exposes
@@ -119,7 +119,7 @@ services:
 
       # The 443 entrypoint is the actual site
       - "traefik.http.routers.backend-https.entrypoints=websecure"
-      - "traefik.http.routers.backend-https.rule=Host(`ec2-3-21-205-87.us-east-2.compute.amazonaws.com`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend-https.rule=Host(`ec2-3-14-27-215.us-east-2.compute.amazonaws.com`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend-https.tls=true"
 
       # Despite the "loadbalancer" naming, this just describes what port this container exposes
