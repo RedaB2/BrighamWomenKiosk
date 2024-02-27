@@ -70,7 +70,7 @@ const main = async () => {
   });
 
   // seed service requests
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 100; i++) {
     await prisma.requests.create({
       data: generateRequest(employeeIds, nodeIds),
     });
