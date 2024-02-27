@@ -8,7 +8,7 @@ export const LoginButton: React.FC = () => {
   const handleLogin = async () => {
     await loginWithRedirect({
       appState: {
-        returnTo: location.pathname,
+        returnTo: window.location.origin,
       },
     });
   };
