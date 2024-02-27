@@ -191,11 +191,22 @@ const MapData = () => {
           columns={nodesTableColumns}
           data={nodes}
           searchColumn="longName"
+          columnNames={[
+            "nodeID",
+            "xcoord",
+            "ycoord",
+            "floor",
+            "building",
+            "nodeType",
+            "longName",
+            "shortName",
+          ]}
         />
         <DataTable
           columns={edgesTableColumns}
           data={edges}
           searchColumn="edgeID"
+          columnNames={["edgeID", "startNode", "endNode", "weight"]}
         />
       </div>
     </>
@@ -238,6 +249,7 @@ const nodesTableColumns: ColumnDef<Nodes>[] = [
   },
   {
     accessorKey: "xcoord",
+    accessorFn: (row) => row.xcoord?.toString(),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="X-Coordinate" />
     ),
@@ -245,6 +257,7 @@ const nodesTableColumns: ColumnDef<Nodes>[] = [
   },
   {
     accessorKey: "ycoord",
+    accessorFn: (row) => row.ycoord?.toString(),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Y-Coordinate" />
     ),
@@ -337,6 +350,7 @@ const edgesTableColumns: ColumnDef<Edges>[] = [
   },
   {
     accessorKey: "weight",
+    accessorFn: (row) => row.weight?.toString(),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Weight" />
     ),

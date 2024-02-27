@@ -239,6 +239,22 @@ const ServicesData = () => {
             data={servicesWithEmployees}
             searchColumn="employee"
             onAddRow={() => navigate("/services")}
+            columnNames={[
+              "id",
+              "nodeID",
+              "employeeID",
+              "employee",
+              "urgency",
+              "type",
+              "notes",
+              "medicineName",
+              "medicineDosage",
+              "maintenanceType",
+              "roomTo",
+              "hazardousWaste",
+              "department",
+              "completionStatus",
+            ]}
           />
         </ServicesWithEmployeesContext.Provider>
       </div>

@@ -10,7 +10,7 @@ import {
   Modal,
 } from "flowbite-react";
 import { CiMenuBurger, CiSearch } from "react-icons/ci";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Nodes } from "database";
 import { MapContext } from "../components";
@@ -115,22 +115,27 @@ const Sidebar = () => {
   const [splitDirections, setSplitDirections] = useState<NodeFloorID[]>([]);
 
   let bgAlt = 0;
-
-  // assigns nodes IDs so that nodes on separate areas of the same floor can be differentiated
+  const floorSectionsRef = useRef<NodeFloorID[]>();
+  floorSectionsRef.current = floorSections;
 
   function chooseFID(floor: string): string {
-    if (!floorSections[0]) {
+    if (floorSectionsRef.current) {
+      if (!floorSectionsRef.current[0]) {
+        return "";
+      }
+    } else {
       return "";
     }
-    for (const anFID in floorSections) {
+    for (const anFID in floorSectionsRef.current) {
       if (anFID.substring(0, anFID.length - 1) == floor) {
         return anFID;
       }
     }
-    return floorSections[0].floorID;
+    return floorSectionsRef.current[0].floorID;
   }
 
   useEffect(() => {
+    // assigns nodes IDs so that nodes on separate areas of the same floor can be differentiated
     function separateFloors(newDirections: Nodes[]) {
       let lastFloor = "";
       const floors: NodeFloorID[] = [];
@@ -155,19 +160,19 @@ const Sidebar = () => {
   useEffect(() => {
     // Set to store unique floorID values
     const uniqueFloorIDSet = new Set<string>();
+    const tempFloorSections = splitDirections.filter((item) => {
+      // Check if the 'type' is not in the Set
+      if (!uniqueFloorIDSet.has(item.floorID)) {
+        // Add the 'type' to the Set and return the item
+        uniqueFloorIDSet.add(item.floorID);
+        return true;
+      }
+      // If the 'type' is already in the Set, return undefined (filtered out)
+      return false;
+    });
+    setFloorSections(tempFloorSections);
+    floorSectionsRef.current = tempFloorSections;
 
-    setFloorSections(
-      splitDirections.filter((item) => {
-        // Check if the 'type' is not in the Set
-        if (!uniqueFloorIDSet.has(item.floorID)) {
-          // Add the 'type' to the Set and return the item
-          uniqueFloorIDSet.add(item.floorID);
-          return true;
-        }
-        // If the 'type' is already in the Set, return undefined (filtered out)
-        return false;
-      })
-    );
     setSelectedFID(
       splitDirections[0] ? splitDirections[0].floorID : chooseFID("")
     );
@@ -181,49 +186,50 @@ const Sidebar = () => {
     if (!openFloors.includes(selectedFID)) {
       // If not open, add it to the open floors
       setOpenFloors([selectedFID]);
-      setSelectedFloor(adhocConverterChangePlease(selectedFID));
-      const floorDirections = splitDirections.filter(
-        (direction, i, arr) =>
-          direction?.floorID === selectedFID ||
-          (i > 0 && arr[i - 1].floorID === selectedFID) ||
-          (i === arr.length - 1 && arr[i].floorID === selectedFID)
-      );
-      let maxX = 0.1;
-      let maxY = 0.1;
-      let minX = 0.1;
-      let minY = 0.1;
-      for (const aNode of floorDirections) {
-        if (maxX % 1 != 0) {
-          maxX = aNode.node.xcoord;
-        }
-        if (maxY % 1 != 0) {
-          maxY = aNode.node.ycoord;
-        }
-        if (minX % 1 != 0) {
-          minX = aNode.node.xcoord;
-        }
-        if (minY % 1 != 0) {
-          minY = aNode.node.ycoord;
-        }
-        if (aNode.node.xcoord > maxX) {
-          maxX = aNode.node.xcoord;
-        }
-        if (aNode.node.ycoord > maxY) {
-          maxY = aNode.node.ycoord;
-        }
-        if (aNode.node.xcoord < minX) {
-          minX = aNode.node.xcoord;
-        }
-        if (aNode.node.ycoord < minY) {
-          minY = aNode.node.ycoord;
-        }
-      }
-      setCenter([
-        minX + (maxX - minX) / 2,
-        minY + (maxY - minY) / 2,
-        -0.00035 * Math.sqrt((maxX - minX) ** 2 + (maxY - minY) ** 2),
-      ]);
     }
+    setSelectedFloor(adhocConverterChangePlease(selectedFID));
+    const floorDirections = splitDirections.filter(
+      (direction, i, arr) =>
+        direction?.floorID === selectedFID ||
+        (i > 0 && arr[i - 1].floorID === selectedFID) ||
+        (i === arr.length - 1 && arr[i].floorID === selectedFID)
+    );
+    let maxX = 0.1;
+    let maxY = 0.1;
+    let minX = 0.1;
+    let minY = 0.1;
+    for (const aNode of floorDirections) {
+      if (maxX % 1 != 0) {
+        maxX = aNode.node.xcoord;
+      }
+      if (maxY % 1 != 0) {
+        maxY = aNode.node.ycoord;
+      }
+      if (minX % 1 != 0) {
+        minX = aNode.node.xcoord;
+      }
+      if (minY % 1 != 0) {
+        minY = aNode.node.ycoord;
+      }
+      if (aNode.node.xcoord > maxX) {
+        maxX = aNode.node.xcoord;
+      }
+      if (aNode.node.ycoord > maxY) {
+        maxY = aNode.node.ycoord;
+      }
+      if (aNode.node.xcoord < minX) {
+        minX = aNode.node.xcoord;
+      }
+      if (aNode.node.ycoord < minY) {
+        minY = aNode.node.ycoord;
+      }
+    }
+    setCenter([
+      minX + (maxX - minX) / 2,
+      minY + (maxY - minY) / 2,
+      -0.00035 * Math.sqrt((maxX - minX) ** 2 + (maxY - minY) ** 2),
+    ]);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFID]);
 
@@ -985,6 +991,49 @@ const Sidebar = () => {
         </form>
         {/* Displaying directions organized by floor */}
         <div className="mt-4 space-y-2">
+          <div className={"flex space-x-2 justify-between"}>
+            <div className={"flex space-x-2"}>
+              <Button
+                outline
+                size={"xs"}
+                onClick={() => {
+                  if (floorSectionsRef.current) {
+                    const openAll: string[] = [];
+                    floorSectionsRef.current.map((aNode) => {
+                      openAll.push(aNode.floorID);
+                    });
+                    setOpenFloors(openAll);
+                  }
+                }}
+              >
+                Expand all
+              </Button>
+              <Button
+                outline
+                size={"xs"}
+                onClick={() => {
+                  setOpenFloors([]);
+                }}
+              >
+                Collapse all
+              </Button>
+            </div>
+            <Button
+              color="failure"
+              outline
+              size={"xs"}
+              onClick={() => {
+                setOpenFloors([]);
+                setStartLocation("");
+                setStartID("");
+                setEndLocation("");
+                setEndID("");
+                setPath([]);
+              }}
+            >
+              Clear Nav
+            </Button>
+          </div>
           {Array.from(
             new Set(splitDirections.map((direction) => direction?.floorID))
           ).map((floorID) => (
