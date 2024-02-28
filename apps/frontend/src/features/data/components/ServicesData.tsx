@@ -126,18 +126,36 @@ const ServicesData = () => {
     return map;
   }, {} as Record<string, number>);
 
-  const seriesDonut = Object.values(completionStatusMap).map((count) =>
-    Number(((count / servicesWithEmployees.length) * 100).toFixed(2))
-  );
+  const [seriesDonut, setSeriesDonut] = useState<number[]>([]);
+  useEffect(() => {
+    // filter seriesDonut based on selectedEmployeeType
+    const filteredServices = selectedEmployeeType
+      ? servicesWithEmployees.filter(
+          (service) => service.employee?.role === selectedEmployeeType
+        )
+      : servicesWithEmployees;
+    const completionStatusMap = filteredServices.reduce((map, service) => {
+      const status = service.completionStatus;
+      const userFriendlyLabel = completionStatusLabelsMap[status];
+      map[userFriendlyLabel] = (map[userFriendlyLabel] || 0) + 1;
+      return map;
+    }, {} as Record<string, number>);
+    const seriesDonut = Object.values(completionStatusMap).map((count) =>
+      Number(((count / servicesWithEmployees.length) * 100).toFixed(2))
+    );
+    setSeriesDonut(seriesDonut);
+  }, [servicesWithEmployees, selectedEmployeeType]);
   const labelsDonut = Object.keys(completionStatusMap);
 
   // Data for StackedHorizontalBarChart
+  interface BarChartData {
+    name: string;
+    data: number[];
+  }
+  const [seriesBar, setSeriesBar] = useState<BarChartData[]>([]);
+  const [typesBar, setTypesBar] = useState<string[]>([]);
+
   // Calculate labelsBar
-  const types = Array.from(
-    new Set(servicesWithEmployees.map((request) => request.type))
-  );
-  const typesBar = types.map((type) => typeLabelsMap[type]);
-  const statuses = Object.keys(completionStatusLabelsMap);
   const getStatusCountsForType = (
     status: string,
     type: string,
@@ -151,16 +169,32 @@ const ServicesData = () => {
     return filteredData.length;
   };
 
-  // Calculate seriesBar
-  const seriesBar = statuses.map((status) => {
-    const dataForStatus: number[] = types.map((type) =>
-      getStatusCountsForType(status, type, servicesWithEmployees)
+  useEffect(() => {
+    const types = Array.from(
+      new Set(servicesWithEmployees.map((request) => request.type))
     );
-    return {
-      name: status,
-      data: dataForStatus,
-    };
-  });
+    const typesBar = types.map((type) => typeLabelsMap[type]);
+    const statuses = Object.keys(completionStatusLabelsMap);
+    // filter seriesBar based on selectedEmployeeType
+    const filteredServices = selectedEmployeeType
+      ? servicesWithEmployees.filter(
+          (service) => service.employee?.role === selectedEmployeeType
+        )
+      : servicesWithEmployees;
+
+    // Calculate seriesBar
+    const seriesBar = statuses.map((status) => {
+      const dataForStatus: number[] = types.map((type) =>
+        getStatusCountsForType(status, type, filteredServices)
+      );
+      return {
+        name: status,
+        data: dataForStatus,
+      };
+    });
+    setSeriesBar(seriesBar);
+    setTypesBar(typesBar);
+  }, [servicesWithEmployees, selectedEmployeeType]);
 
   return (
     <>
