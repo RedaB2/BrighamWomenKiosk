@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Card } from "flowbite-react";
-import { LoginButton, SignUpButton, ProfileContext } from "../components";
+import { LoginButton, ProfileContext } from "../components";
 
 const SignIn = () => {
   const {
@@ -44,7 +44,6 @@ const SignIn = () => {
         </h1>
         <ProfileContext />
         <LoginButton />
-        <SignUpButton />
       </Card>
     </div>
   );
