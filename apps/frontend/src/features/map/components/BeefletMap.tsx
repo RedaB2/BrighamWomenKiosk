@@ -27,6 +27,9 @@ import { Nodes } from "database";
 import ElevatorIcon from "../assets/ElevatorIconBlue.png";
 import StairIcon from "../assets/StairIcon.png";
 import { MdDoubleArrow } from "react-icons/md";
+import "leaflet/dist/images/marker-icon-2x.png";
+import "leaflet/dist/images/marker-icon.png";
+import "leaflet/dist/images/marker-shadow.png";
 
 const ZoomGetter = ({ setZoom }: { setZoom: (arg0: number) => void }) => {
   useMapEvent("zoom", (event) => {
