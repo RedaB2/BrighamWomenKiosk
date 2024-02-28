@@ -26,10 +26,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Nodes } from "database";
 import ElevatorIcon from "../assets/ElevatorIconBlue.png";
 import StairIcon from "../assets/StairIcon.png";
+import MarkerIcon from "../assets/marker-icon-2x.png";
 import { MdDoubleArrow } from "react-icons/md";
-import "leaflet/dist/images/marker-icon-2x.png";
-import "leaflet/dist/images/marker-icon.png";
-import "leaflet/dist/images/marker-shadow.png";
+//import "leaflet/dist/images/marker-icon-2x.png";
+//import "leaflet/dist/images/marker-icon.png";
+//import "leaflet/dist/images/marker-shadow.png";
 
 const ZoomGetter = ({ setZoom }: { setZoom: (arg0: number) => void }) => {
   useMapEvent("zoom", (event) => {
@@ -332,7 +333,7 @@ export default function BeefletMap() {
                           ? "blue"
                           : node.nodeID === endID
                           ? "yellow"
-                          : reqNum > 0
+                          : (reqNum > 0 && isAuthenticated)
                           ? colorBlind
                             ? "#F200FF"
                             : "red"
@@ -494,6 +495,11 @@ export default function BeefletMap() {
               <Marker
                 position={[-node.ycoord, node.xcoord]}
                 key={node.nodeID}
+                icon={L.icon({
+                  iconUrl: MarkerIcon,
+                  iconSize: [25, 40], // Adjust size if needed
+                  iconAnchor: [12.5, 40]
+                })}
               />
             ))}
         {nodes
@@ -502,7 +508,15 @@ export default function BeefletMap() {
               node.nodeID == endID && node.floor == assetToFloor(selectedFloor)
           )
           .map((node) => (
-            <Marker position={[-node.ycoord, node.xcoord]} key={node.nodeID} />
+            <Marker 
+            position={[-node.ycoord, node.xcoord]} 
+            key={node.nodeID}
+            icon={L.icon({
+              iconUrl: MarkerIcon,
+              iconSize: [25, 40], // Adjust size if needed
+              iconAnchor: [12.5, 40]
+            })}
+            />
           ))}
         {floorChanges
           .filter(
