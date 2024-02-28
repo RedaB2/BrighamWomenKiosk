@@ -1,4 +1,4 @@
-import { Edges, Nodes, Requests } from "database";
+import { Edges, Nodes, Requests, Employees } from "database";
 import { createContext, Dispatch, SetStateAction } from "react";
 import { NodeFloorID } from "./Sidebar";
 
@@ -21,8 +21,16 @@ const MapContext = createContext<{
   setStartID: Dispatch<SetStateAction<string>>;
   endID: string;
   setEndID: Dispatch<SetStateAction<string>>;
-  requests: Requests[];
-  setRequests: Dispatch<SetStateAction<Requests[]>>;
+  requests: (Requests & {
+    employee: Employees | null;
+  })[];
+  setRequests: Dispatch<
+    SetStateAction<
+      (Requests & {
+        employee: Employees | null;
+      })[]
+    >
+  >;
   floorSections: NodeFloorID[];
   setFloorSections: Dispatch<SetStateAction<NodeFloorID[]>>;
   selectedFID: string;

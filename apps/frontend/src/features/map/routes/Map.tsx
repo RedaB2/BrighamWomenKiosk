@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import firstFloor from "../assets/01_thefirstfloor.png";
 import { Sidebar, MapContext, NodeFloorID } from "../components";
 import BeefletMap from "@/features/map/components/BeefletMap.tsx";
-import { Edges, Nodes, Requests } from "database";
+import { Edges, Nodes, Requests, Employees } from "database";
 
 const Map = () => {
   const [nodes, setNodes] = useState<Nodes[]>([]);
@@ -14,10 +14,14 @@ const Map = () => {
   const [endLocation, setEndLocation] = useState("");
   const [startID, setStartID] = useState("");
   const [endID, setEndID] = useState("");
-  const [requests, setRequests] = useState<Requests[]>([]);
+  const [requests, setRequests] = useState<
+    (Requests & {
+      employee: Employees | null;
+    })[]
+  >([]);
   const [floorSections, setFloorSections] = useState<NodeFloorID[]>([]);
   const [selectedFID, setSelectedFID] = useState("");
-  const [center, setCenter] = useState<number[]>([0, 0]);
+  const [center, setCenter] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchNodes = async () => {
@@ -40,9 +44,9 @@ const Map = () => {
         console.error("Failed to fetch edges:", error);
       }
     };
-    const fetchServices = async () => {
+    const fetchServicesWithEmployees = async () => {
       try {
-        const res = await fetch("/api/services");
+        const res = await fetch("/api/services/with-employee");
         if (!res.ok) throw new Error(res.statusText);
         const data = await res.json();
         setRequests(data);
@@ -52,7 +56,7 @@ const Map = () => {
     };
     fetchNodes();
     fetchEdges();
-    fetchServices();
+    fetchServicesWithEmployees();
   }, []);
 
   return (
