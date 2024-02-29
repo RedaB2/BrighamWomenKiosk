@@ -34,7 +34,7 @@ import { floorToAsset } from "../utils";
 const nodeType = {
   ELEV: "ELEV",
   REST: "REST",
-  STAI: "STAI",
+  //STAI: "STAI",
   DEPT: "DEPT",
   LABS: "LABS",
   INFO: "INFO",
@@ -42,14 +42,14 @@ const nodeType = {
   EXIT: "EXIT",
   RETL: "RETL",
   SERV: "SERV",
-  HALL: "HALL",
+  //HALL: "HALL",
   BATH: "BATH",
 };
 
 const nodeTypeLabel = {
   ELEV: "Elevator",
   REST: "Restroom",
-  STAI: "Stairs",
+  //STAI: "Stairs",
   DEPT: "Department",
   LABS: "Laboratory",
   INFO: "Information",
@@ -57,7 +57,7 @@ const nodeTypeLabel = {
   EXIT: "Exit",
   RETL: "Retail",
   SERV: "Service",
-  HALL: "Hallway",
+  //HALL: "Hallway",
   BATH: "Bathroom",
 };
 
